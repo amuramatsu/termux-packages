@@ -1,0 +1,112 @@
+--- a/mozc-config/mozc_dict_main.cc
++++ b/mozc-config/mozc_dict_main.cc
+@@ -15,6 +15,7 @@
+ #include <sstream>
+ #include <string>
+ #include <unistd.h>
++#include <iconv.h>
+ 
+ using namespace std;
+ 
+@@ -75,10 +76,11 @@ void MozcDict::set_entry_with_dic(string dic_name, string key, string value, str
+         if (new_dic(dic_name)) return;
+         dic = get_dic(dic_name);
+     }
+-    mozc::UserDictionaryStorage::UserDictionaryEntry from, to;
+-    from.set_key(key);
+-    from.set_value(value);
+-    from.set_pos(pos);
++    mozc::UserDictionaryImporter::RawEntry from;
++    mozc::UserDictionaryStorage::UserDictionaryEntry to;
++    from.key = key;
++    from.value = value;
++    from.pos = pos;
+     if (!mozc::UserDictionaryImporter::ConvertEntry(from, &to)) {
+         cerr << "Invalid POS Error - " << pos << endl;
+         return;
+@@ -105,10 +107,11 @@ void MozcDict::set_entry(string key, string value, string pos, string comment) {
+             stor->mutable_dictionaries(0);
+     if (dic == NULL) return;
+ 
+-    mozc::UserDictionaryStorage::UserDictionaryEntry from, to;
+-    from.set_key(key);
+-    from.set_value(value);
+-    from.set_pos(pos);
++    mozc::UserDictionaryImporter::RawEntry from;
++    mozc::UserDictionaryStorage::UserDictionaryEntry to;
++    from.key = key;
++    from.value = value;
++    from.pos = pos;
+     if (!mozc::UserDictionaryImporter::ConvertEntry(from, &to)) {
+         cerr << "Invalid POS Error - " << pos << endl;
+         return;
+@@ -128,11 +131,7 @@ uint64 CreateID() {
+ 
+   // dic_id == 0 is used as a magic number
+   while (id == 0) {
+-    if (!mozc::Util::GetSecureRandomSequence(
+-            reinterpret_cast<char *>(&id), sizeof(id))) {
+-      LOG(ERROR) << "GetSecureRandomSequence() failed. use rand()";
+-      id = static_cast<uint64>(rand());
+-    }
++    mozc::Util::GetRandomSequence(reinterpret_cast<char *>(&id), sizeof(id));
+   }
+ 
+   return id;
+@@ -209,12 +208,24 @@ int MozcDict::import(string name, char* file_name) {
+     is.close();
+ 
+     mozc::UserDictionaryImporter::EncodingType type =
+-            mozc::UserDictionaryImporter::GuessEncodingType(input, len);
++            mozc::UserDictionaryImporter::GuessEncodingType(string(input, len));
+     string output;
+     if (type == mozc::UserDictionaryImporter::UTF8) {
+         output += input;
+     } else if (type == mozc::UserDictionaryImporter::SHIFT_JIS) {
+-        mozc::Util::SJISToUTF8(input, &output);
++        iconv_t ic = iconv_open("UTF-8", "CP932");
++        if (ic != (iconv_t)-1) {
++            char *inbuf = input;
++            size_t inbytes = len;
++            size_t outbytes = inbytes*3; // UTF-8はCP932から最大3倍
++            char *outbuf = new char[outbytes];
++            char *p = outbuf;
++            size_t s = iconv(ic, &inbuf, &inbytes, &p, &outbytes);
++            if (s != (size_t)-1)
++                output.append(outbuf, s);
++            iconv_close(ic);
++            delete[] outbuf;
++        }
+         if (output == "") {
+             cerr << "Convert Error" << endl;
+             delete[] input;
+@@ -226,8 +237,7 @@ int MozcDict::import(string name, char* file_name) {
+         return -1;
+     }
+ 
+-    istringstream ss(output);
+-    mozc::UserDictionaryImporter::IStreamTextLineIterator iter(&ss);
++    mozc::UserDictionaryImporter::StringTextLineIterator iter(output);
+     mozc::UserDictionaryImporter::ErrorType error =
+     mozc::UserDictionaryImporter::ImportFromTextLineIterator(
+             mozc::UserDictionaryImporter::IME_AUTO_DETECT, &iter, dic);
+@@ -286,7 +296,7 @@ void print_help() {
+ namespace {
+ struct POSMap {
+     const char *a;
+-    const char *b;
++    mozc::user_dictionary::UserDictionary::PosType b;
+ };
+ #include "dictionary/pos_map.h"
+ }
+@@ -295,8 +305,8 @@ struct POSMap {
+ void list_pos() {
+     set<string> ss;
+     for (int i = 0; i < arraysize(kPOSMap); i++)
+-        if (kPOSMap[i].b != NULL)
+-            ss.insert(kPOSMap[i].b);
++        if (kPOSMap[i].b != static_cast<mozc::user_dictionary::UserDictionary::PosType>(-1))
++            ss.insert(kPOSMap[i].a);
+ 
+     set<string>::iterator it;
+     for (it = ss.begin(); it != ss.end(); it++)

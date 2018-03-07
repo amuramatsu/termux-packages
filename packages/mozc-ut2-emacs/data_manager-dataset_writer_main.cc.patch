@@ -1,0 +1,15 @@
+--- a/src/data_manager/dataset_writer_main.cc.orig	2016-12-14 22:53:38.000000000 +0900
++++ b/src/data_manager/dataset_writer_main.cc	2018-03-08 00:01:13.122834597 +0900
+@@ -30,9 +30,9 @@
+ // Tool to pack multiple files into one file.
+ //
+ // Usage
+-// $ ./path/to/artifacts/dataset_writer_main \
+-//   --magic=\xNN\xNN\xNN \
+-//   --output=/path/to/output \
++// $ ./path/to/artifacts/dataset_writer_main \  . 
++//   --magic=\xNN\xNN\xNN \                     .
++//   --output=/path/to/output \                 .
+ //   [arg1, [arg2, ...]]
+ //
+ // Here, each argument has the following form:

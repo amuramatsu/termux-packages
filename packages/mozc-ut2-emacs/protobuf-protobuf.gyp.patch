@@ -1,0 +1,46 @@
+--- a/src/protobuf/protobuf.gyp.orig	2016-12-14 22:53:38.000000000 +0900
++++ b/src/protobuf/protobuf.gyp	2018-03-08 00:10:59.681750286 +0900
+@@ -224,11 +224,38 @@
+       },
+       'conditions': [
+         ['use_libprotobuf==1', {
+-          'link_settings': {
+-            'libraries': [
+-              '-lprotobuf',
+-            ],
+-          },
++          'conditions': [
++            [ '_toolset=="host"', {
++              'link_settings': {
++                'libraries': [
++                  '/home/builder/.termux-build/libprotobuf/host-build/install/lib/libprotobuf.a',
++                ],
++              },
++             'all_dependent_settings': {
++                'include_dirs': [
++                  '/home/builder/.termux-build/libprotobuf/host-build/install/include',
++                ],
++              },
++              'library_dirs': [
++                '/home/builder/.termux-build/libprotobuf/host-build/install/lib',
++              ],
++            }],
++            [ '_toolset=="target"', {
++              'link_settings': {
++                'libraries': [
++                  '-lprotobuf',
++                ],
++              },
++             'all_dependent_settings': {
++                'include_dirs': [
++                  '@TERMUX_PREFIX@/include',
++                ],
++              },
++              'library_dirs': [
++                '@TERMUX_PREFIX@/lib',
++              ],
++            }],
++          ],
+         },
+         {  # else
+           'sources': ['<@(protobuf_sources)'],
