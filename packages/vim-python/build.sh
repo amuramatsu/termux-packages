@@ -3,8 +3,8 @@ TERMUX_PKG_DESCRIPTION="Vi IMproved - enhanced vi editor"
 TERMUX_PKG_DEPENDS="ncurses, vim-runtime, python"
 # vim should only be updated every 50 releases on multiples of 50.
 # Update both vim and vim-python to the same version in one PR.
-TERMUX_PKG_VERSION=8.0.1550
-TERMUX_PKG_SHA256=e03676ed8f57b4d19b6168ef86cd0bbd286cd0a2b22f9b199d77408e8a311d67
+TERMUX_PKG_VERSION=8.1.0100
+TERMUX_PKG_SHA256=5156dd2fe74886b126b174d293cb4f8948d57a8dacd5d8310ded66098724e869
 TERMUX_PKG_SRCURL="https://github.com/vim/vim/archive/v${TERMUX_PKG_VERSION}.tar.gz"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 vim_cv_getcwd_broken=no
@@ -27,9 +27,9 @@ bin/rvim
 bin/ex
 share/man/man1/evim.1
 share/icons
-share/vim/vim80/spell/en.ascii*
-share/vim/vim80/print
-share/vim/vim80/tools
+share/vim/vim81/spell/en.ascii*
+share/vim/vim81/print
+share/vim/vim81/tools
 "
 TERMUX_PKG_CONFFILES="share/vim/vimrc"
 
@@ -42,8 +42,8 @@ vi_cv_var_python3_version=3.6
 --with-python3-config-dir=$TERMUX_PREFIX/lib/python3.6/config-3.6m/
 "
 TERMUX_PKG_DESCRIPTION+=" - with python support"
-# Remove share/vim/vim80 which is in vim-runtime built as a subpackage of vim:
-TERMUX_PKG_RM_AFTER_INSTALL+=" share/vim/vim80"
+# Remove share/vim/vim81 which is in vim-runtime built as a subpackage of vim:
+TERMUX_PKG_RM_AFTER_INSTALL+=" share/vim/vim81"
 termux_step_pre_configure() {
 	CPPFLAGS+=" -I${TERMUX_PREFIX}/include/python3.6m"
 }
@@ -60,9 +60,9 @@ termux_step_post_make_install () {
 	cp $TERMUX_PKG_BUILDER_DIR/vimrc $TERMUX_PREFIX/share/vim/vimrc
 
 	# Remove most tutor files:
-	cp $TERMUX_PREFIX/share/vim/vim80/tutor/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PKG_TMPDIR/
-	rm -f $TERMUX_PREFIX/share/vim/vim80/tutor/*
-	cp $TERMUX_PKG_TMPDIR/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PREFIX/share/vim/vim80/tutor/
+	cp $TERMUX_PREFIX/share/vim/vim81/tutor/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PKG_TMPDIR/
+	rm -f $TERMUX_PREFIX/share/vim/vim81/tutor/*
+	cp $TERMUX_PKG_TMPDIR/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PREFIX/share/vim/vim81/tutor/
 
 	cd $TERMUX_PREFIX/bin
 	ln -f -s vim vi
