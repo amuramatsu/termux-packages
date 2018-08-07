@@ -12,10 +12,10 @@ if [ ! -d $ANDROID_HOME ]; then
 	rm -Rf `basename $ANDROID_HOME`
 
 	# https://developer.android.com/studio/index.html#command-tools
-	# The downloaded version below is 26.0.1.:
+	# The downloaded version below is 26.1.1.:
 	curl --fail --retry 3 \
 		-o tools.zip \
-		https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+		https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
 	rm -Rf android-sdk
 	unzip -q tools.zip -d android-sdk
 	rm tools.zip
@@ -38,4 +38,4 @@ fi
 yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
 
 # The android-21 platform is used in the ecj package:
-$ANDROID_HOME/tools/bin/sdkmanager "build-tools;27.0.3" "platforms;android-27" "platforms;android-21"
+$ANDROID_HOME/tools/bin/sdkmanager "build-tools;28.0.1" "platforms;android-27" "platforms;android-21"

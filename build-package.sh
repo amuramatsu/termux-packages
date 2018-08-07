@@ -110,7 +110,7 @@ termux_setup_ninja() {
 # Utility function to setup a current meson build system.
 termux_setup_meson() {
 	termux_setup_ninja
-	local MESON_VERSION=0.46.1
+	local MESON_VERSION=0.47.0
 	local MESON_FOLDER=$TERMUX_COMMON_CACHEDIR/meson-$MESON_VERSION-v1
 	if [ ! -d "$MESON_FOLDER" ]; then
 		local MESON_TAR_NAME=meson-$MESON_VERSION.tar.gz
@@ -119,7 +119,7 @@ termux_setup_meson() {
 		termux_download \
 			https://github.com/mesonbuild/meson/releases/download/$MESON_VERSION/meson-$MESON_VERSION.tar.gz \
 			$MESON_TAR_FILE \
-			19497a03e7e5b303d8d11f98789a79aba59b5ad4a81bd00f4d099be0212cee78
+			1bd360a58c28039cdb3b8ce909764e90a58481deb79396227ba4081af377f009
 		tar xf "$MESON_TAR_FILE" -C "$TERMUX_PKG_TMPDIR"
 		mv $MESON_TMP_FOLDER $MESON_FOLDER
 	fi
@@ -259,7 +259,7 @@ termux_step_setup_variables() {
 	: "${TERMUX_ANDROID_HOME:="/data/data/com.termux/files/home"}"
 	: "${TERMUX_DEBUG:=""}"
 	: "${TERMUX_PKG_API_LEVEL:="21"}"
-	: "${TERMUX_ANDROID_BUILD_TOOLS_VERSION:="27.0.3"}"
+	: "${TERMUX_ANDROID_BUILD_TOOLS_VERSION:="28.0.1"}"
 	: "${TERMUX_NDK_VERSION:="17"}"
 
 	if [ "x86_64" = "$TERMUX_ARCH" ] || [ "aarch64" = "$TERMUX_ARCH" ]; then
@@ -284,7 +284,7 @@ termux_step_setup_variables() {
 	# We do not put all of build-tools/$TERMUX_ANDROID_BUILD_TOOLS_VERSION/ into PATH
 	# to avoid stuff like arm-linux-androideabi-ld there to conflict with ones from
 	# the standalone toolchain.
-	TERMUX_DX=$ANDROID_HOME/build-tools/$TERMUX_ANDROID_BUILD_TOOLS_VERSION/dx
+	TERMUX_D8=$ANDROID_HOME/build-tools/$TERMUX_ANDROID_BUILD_TOOLS_VERSION/d8
 
 	TERMUX_COMMON_CACHEDIR="$TERMUX_TOPDIR/_cache"
 	TERMUX_DEBDIR="$TERMUX_SCRIPTDIR/debs"
@@ -979,7 +979,7 @@ termux_step_make() {
 		QUIET_BUILD="-s"
 	fi
 
-	if ls ./*akefile &> /dev/null; then
+	if ls ./*akefile &> /dev/null || [ ! -z "$TERMUX_PKG_EXTRA_MAKE_ARGS" ]; then
 		if [ -z "$TERMUX_PKG_EXTRA_MAKE_ARGS" ]; then
 			make -j $TERMUX_MAKE_PROCESSES $QUIET_BUILD
 		else
@@ -989,7 +989,7 @@ termux_step_make() {
 }
 
 termux_step_make_install() {
-	if ls ./*akefile &> /dev/null; then
+	if ls ./*akefile &> /dev/null || [ ! -z "$TERMUX_PKG_EXTRA_MAKE_ARGS" ]; then
 		: "${TERMUX_PKG_MAKE_INSTALL_TARGET:="install"}"
 		# Some packages have problem with parallell install, and it does not buy much, so use -j 1.
 		if [ -z "$TERMUX_PKG_EXTRA_MAKE_ARGS" ]; then
