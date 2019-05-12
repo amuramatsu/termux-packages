@@ -1,10 +1,11 @@
 TERMUX_PKG_HOMEPAGE=http://www.mutt.org/
 TERMUX_PKG_DESCRIPTION="Mail client with patches from neomutt"
-TERMUX_PKG_VERSION=1.10.1
-TERMUX_PKG_REVISION=1
-TERMUX_PKG_SHA256=734a3883158ec3d180cf6538d8bd7f685ce641d2cdef657aa0038f76e79a54a0
+TERMUX_PKG_LICENSE="GPL-2.0"
+TERMUX_PKG_VERSION=1.11.4
+TERMUX_PKG_REVISION=2
+TERMUX_PKG_SHA256=b651357ea6c8762178080493991c77ecb111d916d171d422500257ab48be2801
 TERMUX_PKG_SRCURL=ftp://ftp.mutt.org/pub/mutt/mutt-${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_DEPENDS="libandroid-support, ncurses, gdbm, openssl, libsasl, mime-support"
+TERMUX_PKG_DEPENDS="libandroid-support, ncurses, gdbm, openssl, libsasl, mime-support, zlib, libiconv"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 mutt_cv_c99_snprintf=yes
 mutt_cv_c99_vsnprintf=yes
@@ -30,14 +31,14 @@ etc/mime.types
 "
 TERMUX_PKG_CONFFILES="etc/Muttrc"
 
-termux_step_post_configure () {
+termux_step_post_configure() {
 	# Build wants to run mutt_md5 and makedoc:
 	gcc -DHAVE_STDINT_H -DMD5UTIL $TERMUX_PKG_SRCDIR/md5.c -o $TERMUX_PKG_BUILDDIR/mutt_md5
 	gcc -DHAVE_STRERROR $TERMUX_PKG_SRCDIR/doc/makedoc.c -o $TERMUX_PKG_BUILDDIR/doc/makedoc
 	touch -d "next hour" $TERMUX_PKG_BUILDDIR/mutt_md5 $TERMUX_PKG_BUILDDIR/doc/makedoc
 }
 
-termux_step_post_make_install () {
+termux_step_post_make_install() {
 	cp $TERMUX_PKG_SRCDIR/doc/mutt.man $TERMUX_PREFIX/share/man/man1/mutt.1.man
 	mkdir -p $TERMUX_PREFIX/share/examples/mutt/
 	cp $TERMUX_PKG_SRCDIR/contrib/gpg.rc $TERMUX_PREFIX/share/examples/mutt/gpg.rc

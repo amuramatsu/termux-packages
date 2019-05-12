@@ -1,9 +1,11 @@
 TERMUX_PKG_HOMEPAGE=https://curl.haxx.se/
 TERMUX_PKG_DESCRIPTION="Easy-to-use client-side URL transfer library"
-TERMUX_PKG_DEPENDS="openssl, libnghttp2"
-TERMUX_PKG_VERSION=7.61.0
-TERMUX_PKG_SHA256=5f6f336921cf5b84de56afbd08dfb70adeef2303751ffb3e570c936c6d656c9c
-TERMUX_PKG_SRCURL=http://curl.askapache.com/download/curl-${TERMUX_PKG_VERSION}.tar.bz2
+TERMUX_PKG_LICENSE="MIT"
+TERMUX_PKG_DEPENDS="openssl (>= 1.1.1), libnghttp2, zlib"
+TERMUX_PKG_VERSION=7.64.1
+TERMUX_PKG_REVISION=2
+TERMUX_PKG_SHA256=4cc7c738b35250d0680f29e93e0820c4cb40035f43514ea3ec8d60322d41a45d
+TERMUX_PKG_SRCURL=https://curl.haxx.se/download/curl-${TERMUX_PKG_VERSION}.tar.bz2
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --enable-ntlm-wb=$TERMUX_PREFIX/bin/ntlm_auth
 --with-ca-bundle=$TERMUX_PREFIX/etc/tls/cert.pem
@@ -15,3 +17,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-ssl
 "
 TERMUX_PKG_INCLUDE_IN_DEVPACKAGE="bin/curl-config share/man/man1/curl-config.1"
+# Starting with version 7.62 curl started enabling http/2 by default.
+# Support for http/2 as added in version 1.4.8-8 of the apt package, so we
+# conflict with previous versions to avoid broken installations.
+TERMUX_PKG_CONFLICTS="apt (<< 1.4.8-8)"
