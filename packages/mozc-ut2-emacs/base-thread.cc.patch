@@ -1,0 +1,22 @@
+--- a/src/base/thread.cc.orig	2016-12-14 22:53:38.000000000 +0900
++++ b/src/base/thread.cc	2018-03-07 23:31:04.110684477 +0900
+@@ -175,7 +175,7 @@
+ 
+ namespace {
+ 
+-#ifdef OS_ANDROID
++#if defined(OS_ANDROID) || defined(__clang__)
+ 
+ void ExitThread(int sig) {
+   pthread_exit(0);
+@@ -219,8 +219,8 @@
+   // Nothing is required.
+ }
+ 
+-void PThreadCancel(pthread_t thread_id) {
+-  pthread_cancel(thread_id);
++void PThreadCancel(::pthread_t thread_id) {
++  ::pthread_cancel(thread_id);
+ }
+ 
+ #endif  // OS_ANDROID or OS_NACL or others
