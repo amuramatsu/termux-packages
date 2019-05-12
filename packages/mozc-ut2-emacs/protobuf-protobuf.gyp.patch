@@ -13,16 +13,16 @@
 +            [ '_toolset=="host"', {
 +              'link_settings': {
 +                'libraries': [
-+                  '/home/builder/.termux-build/libprotobuf/host-build/install/lib/libprotobuf.a',
++                  '/home/builder/.termux-build/_cache/protobuf-3.7.1-host/lib/libprotobuf.a',
 +                ],
 +              },
 +             'all_dependent_settings': {
 +                'include_dirs': [
-+                  '/home/builder/.termux-build/libprotobuf/host-build/install/include',
++                  '/home/builder/.termux-build/_cache/protobuf-3.7.1-host/include',
 +                ],
 +              },
 +              'library_dirs': [
-+                '/home/builder/.termux-build/libprotobuf/host-build/install/lib',
++                '/home/builder/.termux-build/_cache/protobuf-3.7.1-host/lib',
 +              ],
 +            }],
 +            [ '_toolset=="target"', {
