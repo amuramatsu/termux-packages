@@ -121,6 +121,9 @@ termux_step_post_make_install() {
 	return
 }
 
+# Link/copy the LICENSE for the package to $TERMUX_PREFIX/share/$TERMUX_PKG_NAME/
+source scripts/build/termux_step_install_license.sh
+
 # Function to cp (through tar) installed files to massage dir
 source scripts/build/termux_step_extract_into_massagedir.sh
 
@@ -176,6 +179,7 @@ source scripts/build/termux_step_finish_build.sh
 	termux_step_make_install
 	cd "$TERMUX_PKG_BUILDDIR"
 	termux_step_post_make_install
+	termux_step_install_license
 	cd "$TERMUX_PKG_MASSAGEDIR"
 	termux_step_extract_into_massagedir
 	cd "$TERMUX_PKG_MASSAGEDIR"
