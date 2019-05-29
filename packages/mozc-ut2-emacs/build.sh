@@ -1,14 +1,15 @@
 TERMUX_PKG_HOMEPAGE=http://www.geocities.jp/ep3797/mozc-ut2.html
 TERMUX_PKG_DESCRIPTION="Japanese Input method with large dictionary (for emacs)"
+TERMUX_PKG_LICENSE="GPL-3.0"
 local _MAJOR_VERSION=2.20.2677.102
 local _MINOR_VERSION=20171008
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
-TERMUX_PKG_REVISION=4
+TERMUX_PKG_REVISION=5
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_SHA256=3e89b533cd0177156031dbedbc607d953f7ed522cb37b9286490b9f6002d6603
 TERMUX_PKG_SRCURL=https://ja.osdn.net/downloads/users/16/16040/mozc-ut2-${TERMUX_PKG_VERSION}.tar.xz
 TERMUX_PKG_BUILD_IN_SRC=yes
-TERMUX_PKG_DEPENDS="libandroid-support, libprotobuf, libiconv"
+TERMUX_PKG_DEPENDS="libprotobuf, libiconv"
 TERMUX_PKG_BUILD_DEPENDS="libprotobuf-dev"
 TERMUX_PKG_HOSTBUILD=yes
 
@@ -30,9 +31,6 @@ termux_step_post_extract_package() {
 }
 
 termux_step_configure () {
-	# hack for libandroid-support
-	local _LDFLAGS="$LDFLAGS"
-	export LDFLAGS=""
 	termux_setup_ninja
 	cd src
 	GYP_DEFINES="use_libprotobuf=1 include_dirs=$TERMUX_PREFIX/include library_dirs=$TERMUX_PREFIX/lib" \
@@ -40,7 +38,6 @@ termux_step_configure () {
 		--gypdir=$TERMUX_PKG_SRCDIR/src/third_party/gyp \
 		--target_platform=Linux --noqt \
 		--server_dir=$TERMUX_PREFIX/lib/mozc
-	export LDFLAGS="$_LDFLAGS"
 }
 
 termux_step_make () {
