@@ -3,9 +3,10 @@ TERMUX_PKG_DESCRIPTION="TeX Live is a distribution of the TeX typesetting system
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_VERSION=20190410
-TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/build-svn50882.tar.gz
-TERMUX_PKG_SHA256=a7462f8e29163faa52ad2ac658727b60f95241449832f1a4dac8d8a406d18233
-TERMUX_PKG_DEPENDS="freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua, poppler, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib, texlive-bin"
+TERMUX_PKG_REVISION=1
+TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/build-svn51263.tar.gz
+TERMUX_PKG_SHA256=fb117eca01d1561a8e86adf74081a554d59799c7b3b15a1944418f8f30af621d
+TERMUX_PKG_DEPENDS="libiconv, freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua, poppler, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib, texlive-bin"
 # libpcre, glib, fonconfig are dependencies to libcairo. pkg-config gives an error if they are missing
 # libuuid, libxml2 are needed by fontconfig
 TERMUX_PKG_BUILD_DEPENDS="icu-devtools, pcre-dev, glib-dev, fontconfig, libuuid-dev, libxml2-dev"
@@ -664,6 +665,6 @@ termux_step_pre_configure() {
 	     {} +
 
 	# These files are from upstream master:
-	cp "$TERMUX_PKG_BUILDER_DIR"/pdftoepdf-poppler0.75.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftoepdf.cc # commit 4dbbcd8
-	cp "$TERMUX_PKG_BUILDER_DIR"/pdftosrc-poppler0.72.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftosrc.cc # commit 68f53cf
+	cp "$TERMUX_PKG_BUILDER_DIR"/pdftoepdf-poppler0.76.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftoepdf.cc # commit 473d82b
+	cp "$TERMUX_PKG_BUILDER_DIR"/pdftosrc-poppler0.76.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftosrc.cc # commit 473d82b
 }
