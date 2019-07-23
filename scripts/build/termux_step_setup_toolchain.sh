@@ -16,6 +16,7 @@ termux_step_setup_toolchain() {
 	export CPP=${TERMUX_HOST_PLATFORM}-cpp
 	export CC_FOR_BUILD=gcc
 	export LD=$TERMUX_HOST_PLATFORM-ld
+	export OBJCOPY=$TERMUX_HOST_PLATFORM-objcopy
 	export OBJDUMP=$TERMUX_HOST_PLATFORM-objdump
 	# Setup pkg-config for cross-compiling:
 	export PKG_CONFIG=$TERMUX_STANDALONE_TOOLCHAIN/bin/${TERMUX_HOST_PLATFORM}-pkg-config
@@ -46,11 +47,7 @@ termux_step_setup_toolchain() {
 	if [ -n "$TERMUX_DEBUG" ]; then
 		CFLAGS+=" -g3 -O1 -fstack-protector --param ssp-buffer-size=4 -D_FORTIFY_SOURCE=2"
 	else
-		if [ $TERMUX_ARCH = arm ]; then
-			CFLAGS+=" -Os"
-		else
-			CFLAGS+=" -Oz"
-		fi
+		CFLAGS+=" -Oz"
 	fi
 
 	export CXXFLAGS="$CFLAGS"
