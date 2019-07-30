@@ -2,9 +2,12 @@ TERMUX_PKG_HOMEPAGE=https://www.gnu.org/software/emacs/
 TERMUX_PKG_DESCRIPTION="Extensible, customizable text editor-and more"
 TERMUX_PKG_LICENSE="GPL-3.0"
 TERMUX_PKG_VERSION=26.2
+TERMUX_PKG_REVISION=2
 TERMUX_PKG_SHA256=151ce69dbe5b809d4492ffae4a4b153b2778459de6deb26f35691e1281a9c58e
 TERMUX_PKG_SRCURL=https://mirrors.kernel.org/gnu/emacs/emacs-${TERMUX_PKG_VERSION}.tar.xz
 TERMUX_PKG_DEPENDS="ncurses, gnutls, libxml2"
+TERMUX_PKG_BREAKS="emacs-dev"
+TERMUX_PKG_REPLACES="emacs-dev"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-autodepend
 --with-gif=no
@@ -18,6 +21,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-tiff=no
 --with-xml2
 --with-xpm=no
+--without-dbus
 "
 # Ensure use of system malloc:
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" emacs_cv_sanitize_address=yes"
@@ -30,7 +34,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" gl_cv_func_dup2_works=no"
 # disable setrlimit function to make termux-am work from within emacs
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" ac_cv_func_setrlimit=no"
 TERMUX_PKG_HOSTBUILD=yes
-TERMUX_PKG_KEEP_INFOPAGES=yes
 
 # Remove some irrelevant files:
 TERMUX_PKG_RM_AFTER_INSTALL="share/icons share/emacs/${TERMUX_PKG_VERSION}/etc/images share/applications/emacs.desktop share/emacs/${TERMUX_PKG_VERSION}/etc/emacs.desktop share/emacs/${TERMUX_PKG_VERSION}/etc/emacs.icon bin/grep-changelog share/man/man1/grep-changelog.1.gz share/emacs/${TERMUX_PKG_VERSION}/etc/refcards share/emacs/${TERMUX_PKG_VERSION}/etc/tutorials/TUTORIAL.*"

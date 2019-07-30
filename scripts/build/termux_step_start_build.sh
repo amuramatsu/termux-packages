@@ -2,10 +2,10 @@ termux_step_start_build() {
 	# shellcheck source=/dev/null
 	source "$TERMUX_PKG_BUILDER_SCRIPT"
 
-	TERMUX_STANDALONE_TOOLCHAIN="$TERMUX_COMMON_CACHEDIR/${TERMUX_NDK_VERSION}-${TERMUX_ARCH}-${TERMUX_PKG_API_LEVEL}"
+	TERMUX_STANDALONE_TOOLCHAIN="$TERMUX_COMMON_CACHEDIR/android-r${TERMUX_NDK_VERSION}-api-${TERMUX_PKG_API_LEVEL}"
 	# Bump the below version if a change is made in toolchain setup to ensure
 	# that everyone gets an updated toolchain:
-	TERMUX_STANDALONE_TOOLCHAIN+="-v5"
+	TERMUX_STANDALONE_TOOLCHAIN+="-v1"
 
 	if [ -n "${TERMUX_PKG_BLACKLISTED_ARCHES:=""}" ] && [ "$TERMUX_PKG_BLACKLISTED_ARCHES" != "${TERMUX_PKG_BLACKLISTED_ARCHES/$TERMUX_ARCH/}" ]; then
 		echo "Skipping building $TERMUX_PKG_NAME for arch $TERMUX_ARCH"
@@ -91,6 +91,11 @@ termux_step_start_build() {
 			TERMUX_BUILD_IGNORE_LOCK=true ./build-package.sh -a $TERMUX_ARCH -s "${PKG_DIR}"
 		done<<<$(./scripts/buildorder.py "$TERMUX_PKG_BUILDER_DIR" $TERMUX_PACKAGES_DIRECTORIES || echo "ERROR")
 	fi
+
+	# Following directories may contain objects with RO-only permissions which
+	# makes them undeletable. We need fix that.
+	[ -d "$TERMUX_PKG_BUILDDIR" ] && chmod +w -R "$TERMUX_PKG_BUILDDIR"
+	[ -d "$TERMUX_PKG_SRCDIR" ] && chmod +w -R "$TERMUX_PKG_SRCDIR"
 
 	# Cleanup old state:
 	rm -Rf "$TERMUX_PKG_BUILDDIR" \

@@ -2,10 +2,10 @@ TERMUX_PKG_HOMEPAGE=http://www.squid-cache.org
 TERMUX_PKG_DESCRIPTION="Full-featured Web proxy cache server"
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="Vishal Biswas @vishalbiswas"
-TERMUX_PKG_VERSION=4.7
-TERMUX_PKG_SHA256=a29cf65f77ab70a8b1cf47e6fe1d2975ec9d04d2446d54669a5afd2aee5e354e
+TERMUX_PKG_VERSION=4.8
+TERMUX_PKG_SHA256=78cdb324d93341d36d09d5f791060f6e8aaa5ff3179f7c949cd910d023a86210
 TERMUX_PKG_SRCURL=http://squid.mirror.globo.tech/archive/4/squid-$TERMUX_PKG_VERSION.tar.xz
-TERMUX_PKG_DEPENDS="libcrypt, openssl, libnettle, libltdl"
+TERMUX_PKG_DEPENDS="libc++, libcrypt, openssl, libnettle, libltdl"
 # disk-io requires msgctl and store-io requires disk-io
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 ac_cv_lib_sasl2_sasl_errstring=no
@@ -42,3 +42,8 @@ termux_step_pre_configure() {
 	export BUILDCXXFLAGS=' '
 }
 
+termux_step_post_make_install() {
+	local _SQUID_LOGDIR=$TERMUX_PREFIX/var/logs
+	mkdir -p $_SQUID_LOGDIR
+	echo "Squid logs here by default" > $_SQUID_LOGDIR/README.squid
+}

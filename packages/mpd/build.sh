@@ -1,10 +1,10 @@
 TERMUX_PKG_HOMEPAGE=https://www.musicpd.org
 TERMUX_PKG_DESCRIPTION="Music player daemon"
 TERMUX_PKG_LICENSE="GPL-2.0"
-TERMUX_PKG_VERSION=0.21.9
+TERMUX_PKG_VERSION=0.21.11
 TERMUX_PKG_SRCURL=https://github.com/MusicPlayerDaemon/MPD/archive/v$TERMUX_PKG_VERSION.tar.gz
-TERMUX_PKG_SHA256=3e5b52660363d4aba6360c7c2a6d4bb53aca8c135b8ed63ef0c0434f3455c226
-TERMUX_PKG_DEPENDS="libcurl, libid3tag, libopus, libpulseaudio, libmpdclient, openal-soft, libvorbis, libsqlite, ffmpeg, libmp3lame, libbz2, libogg, libnfs, zlib"
+TERMUX_PKG_SHA256=e12a239cd09e93066d9d83b3a9d0148df367d1f31586a6b0fbad40038a93b310
+TERMUX_PKG_DEPENDS="libc++, libcurl, libid3tag, libopus, libpulseaudio, libmpdclient, openal-soft, libvorbis, libsqlite, ffmpeg, libmp3lame, libbz2, libogg, libnfs, zlib"
 TERMUX_PKG_BUILD_DEPENDS="boost"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dalsa=disabled
