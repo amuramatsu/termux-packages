@@ -24,9 +24,6 @@ termux_step_setup_toolchain() {
 	export READELF=$TERMUX_HOST_PLATFORM-readelf
 	export STRIP=$TERMUX_HOST_PLATFORM-strip
 
-	# Android 7 started to support DT_RUNPATH (but not DT_RPATH).
-	LDFLAGS+=" -Wl,-rpath=$TERMUX_PREFIX/lib -Wl,--enable-new-dtags"
-
 	if [ "$TERMUX_ARCH" = "arm" ]; then
 		# https://developer.android.com/ndk/guides/standalone_toolchain.html#abi_compatibility:
 		# "We recommend using the -mthumb compiler flag to force the generation of 16-bit Thumb-2 instructions".
@@ -44,8 +41,18 @@ termux_step_setup_toolchain() {
 		termux_error_exit "Invalid arch '$TERMUX_ARCH' - support arches are 'arm', 'i686', 'aarch64', 'x86_64'"
 	fi
 
+	# Android 7 started to support DT_RUNPATH (but not DT_RPATH).
+	LDFLAGS+=" -Wl,-rpath=$TERMUX_PREFIX/lib,--enable-new-dtags"
+
+	# Avoid linking extra (unneeded) libraries.
+	LDFLAGS+=" -Wl,--as-needed"
+
+	# Basic hardening.
+	CFLAGS+=" -fstack-protector-strong"
+	LDFLAGS+=" -Wl,-z,relro,-z,now"
+
 	if [ -n "$TERMUX_DEBUG" ]; then
-		CFLAGS+=" -g3 -O1 -fstack-protector --param ssp-buffer-size=4 -D_FORTIFY_SOURCE=2"
+		CFLAGS+=" -g3 -O1 -D_FORTIFY_SOURCE=2"
 	else
 		CFLAGS+=" -Oz"
 	fi
@@ -112,12 +119,12 @@ termux_step_setup_toolchain() {
 		sed -i 's/clang/clang -E/' \
 		   $_TERMUX_TOOLCHAIN_TMPDIR/bin/$HOST_PLAT-cpp
 		cp $_TERMUX_TOOLCHAIN_TMPDIR/bin/$HOST_PLAT-clang \
-		   $_TERMUX_TOOLCHAIN_TMPDIR/bin/$HOST_PLAT-gcc 
+		   $_TERMUX_TOOLCHAIN_TMPDIR/bin/$HOST_PLAT-gcc
 		cp $_TERMUX_TOOLCHAIN_TMPDIR/bin/$HOST_PLAT-clang++ \
 		   $_TERMUX_TOOLCHAIN_TMPDIR/bin/$HOST_PLAT-gcc
 		done
 		cp $_TERMUX_TOOLCHAIN_TMPDIR/bin/armv7a-linux-androideabi$TERMUX_PKG_API_LEVEL-clang \
-		   $_TERMUX_TOOLCHAIN_TMPDIR/bin/arm-linux-androideabi-clang			
+		   $_TERMUX_TOOLCHAIN_TMPDIR/bin/arm-linux-androideabi-clang
 		cp $_TERMUX_TOOLCHAIN_TMPDIR/bin/armv7a-linux-androideabi$TERMUX_PKG_API_LEVEL-clang++ \
 		   $_TERMUX_TOOLCHAIN_TMPDIR/bin/arm-linux-androideabi-clang++
 		cp $_TERMUX_TOOLCHAIN_TMPDIR/bin/armv7a-linux-androideabi-cpp \
@@ -134,7 +141,7 @@ termux_step_setup_toolchain() {
 		# langinfo.h: Inline implementation of nl_langinfo().
 		cp "$TERMUX_SCRIPTDIR"/ndk-patches/{ifaddrs.h,libintl.h,langinfo.h} usr/include
 
-		# Remove <sys/capability.h> because it is provided by libcap-dev.
+		# Remove <sys/capability.h> because it is provided by libcap.
 		# Remove <sys/shm.h> from the NDK in favour of that from the libandroid-shmem.
 		# Remove <sys/sem.h> as it doesn't work for non-root.
 		# Remove <glob.h> as we currently provide it from libandroid-glob.

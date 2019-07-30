@@ -3,17 +3,16 @@ TERMUX_PKG_DESCRIPTION="TeX Live is a distribution of the TeX typesetting system
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="Henrik Grimler @Grimler91"
 TERMUX_PKG_VERSION=20190410
-TERMUX_PKG_REVISION=6
+TERMUX_PKG_REVISION=7
 TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/build-svn51263.tar.gz
 TERMUX_PKG_SHA256=fb117eca01d1561a8e86adf74081a554d59799c7b3b15a1944418f8f30af621d
 TERMUX_PKG_DEPENDS="libc++, libiconv, freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua, poppler, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib"
 # libpcre, glib, fonconfig are dependencies to libcairo. pkg-config gives an error if they are missing
 # libuuid, libxml2 are needed by fontconfig
-TERMUX_PKG_BUILD_DEPENDS="icu-devtools, pcre-dev, glib-dev, fontconfig, libuuid-dev, libxml2-dev"
-TERMUX_PKG_BREAKS="texlive (<< 20180414)"
-TERMUX_PKG_REPLACES="texlive (<< 20170524-3)"
+TERMUX_PKG_BUILD_DEPENDS="icu-devtools, pcre, glib, fontconfig, libuuid, libxml2"
+TERMUX_PKG_BREAKS="texlive (<< 20180414), texlive-bin-dev"
+TERMUX_PKG_REPLACES="texlive (<< 20170524-3), texlive-bin-dev"
 TERMUX_PKG_RECOMMENDS="texlive"
-TERMUX_PKG_NO_DEVELSPLIT=yes
 TERMUX_PKG_HOSTBUILD=true
 
 TL_ROOT=$TERMUX_PREFIX/share/texlive
