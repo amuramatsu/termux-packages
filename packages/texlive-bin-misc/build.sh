@@ -3,7 +3,7 @@ TERMUX_PKG_DESCRIPTION="TeX Live is a distribution of the TeX typesetting system
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_VERSION=20190410
-TERMUX_PKG_REVISION=3
+TERMUX_PKG_REVISION=4
 TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/build-svn51263.tar.gz
 TERMUX_PKG_SHA256=fb117eca01d1561a8e86adf74081a554d59799c7b3b15a1944418f8f30af621d
 TERMUX_PKG_DEPENDS="libc++, libiconv, freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua, poppler, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib, texlive-bin"
@@ -621,6 +621,11 @@ share/man/man1/xetex.1
 share/man/man5/fmtutil.cnf.5
 share/man/man5/synctex.5
 share/man/man5/updmap.cfg.5
+share/info/dvips.info
+share/info/dvipng.info
+share/info/tlbuild.info
+share/info/kpathsea.info
+share/info/web2c.info
 "
 
 termux_step_host_build() {
