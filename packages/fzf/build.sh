@@ -1,13 +1,22 @@
 TERMUX_PKG_HOMEPAGE=https://github.com/junegunn/fzf
 TERMUX_PKG_DESCRIPTION="Command-line fuzzy finder"
 TERMUX_PKG_LICENSE="MIT"
-TERMUX_PKG_VERSION=0.18.0
-TERMUX_PKG_SHA256=5406d181785ea17b007544082b972ae004b62fb19cdb41f25e265ea3cc8c2d9d
+TERMUX_PKG_VERSION=0.19.0
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://github.com/junegunn/fzf/archive/${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=4d7ee0b621287e64ed450d187e5022d906aa378c5390d8c7c1f843417d2f3422
 
 # Depend on findutils as fzf uses the -fstype option, which busybox
 # find does not support, when invoking find:
 TERMUX_PKG_DEPENDS="bash, findutils"
+
+termux_step_pre_configure() {
+	# Certain packages are not safe to build on device because their
+	# build.sh script deletes specific files in $TERMUX_PREFIX.
+	if $TERMUX_ON_DEVICE_BUILD; then
+		termux_error_exit "Package '$TERMUX_PKG_NAME' is not safe for on-device builds."
+	fi
+}
 
 termux_step_make() {
 	termux_setup_golang
@@ -15,7 +24,8 @@ termux_step_make() {
 	export GOPATH=$TERMUX_PKG_BUILDDIR
 
 	mkdir -p $GOPATH/src/github.com/junegunn
-	ln -sf $TERMUX_PKG_SRCDIR $GOPATH/src/github.com/junegunn/fzf
+	mv $TERMUX_PKG_SRCDIR $GOPATH/src/github.com/junegunn/fzf
+	TERMUX_PKG_SRCDIR=$GOPATH/src/github.com/junegunn/fzf
 
 	cd $GOPATH/src/github.com/junegunn/fzf
 	go get -d -v github.com/junegunn/fzf
@@ -34,10 +44,6 @@ termux_step_make_install() {
 	mkdir -p $TERMUX_PREFIX/share/man/man1/
 	cp $TERMUX_PKG_SRCDIR/man/man1/fzf.1 $TERMUX_PREFIX/share/man/man1/
 
-	# Install the vim plugin:
-	mkdir -p $TERMUX_PREFIX/share/vim/vim81/plugin
-	cp $TERMUX_PKG_SRCDIR/plugin/fzf.vim $TERMUX_PREFIX/share/vim/vim81/plugin/fzf.vim
-
 	# Install bash completion script:
 	mkdir -p $TERMUX_PREFIX/share/bash-completion/completions/
 	cp $TERMUX_PKG_SRCDIR/shell/completion.bash $TERMUX_PREFIX/share/bash-completion/completions/fzf
@@ -49,9 +55,4 @@ termux_step_make_install() {
 	# Install the nvim plugin:
 	mkdir -p $TERMUX_PREFIX/share/nvim/runtime/plugin
 	cp $TERMUX_PKG_SRCDIR/plugin/fzf.vim $TERMUX_PREFIX/share/nvim/runtime/plugin/
-}
-
-termux_step_post_massage() {
-	# Remove so that the vim build doesn't add it to vim-runtime:
-	rm $TERMUX_PREFIX/share/vim/vim81/plugin/fzf.vim
 }
