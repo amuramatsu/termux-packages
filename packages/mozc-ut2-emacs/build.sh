@@ -4,7 +4,7 @@ TERMUX_PKG_LICENSE="GPL-3.0"
 local _MAJOR_VERSION=2.20.2677.102
 local _MINOR_VERSION=20171008
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
-TERMUX_PKG_REVISION=6
+TERMUX_PKG_REVISION=7
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_SHA256=3e89b533cd0177156031dbedbc607d953f7ed522cb37b9286490b9f6002d6603
 TERMUX_PKG_SRCURL=https://ja.osdn.net/downloads/users/16/16040/mozc-ut2-${TERMUX_PKG_VERSION}.tar.xz
@@ -32,6 +32,7 @@ termux_step_post_extract_package() {
 
 termux_step_configure () {
 	termux_setup_ninja
+	cd "$TERMUX_PKG_SRCDIR"
 	cd src
 	GYP_DEFINES="use_libprotobuf=1 include_dirs=$TERMUX_PREFIX/include library_dirs=$TERMUX_PREFIX/lib" \
 	  python2 build_mozc.py gyp \
@@ -41,12 +42,14 @@ termux_step_configure () {
 }
 
 termux_step_make () {
+	cd "$TERMUX_PKG_SRCDIR"
 	cd src
 	export PATH="${PATH}:$TERMUX_TOPDIR/libprotobuf/host-build/install/bin"
 	python2 build_mozc.py build -c Release \
 		server/server.gyp:mozc_server \
 		unixemacs/emacs.gyp:mozc_emacs_helper
-	cd ../mozc-config
+	cd "$TERMUX_PKG_SRCDIR"
+	cd mozc-config
 	make mozc-config mozc-dict LIBS="-lprotobuf -liconv"
 }
 
@@ -54,6 +57,7 @@ termux_step_make_install () {
 	local _release_dir=src/out_linux/Release
         local _doc_destdir="${TERMUX_PREFIX}/share/doc/mozc-ut2-emacs"
         local _elisp_destdir="${TERMUX_PREFIX}/share/emacs/site-lisp/mozc-emacs"
+	cd "$TERMUX_PKG_SRCDIR"
 
 	# mozc & emacs-mozc
 	[ -d "${TERMUX_PREFIX}/lib/mozc"  ] || \
