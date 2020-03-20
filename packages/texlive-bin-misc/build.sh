@@ -3,15 +3,16 @@ TERMUX_PKG_DESCRIPTION="TeX Live is a distribution of the TeX typesetting system
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_VERSION=20190410
-TERMUX_PKG_REVISION=9
-TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/build-svn51263.tar.gz
-TERMUX_PKG_SHA256=fb117eca01d1561a8e86adf74081a554d59799c7b3b15a1944418f8f30af621d
-TERMUX_PKG_DEPENDS="libc++, libiconv, freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua, poppler, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib, texlive-bin"
+TERMUX_PKG_REVISION=10
+_SVN_VERSION=54408
+TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/svn${_SVN_VERSION}.tar.gz
+TERMUX_PKG_SHA256=aa394d66ce32858645ebe9a70c5b3aad4b8f8a79054c35918aaef7f91908d8b7
+TERMUX_PKG_DEPENDS="libc++, libiconv, freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua52, poppler, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib, texlive-bin"
 # libpcre, glib, fonconfig are dependencies to libcairo. pkg-config gives an error if they are missing
 # libuuid, libxml2 are needed by fontconfig
 TERMUX_PKG_BUILD_DEPENDS="icu-devtools, pcre, glib, fontconfig, libuuid, libxml2"
-TERMUX_PKG_BREAKS="texlive (<< 20180414)"
-TERMUX_PKG_REPLACES="texlive (<< 20170524-3)"
+TERMUX_PKG_BREAKS="texlive (<< 20180414), texlive-bin-dev"
+TERMUX_PKG_REPLACES="texlive (<< 20170524-3), texlive-bin-dev"
 TERMUX_PKG_RECOMMENDS="texlive"
 TERMUX_PKG_HOSTBUILD=true
 
@@ -41,6 +42,8 @@ RANLIB=ranlib
 --disable-t1utils
 --disable-luatex
 --disable-luajittex
+--disable-luahbtex
+--disable-luajithbtex
 --enable-mflua
 --disable-mfluajit
 --disable-xz
@@ -134,6 +137,7 @@ bin/cfftot1
 bin/checkcites
 bin/checklistings
 bin/chkdvifont
+bin/chklref
 bin/chktex
 bin/chkweb
 bin/cjk-gs-integrate
@@ -231,6 +235,7 @@ bin/kanji-config-updmap
 bin/kanji-config-updmap-sys
 bin/kanji-config-updmap-user
 bin/kanji-fontmap-creator
+bin/ketcindy
 bin/komkindex
 bin/kpseaccess
 bin/kpsepath
@@ -312,6 +317,7 @@ bin/otp2ocp
 bin/outocp
 bin/ovf2ovp
 bin/ovp2ovf
+bin/pamphletangler
 bin/patgen
 bin/pbibtex
 bin/pdf180
@@ -380,6 +386,7 @@ bin/srcredact
 bin/sty2dtx
 bin/svn-multi
 bin/synctex
+bin/texplate
 bin/t1dotlessj
 bin/t1lint
 bin/t1rawafm
@@ -502,6 +509,7 @@ share/man/man1/dvilj2p.1
 share/man/man1/dvilj4.1
 share/man/man1/dvilj4l.1
 share/man/man1/dvilj6.1
+share/man/man1/dvilualatex-dev.1
 share/man/man1/dvipdfm.1
 share/man/man1/dvipdfmx.1
 share/man/man1/dvipdft.1
@@ -539,7 +547,9 @@ share/man/man1/kpsexpand.1
 share/man/man1/lacheck.1
 share/man/man1/lamed.1
 share/man/man1/latex.1
+share/man/man1/latex-dev.1
 share/man/man1/luatex.1
+share/man/man1/lualatex-dev.1
 share/man/man1/makeindex.1
 share/man/man1/mf-nowin.1
 share/man/man1/mf.1
@@ -569,11 +579,13 @@ share/man/man1/ovp2ovf.1
 share/man/man1/patgen.1
 share/man/man1/pdfetex.1
 share/man/man1/pdflatex.1
+share/man/man1/pdflatex-dev.1
 share/man/man1/pdftex.1
 share/man/man1/pdftosrc.1
 share/man/man1/pktogf.1
 share/man/man1/pktype.1
 share/man/man1/pltotf.1
+share/man/man1/platex-dev.1
 share/man/man1/pooltype.1
 share/man/man1/ppltotf.1
 share/man/man1/prepmx.1
@@ -610,6 +622,7 @@ share/man/man1/updmap-sys.1
 share/man/man1/updmap.1
 share/man/man1/uppltotf.1
 share/man/man1/uptex.1
+share/man/man1/uplatex-dev.1
 share/man/man1/uptftopl.1
 share/man/man1/vftovp.1
 share/man/man1/vlna.1
@@ -617,6 +630,7 @@ share/man/man1/vptovf.1
 share/man/man1/weave.1
 share/man/man1/xdvipdfmx.1
 share/man/man1/xetex.1
+share/man/man1/xelatex-dev.1
 share/man/man5/fmtutil.cnf.5
 share/man/man5/synctex.5
 share/man/man5/updmap.cfg.5
@@ -669,6 +683,6 @@ termux_step_pre_configure() {
 	     {} +
 
 	# These files are from upstream master:
-	cp "$TERMUX_PKG_BUILDER_DIR"/pdftoepdf-poppler0.83.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftoepdf.cc # commit f0d0598b
+	cp "$TERMUX_PKG_BUILDER_DIR"/pdftoepdf-poppler0.86.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftoepdf.cc # commit 7cabe29
 	cp "$TERMUX_PKG_BUILDER_DIR"/pdftosrc-poppler0.83.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftosrc.cc # commit f0d0598b
 }
