@@ -2,8 +2,7 @@ TERMUX_PKG_HOMEPAGE=https://www.tug.org/texlive/
 TERMUX_PKG_DESCRIPTION="TeX Live is a distribution of the TeX typesetting system. This package contains architecture dependent binaries."
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
-TERMUX_PKG_VERSION=20190410
-TERMUX_PKG_REVISION=11
+TERMUX_PKG_VERSION=20200406
 _SVN_VERSION=54408
 TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/svn${_SVN_VERSION}.tar.gz
 TERMUX_PKG_SHA256=aa394d66ce32858645ebe9a70c5b3aad4b8f8a79054c35918aaef7f91908d8b7
@@ -669,9 +668,7 @@ termux_step_pre_configure() {
 	export CTANGLE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/ctangle
 	export CTANGLEBOOT=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/ctangleboot
 	export TIE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/tie
-	export OTANGLE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/.libs/otangle
-	# otangle is linked against libkpathsea but can't find it, so we use LD_LIBRARY_PATH
-	export LD_LIBRARY_PATH=$TERMUX_PKG_HOSTBUILD_DIR/texk/kpathsea/.libs
+	export OTAGNLE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/otangle
 
 	find "$TERMUX_PKG_SRCDIR"/texk/web2c/luatexdir -type f -exec sed -i \
 	     -e 's|gTrue|true|g' \
