@@ -1,19 +1,30 @@
 TERMUX_PKG_HOMEPAGE=https://www.tug.org/texlive/tlmgr.html
 TERMUX_PKG_DESCRIPTION="TeX Lives package manager"
 TERMUX_PKG_LICENSE="GPL-2.0"
-TERMUX_PKG_MAINTAINER="Henrik Grimler @Grimler91"
-TERMUX_PKG_VERSION=20190410
-TERMUX_PKG_REVISION=2
+TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
+TERMUX_PKG_VERSION=20200406
 TERMUX_PKG_SRCURL=ftp://ftp.tug.org/texlive/historic/${TERMUX_PKG_VERSION:0:4}/install-tl-unx.tar.gz
-TERMUX_PKG_SHA256=44aa41b5783e345b7021387f19ac9637ff1ce5406a59754230c666642dfe7750
-TERMUX_PKG_DEPENDS="perl, wget, gnupg (>= 2.2.9-1), xz-utils, texlive (>= 20190410)"
+TERMUX_PKG_SHA256=7c90a50e55533d57170cbc7c0370a010019946eb18570282948e1af6f809382d
+TERMUX_PKG_DEPENDS="perl, wget, gnupg (>= 2.2.9-1), xz-utils, texlive (>= 20200406)"
 TERMUX_PKG_CONFFILES="share/texlive/tlpkg/texlive.tlpdb"
-TERMUX_PKG_CONFLICTS="texlive (<< 20180414-1)"
+TERMUX_PKG_CONFLICTS="texlive (<< 20180414-1), texlive-full (>= 20200406)"
 TERMUX_PKG_PLATFORM_INDEPENDENT=true
 TERMUX_PKG_BUILD_IN_SRC=true
 
 TL_ROOT=$TERMUX_PREFIX/share/texlive
 TL_BINDIR=$TERMUX_PREFIX/bin
+
+termux_step_post_extract_package() {
+	cd $TERMUX_PKG_CACHEDIR
+
+	# Download texlive.tlpdb
+	termux_download ftp://ftp.tug.org/texlive/historic/${TERMUX_PKG_VERSION:0:4}/texlive-${TERMUX_PKG_VERSION}-tlpdb-full.tar.gz \
+			texlive-${TERMUX_PKG_VERSION}-tlpdb-full.tar.gz \
+			2990a8d275506c297b2239a1b4c5d9a9ec0d18cf12ff9a6a33924cf2e3838ed4
+
+	tar xf texlive-${TERMUX_PKG_VERSION}-tlpdb-full.tar.gz
+	mv texlive.tlpdb $TERMUX_PKG_BUILDDIR
+}
 
 termux_step_pre_configure() {
 	# Certain packages are not safe to build on device because their
@@ -26,7 +37,7 @@ termux_step_pre_configure() {
 termux_step_make() {
 	mkdir -p $TL_ROOT/{tlpkg/{backups,tlpobj},texmf-var/web2c}
 	cp -r $TERMUX_PKG_BUILDDIR/* $TL_ROOT/
-	cp $TERMUX_PKG_BUILDER_DIR/texlive.tlpdb $TL_ROOT/tlpkg/
+	cp $TERMUX_PKG_BUILDDIR/texlive.tlpdb $TL_ROOT/tlpkg/
 }
 
 termux_step_post_make_install() {
