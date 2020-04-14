@@ -3,6 +3,7 @@ TERMUX_PKG_DESCRIPTION="TeX Lives package manager"
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_VERSION=20200406
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=ftp://ftp.tug.org/texlive/historic/${TERMUX_PKG_VERSION:0:4}/install-tl-unx.tar.gz
 TERMUX_PKG_SHA256=7c90a50e55533d57170cbc7c0370a010019946eb18570282948e1af6f809382d
 TERMUX_PKG_DEPENDS="perl, wget, gnupg (>= 2.2.9-1), xz-utils, texlive (>= 20200406)"
@@ -23,7 +24,7 @@ termux_step_post_extract_package() {
 			2990a8d275506c297b2239a1b4c5d9a9ec0d18cf12ff9a6a33924cf2e3838ed4
 
 	tar xf texlive-${TERMUX_PKG_VERSION}-tlpdb-full.tar.gz
-	mv texlive.tlpdb $TERMUX_PKG_BUILDDIR
+	mv texlive.tlpdb $TERMUX_PKG_BUILDDIR/tlpkg/
 }
 
 termux_step_pre_configure() {
@@ -37,7 +38,6 @@ termux_step_pre_configure() {
 termux_step_make() {
 	mkdir -p $TL_ROOT/{tlpkg/{backups,tlpobj},texmf-var/web2c}
 	cp -r $TERMUX_PKG_BUILDDIR/* $TL_ROOT/
-	cp $TERMUX_PKG_BUILDDIR/texlive.tlpdb $TL_ROOT/tlpkg/
 }
 
 termux_step_post_make_install() {
@@ -74,7 +74,9 @@ share/texlive/install-tl
 share/texlive/tlpkg/TeXLive
 share/texlive/texmf-dist/scripts/texlive/uninstall-win32.pl
 share/texlive/texmf-dist/scripts/texlive/uninstq.vbs
-share/texlive/texmf-dist/scripts/texlive/tlmgr-gui.pl
+share/texlive/texmf-dist/scripts/texlive/tl-errmess.vbs
+share/texlive/texmf-dist/scripts/texlive/tlmgrgui.pl
+share/texlive/texmf-dist/scripts/texlive/mktexlsr
 share/texlive/texmf-dist/web2c
 share/texlive/tlpkg/installer/COPYING.MinGW-runtime.txt
 share/texlive/tlpkg/installer/install-menu-perltk.pl
