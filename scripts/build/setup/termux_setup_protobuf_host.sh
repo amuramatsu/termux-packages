@@ -17,4 +17,5 @@ termux_setup_protobuf_host() {
 		 cmake "-DCMAKE_INSTALL_PREFIX=$_PROTOBUF_HOST_FOLDER" -Dprotobuf_BUILD_TESTS=OFF ../cmake &&
 		 make -j $TERMUX_MAKE_PROCESSES install)
 	fi
+	ln -sf "$_PROTOBUF_HOST_FOLDER" "$TERMUX_COMMON_CACHEDIR/protobuf-host"
 }

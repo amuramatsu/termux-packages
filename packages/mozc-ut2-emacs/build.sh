@@ -4,7 +4,7 @@ TERMUX_PKG_LICENSE="GPL-3.0"
 local _MAJOR_VERSION=2.20.2677.102
 local _MINOR_VERSION=20171008
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
-TERMUX_PKG_REVISION=7
+TERMUX_PKG_REVISION=8
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_SHA256=3e89b533cd0177156031dbedbc607d953f7ed522cb37b9286490b9f6002d6603
 TERMUX_PKG_SRCURL=https://ja.osdn.net/downloads/users/16/16040/mozc-ut2-${TERMUX_PKG_VERSION}.tar.xz
@@ -28,6 +28,8 @@ termux_step_post_extract_package() {
 	git clone $_MOZCTOROKU_REPO mozctoroku
 	(cd mozctoroku && git checkout $_MOZCTOROKU_COMMIT)
 	termux_setup_protobuf
+	find src -name '*.gyp' -exec sed -i.bak "s/'python'/'python2'/g" {} \;
+	find src -name '*.gypi' -exec sed -i.bak "s/'python'/'python2'/g" {} \;
 }
 
 termux_step_configure () {
@@ -47,7 +49,7 @@ termux_step_make () {
 	export PATH="${PATH}:$TERMUX_TOPDIR/libprotobuf/host-build/install/bin"
 	python2 build_mozc.py build -c Release \
 		server/server.gyp:mozc_server \
-		unixemacs/emacs.gyp:mozc_emacs_helper
+		unixemacs/emacs.gyp:mozc_emacs_helper || true
 	cd "$TERMUX_PKG_SRCDIR"
 	cd mozc-config
 	make mozc-config mozc-dict LIBS="-lprotobuf -liconv"

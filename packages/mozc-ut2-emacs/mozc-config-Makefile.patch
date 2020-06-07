@@ -25,11 +25,11 @@
 -INCS	= -I$(MOZC_SRC) \
 -	      -I$(MOZC_SRC)/out/Release/obj/gen \
 -	      -I$(MOZC_SRC)/out/Release/obj/gen/proto_out
-+INCS	= -I@TERMUX_PREFIX@/include \
-+	  -I$(MOZC_SRC) \
++INCS	= -I$(MOZC_SRC) \
 +	  -I$(MOZC_SRC)/out_linux/Release/gen \
-+	  -I$(MOZC_SRC)/out_linux/Release/gen/proto_out
- 
++	  -I$(MOZC_SRC)/out_linux/Release/gen/proto_out \
++	  -I@TERMUX_PREFIX@/include
+
  MOZC_CONF	= mozc-config
  
 -MOZC_CONF_OBJS	= mozc_config_main.o
