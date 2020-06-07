@@ -1,10 +1,11 @@
 TERMUX_PKG_HOMEPAGE=https://curl.haxx.se/
 TERMUX_PKG_DESCRIPTION="Easy-to-use client-side URL transfer library"
 TERMUX_PKG_LICENSE="MIT"
-TERMUX_PKG_VERSION=7.67.0
+TERMUX_PKG_VERSION=7.70.0
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://curl.haxx.se/download/curl-${TERMUX_PKG_VERSION}.tar.bz2
-TERMUX_PKG_SHA256=dd5f6956821a548bf4b44f067a530ce9445cc8094fd3e7e3fc7854815858586c
-TERMUX_PKG_DEPENDS="libnghttp2, openssl (>= 1.1.1), zlib"
+TERMUX_PKG_SHA256=a50bfe62ad67a24f8b12dd7fd655ac43a0f0299f86ec45b11354f25fbb5829d0
+TERMUX_PKG_DEPENDS="libnghttp2, libssh2, openssl (>= 1.1.1), zlib"
 TERMUX_PKG_BREAKS="libcurl-dev"
 TERMUX_PKG_REPLACES="libcurl-dev"
 TERMUX_PKG_ESSENTIAL=true
@@ -19,6 +20,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --without-librtmp
 --without-brotli
 --with-ssl
+--with-libssh2
 "
 
 

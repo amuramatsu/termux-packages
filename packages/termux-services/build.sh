@@ -1,9 +1,9 @@
-TERMUX_PKG_HOMEPAGE=https://github.com/Neo-Oli/termux-services/
+TERMUX_PKG_HOMEPAGE=https://github.com/termux/termux-services/
 TERMUX_PKG_DESCRIPTION="Service daemon for Termux"
-TERMUX_PKG_VERSION=0.0.5
+TERMUX_PKG_VERSION=0.12
 TERMUX_PKG_LICENSE="GPL-3.0"
 TERMUX_PKG_SRCURL=https://github.com/termux/termux-services/archive/${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=0d2c08b28a4f97c6d50bea9d1d21d599a16be031ad95573e078f6bd864ccdd1e
+TERMUX_PKG_SHA256=b7b31e2a958774ce9c59120b7803dbb8ed9daca8d40dd2f1d50bd46573be25d2
 TERMUX_PKG_DEPENDS="busybox, coreutils"
 TERMUX_PKG_PLATFORM_INDEPENDENT=true
 TERMUX_PKG_BUILD_IN_SRC=true

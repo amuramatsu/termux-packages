@@ -1,14 +1,14 @@
 TERMUX_PKG_HOMEPAGE=https://boost.org
 TERMUX_PKG_DESCRIPTION="Free peer-reviewed portable C++ source libraries"
 TERMUX_PKG_LICENSE="BSL-1.0"
-TERMUX_PKG_VERSION=1.71.0
+TERMUX_PKG_VERSION=1.73.0
 TERMUX_PKG_SRCURL=https://dl.bintray.com/boostorg/release/$TERMUX_PKG_VERSION/source/boost_${TERMUX_PKG_VERSION//./_}.tar.bz2
-TERMUX_PKG_SHA256=d73a8da01e8bf8c7eda40b4c84915071a8c8a0df4a6734537ddde4a8580524ee
-TERMUX_PKG_BUILD_IN_SRC=true
+TERMUX_PKG_SHA256=4eb3b8d442b426dc35346235c8733b5ae35ba431690e38c6a8263dce9fcbb402
 TERMUX_PKG_DEPENDS="libc++, libbz2, libiconv, liblzma, zlib"
 TERMUX_PKG_BUILD_DEPENDS="python"
 TERMUX_PKG_BREAKS="libboost-python (<= 1.65.1-2), boost-dev"
 TERMUX_PKG_REPLACES="libboost-python (<= 1.65.1-2), boost-dev"
+TERMUX_PKG_BUILD_IN_SRC=true
 
 termux_step_pre_configure() {
 	# Certain packages are not safe to build on device because their
@@ -58,7 +58,6 @@ termux_step_make_install() {
 		address-model="$BOOSTAM" \
 		boost.locale.icu=off \
 		binary-format=elf \
-		link=shared \
 		threading=multi \
 		install
 }
