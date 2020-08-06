@@ -48,7 +48,7 @@ CPPFLAGS="-I${prefix}/include -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D
 CFLAGS="${CPPFLAGS} ${CFLAGS}  -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS"
 CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -Wcast-qual -Wnon-virtual-dtor -std=c++11 -fno-exceptions"
 if [ "$has_rtti" != "YES" ]; then CXXFLAGS="$CXXFLAGS -fno-rtti"; fi
-LDFLAGS="-L${prefix}/lib"
+LDFLAGS="-L${prefix}/lib -Wl,-R,${prefix}/lib"
 LIBFILE="${prefix}/lib/libLLVM-$version.so"
 components="aarch64 aarch64asmparser aarch64asmprinter aarch64codegen aarch64desc \
 aarch64disassembler aarch64info aarch64utils aggressiveinstcombine all all-targets amdgpu \

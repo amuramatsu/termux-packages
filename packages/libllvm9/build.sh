@@ -35,9 +35,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 TERMUX_PKG_FORCE_CMAKE=true
 TERMUX_PKG_HAS_DEBUG=false
-# Debug build succeeds but make install with:
-# cp: cannot stat '../src/projects/openmp/runtime/exports/common.min.50.ompt.optional/include/omp.h': No such file or directory
-# common.min.50.ompt.optional should be common.deb.50.ompt.optional when doing debug build
 
 termux_step_host_build() {
 	termux_setup_cmake
@@ -66,6 +63,7 @@ termux_step_pre_configure() {
 	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -DLLVM_DEFAULT_TARGET_TRIPLE=$LLVM_DEFAULT_TARGET_TRIPLE"
 	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -DLLVM_TARGET_ARCH=$LLVM_TARGET_ARCH -DLLVM_TARGETS_TO_BUILD=all"
 	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -DLLVM_HOST_TRIPLE=$LLVM_DEFAULT_TARGET_TRIPLE"
+	LDFLAGS="$LDFLAGS -L$TERMUX_PREFIX_OPT/lib -Wl,-rpath=$TERMUX_PREFIX_OPT/lib"
 }
 
 termux_step_post_massage() {
