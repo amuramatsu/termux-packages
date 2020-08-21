@@ -1,9 +1,9 @@
 TERMUX_PKG_HOMEPAGE=https://jfrog.com/getcli
 TERMUX_PKG_DESCRIPTION="A CLI for JFrog products."
 TERMUX_PKG_LICENSE="Apache-2.0"
-TERMUX_PKG_VERSION=1.36.0
-TERMUX_PKG_SRCURL=https://github.com/jfrog/jfrog-cli/archive/$TERMUX_PKG_VERSION.tar.gz
-TERMUX_PKG_SHA256=31c98a57518fef4c3f23459d9844a4025fd8d8e1bdf98a39237342e7fb31d7b1
+TERMUX_PKG_VERSION=1.39.0
+TERMUX_PKG_SRCURL=https://github.com/jfrog/jfrog-cli/archive/v$TERMUX_PKG_VERSION.tar.gz
+TERMUX_PKG_SHA256=4f053bb2a228ebf4ab25ebf4c40ec39e0210cbf7f143cc5ae83bc17ce7488052
 TERMUX_PKG_DEPENDS="libc++"
 
 termux_step_make() {
@@ -18,7 +18,7 @@ termux_step_make() {
 		# "linux" tag should not be necessary
 		# try removing when golang version is upgraded
 
-	# Building for host to generate manpages and completion.
+	#Building for host to generate manpages and completion.
 	chmod 700 -R $GOPATH/pkg && rm -rf $GOPATH/pkg
 	unset GOOS GOARCH CGO_LDFLAGS
 	unset CC CXX CFLAGS CXXFLAGS LDFLAGS

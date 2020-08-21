@@ -1,9 +1,9 @@
 TERMUX_PKG_HOMEPAGE=http://seafile.com
 TERMUX_PKG_DESCRIPTION="Seafile is a file syncing and sharing software with file encryption and group sharing"
 TERMUX_PKG_LICENSE="Apache-2.0"
-TERMUX_PKG_VERSION=7.0.7
+TERMUX_PKG_VERSION=7.0.9
 TERMUX_PKG_SRCURL=https://github.com/haiwen/seafile/archive/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=db50f0b7bc5a231dfc1bedc958e0e191b74cb4a74d6f701d0c6bfc59c4ca18dd
+TERMUX_PKG_SHA256=f127b735e5d4cbd7e692d52eda54113f1a4ca31bd8328fbccf01a5462bbba5e8
 TERMUX_PKG_DEPENDS="ccnet, libcurl, python"
 TERMUX_PKG_BREAKS="seafile-client-dev"
 TERMUX_PKG_REPLACES="seafile-client-dev"
@@ -15,7 +15,7 @@ termux_step_pre_configure() {
 }
 
 termux_step_post_configure() {
-	# the package has trouble to prepare some headers
+	#the package has trouble to prepare some headers
 	cd $TERMUX_PKG_SRCDIR/lib
 	python $TERMUX_PREFIX/bin/searpc-codegen.py $TERMUX_PKG_SRCDIR/lib/rpc_table.py
 }

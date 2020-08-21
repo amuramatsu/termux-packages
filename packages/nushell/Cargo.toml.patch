@@ -1,12 +1,20 @@
-diff -uNr nushell-0.14.0/Cargo.toml nushell-0.14.0.mod/Cargo.toml
---- nushell-0.14.0/Cargo.toml	2020-05-12 19:32:51.000000000 +0300
-+++ nushell-0.14.0.mod/Cargo.toml	2020-05-13 12:22:00.470388369 +0300
-@@ -62,7 +62,7 @@
- # Test executables
- test-bins = []
+diff -u -r ../nushell-0.18.1/Cargo.toml ./Cargo.toml
+--- ../nushell-0.18.1/Cargo.toml	2020-08-12 03:59:28.000000000 +0000
++++ ./Cargo.toml	2020-08-13 08:02:58.145134000 +0000
+@@ -53,7 +53,6 @@
+ log = "0.4.8"
+ pretty_env_logger = "0.4.0"
+ quick-xml = "0.18.1"
+-starship = "0.43.0"
  
--default = ["sys", "ps", "textview", "inc", "str"]
-+default = ["textview", "inc", "str"]
- stable = ["default", "starship-prompt", "binaryview", "match", "tree", "average", "post", "fetch", "clipboard-cli", "trash-support", "start"]
+ [dev-dependencies]
+ nu-test-support = {version = "0.18.1", path = "./crates/nu-test-support"}
+@@ -64,8 +63,6 @@
  
- # Default
+ [features]
+ default = [
+-  "sys",
+-  "ps",
+   "textview",
+   "inc",
+   "git-support",

@@ -2,11 +2,11 @@ TERMUX_PKG_HOMEPAGE=https://kubernetes.io/
 TERMUX_PKG_DESCRIPTION="Kubernetes.io client binary"
 TERMUX_PKG_LICENSE="Apache-2.0"
 TERMUX_PKG_MAINTAINER="Leonid Pliushch <leonid.pliushch@gmail.com>"
-TERMUX_PKG_VERSION=1.18.3
+TERMUX_PKG_VERSION=1.18.8
 TERMUX_PKG_SRCURL=https://dl.k8s.io/v$TERMUX_PKG_VERSION/kubernetes-src.tar.gz
-TERMUX_PKG_SHA256=40bdcb4d791ecfaf16007133bf64318519a8404a251a5a5673efbe1f236f858b
+TERMUX_PKG_SHA256=b4ca40cc24bef3e89dc920992422e0061c376e8616d2455c89d6c18b90e1b141
 
-termux_step_extract_package() {
+termux_step_get_source() {
 	mkdir -p "$TERMUX_PKG_CACHEDIR"
 	mkdir -p "$TERMUX_PKG_SRCDIR"
 
@@ -20,7 +20,7 @@ termux_step_extract_package() {
 termux_step_make() {
 	termux_setup_golang
 
-	# Needed to generate manpages.
+	#Needed to generate manpages.
 	#(
 	#	export GOPATH="$TERMUX_PKG_BUILDDIR/host"
 	#	unset GOOS GOARCH CGO_LDFLAGS

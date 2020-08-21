@@ -56,6 +56,7 @@ PACKAGES+=" xmlto"
 # Needed by python modules (e.g. asciinema) and some build systems.
 PACKAGES+=" python3.7"
 PACKAGES+=" python3.8"
+PACKAGES+=" python3-pip"
 PACKAGES+=" python3-setuptools"
 
 # Needed by package bc.
@@ -92,6 +93,7 @@ PACKAGES+=" re2c"
 
 # Needed by package rust.
 PACKAGES+=" libssl-dev" # Needed to build Rust
+PACKAGES+=" clang-10"
 
 # Needed for package smalltalk.
 PACKAGES+=" libsigsegv-dev"
@@ -106,11 +108,7 @@ PACKAGES+=" zlib1g-dev"
 PACKAGES+=" libssl-dev:i386"
 PACKAGES+=" zlib1g-dev:i386"
 
-# So we don't build llvm for build.
-PACKAGES+=" llvm-8-tools"
-
 # For swift.
-PACKAGES+=" clang-10"
 PACKAGES+=" lld"
 
 # Needed by wrk.
@@ -132,19 +130,26 @@ PACKAGES+=" erlang-nox"
 PACKAGES+=" libgc-dev"
 PACKAGES+=" libgmp-dev"
 PACKAGES+=" libunistring-dev"
-PACKAGES+=" llvm-9-dev"
+PACKAGES+=" libparse-yapp-perl"
+PACKAGES+=" heimdal-multidev"
+PACKAGES+=" comerr-dev"
+PACKAGES+=" llvm-10-tools"
+PACKAGES+=" llvm-10-dev"
 
 # Needed by packages in X11 repository.
+PACKAGES+=" alex"
 PACKAGES+=" docbook-xsl-ns"
 PACKAGES+=" gnome-common"
 PACKAGES+=" gobject-introspection"
 PACKAGES+=" gtk-3-examples"
 PACKAGES+=" gtk-doc-tools"
+PACKAGES+=" happy"
 PACKAGES+=" itstool"
 PACKAGES+=" libgdk-pixbuf2.0-dev"
 PACKAGES+=" python-setuptools"
 PACKAGES+=" python3-xcbgen"
 PACKAGES+=" texlive-extra-utils"
+PACKAGES+=" xfce4-dev-tools"
 PACKAGES+=" xfonts-utils"
 
 # Needed by packages in science repository

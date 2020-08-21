@@ -1,3 +1,18 @@
+diff --git a/swiftpm/CMakeLists.txt b/swiftpm/CMakeLists.txt
+index 4cd8621f..86a23e0a 100644
+--- a/swiftpm/CMakeLists.txt
++++ b/swiftpm/CMakeLists.txt
+@@ -26,7 +26,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+ 
+ option(BUILD_SHARED_LIBS "Build shared libraryes by default" YES)
+ 
+-find_package(TSC CONFIG REQUIRED)
++if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL Android)
++  find_package(TSC CONFIG REQUIRED)
++endif()
+ 
+ find_package(LLBuild CONFIG)
+ if(NOT LLBuild_FOUND)
 diff --git a/swiftpm/Sources/PackageDescription/CMakeLists.txt b/swiftpm/Sources/PackageDescription/CMakeLists.txt
 index b6d925e1..3e546554 100644
 --- a/swiftpm/Sources/PackageDescription/CMakeLists.txt
@@ -13,7 +28,7 @@ index b6d925e1..3e546554 100644
          Swift_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/pm/${PACKAGE_DESCRIPTION_VERSION}
 +        BUILD_WITH_INSTALL_RPATH TRUE
          INSTALL_NAME_DIR \\@rpath
-+        INSTALL_RPATH "$ORIGIN/../../$<LOWER_CASE:${CMAKE_SYSTEM_NAME}>"
++        INSTALL_RPATH "$ORIGIN/../../android"
          OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pm/${PACKAGE_DESCRIPTION_VERSION}
          OUTPUT_NAME PackageDescription
          ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pm/${PACKAGE_DESCRIPTION_VERSION}
@@ -30,15 +45,3 @@ index 50e1ba60..e47b87e7 100644
  endif()
  # NOTE(compnerd) workaround for CMake not setting up include flags yet
  set_target_properties(TSCBasic PROPERTIES
-diff --git a/swiftpm/Utilities/bootstrap b/swiftpm/Utilities/bootstrap
-index f7439427..b3edbbea 100755
---- a/swiftpm/Utilities/bootstrap
-+++ b/swiftpm/Utilities/bootstrap
-@@ -574,6 +574,7 @@ def get_swiftpm_flags(args):
-     if 'ANDROID_DATA' in os.environ:
-         build_flags.extend(["-Xswiftc", "-Xcc", "-Xswiftc", "-U_GNU_SOURCE"])
- 
-+    build_flags.extend(["-Xswiftc", "-no-toolchain-stdlib-rpath", "-Xlinker", "-landroid-spawn"])
-     return build_flags
- 
- # -----------------------------------------------------------
