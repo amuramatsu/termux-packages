@@ -90,16 +90,18 @@
      mozc::UserDictionaryImporter::ErrorType error =
      mozc::UserDictionaryImporter::ImportFromTextLineIterator(
              mozc::UserDictionaryImporter::IME_AUTO_DETECT, &iter, dic);
-@@ -286,7 +296,7 @@ void print_help() {
+@@ -286,17 +296,17 @@ void print_help() {
  namespace {
  struct POSMap {
      const char *a;
 -    const char *b;
 +    mozc::user_dictionary::UserDictionary::PosType b;
  };
- #include "dictionary/pos_map.h"
+-#include "dictionary/pos_map.h"
++#include "dictionary/pos_map.inc"
  }
-@@ -295,8 +305,8 @@ struct POSMap {
+ #include <set>
+ 
  void list_pos() {
      set<string> ss;
      for (int i = 0; i < arraysize(kPOSMap); i++)

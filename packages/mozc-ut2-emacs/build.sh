@@ -1,17 +1,24 @@
-TERMUX_PKG_HOMEPAGE=http://www.geocities.jp/ep3797/mozc-ut2.html
+TERMUX_PKG_HOMEPAGE=http://linuxplayers.g1.xrea.com/mozc-ut.html
 TERMUX_PKG_DESCRIPTION="Japanese Input method with large dictionary (for emacs)"
 TERMUX_PKG_LICENSE="GPL-3.0"
-local _MAJOR_VERSION=2.20.2677.102
-local _MINOR_VERSION=20171008
+_MAJOR_VERSION=2.23.2815.102+dfsg
+_MINOR_VERSION=20200821.1
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
-TERMUX_PKG_REVISION=10
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
-TERMUX_PKG_SHA256=3e89b533cd0177156031dbedbc607d953f7ed522cb37b9286490b9f6002d6603
-TERMUX_PKG_SRCURL=https://ja.osdn.net/downloads/users/16/16040/mozc-ut2-${TERMUX_PKG_VERSION}.tar.xz
+TERMUX_PKG_SHA256=258120e3e1af2268ec46455cdf50ff2c918af6e3928c5efc13e55eedbf0ce196
+TERMUX_PKG_SRCURL=ftp://ftp.jp.debian.org/debian/pool/main/m/mozc/mozc_${_MAJOR_VERSION}.orig.tar.xz
 TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_DEPENDS="libprotobuf, libiconv"
 TERMUX_PKG_BUILD_DEPENDS="protobuf"
 TERMUX_PKG_HOSTBUILD=yes
+
+_UTDIC_SRCURL=https://osdn.net/downloads/users/26/26575/mozcdic-ut-$_MINOR_VERSION.tar.bz2
+_UTDIC_SHA256=f311ad53e233db87e2ab591a31c6b3901e6d2c736a2bd262a11c5bb1d0b58b76
+
+_GYP_REPO=https://chromium.googlesource.com/external/gyp.git
+_GYP_COMMIT=4ec6c4e3a94bd04a6da2858163d40b2429b8aad1
+_JP_USAGE_DICT_REPO=https://github.com/hiroyuki-komatsu/japanese-usage-dictionary
+_JP_USAGE_DICT_COMMIT=e5b3425575734c323e1d947009dd74709437b684
 
 _MOZC_CONFIG_REPO=https://github.com/hidegit/mozc-config.git
 _MOZC_CONFIG_COMMIT=79bd032431320dbb79d3e16d41686e5a58f22218
@@ -22,7 +29,19 @@ termux_step_host_build() {
 	termux_setup_protobuf_host
 }
 
-termux_step_post_extract_package() {
+termux_step_post_get_source() {
+	mkdir src/third_party
+    	git clone $_GYP_REPO src/third_party/gyp
+	(cd src/third_party/gyp && git checkout $_GYP_COMMIT)
+	git clone $_JP_USAGE_DICT_REPO src/third_party/japanese_usage_dictionary
+	(cd src/third_party/japanese_usage_dictionary && git checkout $_JP_USAGE_DICT_COMMIT)
+	termux_download \
+		$_UTDIC_SRCURL \
+		mozcdic-ut-${_MINOR_VERSION}.tar.bz2 \
+		$_UTDIC_SHA256
+	tar jvxf mozcdic-ut-${_MINOR_VERSION}.tar.bz2
+	cat mozcdic-ut-${_MINOR_VERSION}/mozcdic-*-${_MINOR_VERSION}.txt \
+	    >> src/data/dictionary_oss/dictionary00.txt
 	git clone $_MOZC_CONFIG_REPO mozc-config
 	(cd mozc-config && git checkout $_MOZC_CONFIG_COMMIT)
 	git clone $_MOZCTOROKU_REPO mozctoroku

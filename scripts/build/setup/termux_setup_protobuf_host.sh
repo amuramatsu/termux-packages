@@ -9,7 +9,7 @@ termux_setup_protobuf_host() {
 				"$_PROTOBUF_SRCURL" \
 				"$TERMUX_PKG_TMPDIR/protobuf-$_PROTOBUF_VERSION.tar.gz" \
 				"$_PROTOBUF_SHA256"
-		tar zxf "$TERMUX_PKG_TMPDIR/protobuf-$_PROTOBUF_VERSION.tar.gz" -C "$TERMUX_PKG_TMPDIR"
+		tar zvxf "$TERMUX_PKG_TMPDIR/protobuf-$_PROTOBUF_VERSION.tar.gz" -C "$TERMUX_PKG_TMPDIR"
 		termux_setup_cmake
 		termux_setup_protobuf
 		(cd "$TERMUX_PKG_TMPDIR/protobuf-$_PROTOBUF_VERSION" &&
