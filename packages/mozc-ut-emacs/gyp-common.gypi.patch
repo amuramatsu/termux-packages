@@ -1,0 +1,42 @@
+--- a/src/gyp/common.gypi.orig	2016-12-14 22:53:38.000000000 +0900
++++ b/src/gyp/common.gypi	2018-03-07 23:16:09.761661465 +0900
+@@ -130,8 +130,8 @@
+       ['target_platform=="Linux"', {
+         'compiler_target': 'clang',
+         'compiler_target_version_int': 304,  # Clang 3.4 or higher
+-        'compiler_host': 'clang',
+-        'compiler_host_version_int': 304,  # Clang 3.4 or higher
++        'compiler_host': 'gcc',
++        'compiler_host_version_int': 440,  # gcc 4.4 or higher
+       }],
+     ],
+   },
+@@ -272,6 +272,15 @@
+           ['target_platform=="Linux"', {
+             # OS_LINUX is defined always (target and host).
+             'defines': ['OS_LINUX',],
++            'target_conditions' : [
++              ['_toolset=="host"', {
++                'include_dirs': [],
++              }],
++              ['_toolset=="target"', {
++                'include_dirs': [ '@TERMUX_PREFIX@/include' ],
++                'library_dirs': [ '@TERMUX_PREFIX@/lib' ],
++              }]
++            ],
+           }],
+           ['target_platform=="Android"', {
+             'defines': ['NO_USAGE_REWRITER'],
+@@ -450,6 +459,12 @@
+         ['LD', '<!(which ld)'],
+         ['NM', '<!(which nm)'],
+         ['READELF', '<!(which readelf)'],
++        ['AR.host', '/usr/bin/ar'],
++        ['CC.host', '/usr/bin/gcc'],
++        ['CXX.host', '/usr/bin/g++'],
++        ['LD.host', '/usr/bin/ld'],
++        ['NM.host', '/usr/bin/nm'],
++        ['READELF.host', '/usr/bin/readelf'],
+       ],
+     }],
+     ['target_platform=="Android"', {

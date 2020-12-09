@@ -1,0 +1,37 @@
+--- a/src/base/process.cc.orig	2016-12-14 22:53:38.000000000 +0900
++++ b/src/base/process.cc	2018-03-07 21:06:10.758648192 +0900
+@@ -47,8 +47,33 @@
+ #if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_NACL)
+ #include <fcntl.h>
+ #include <signal.h>
+-#include <spawn.h>  // for posix_spawn().
++//#include <spawn.h>  // for posix_spawn().
+ #include <sys/types.h>
++
++#include <unistd.h>
++#include <sys/wait.h>
++static int
++posix_spawn(pid_t *pid, const char *path,
++  const /*posix_spawn_file_actions_t*/void *fa,
++  const /*posix_spawnattr_t*/void *sa,
++  char * const argv[], char * const envp[])
++{
++  pid_t p;
++  volatile int error = 0;
++
++  p = vfork();
++  if (p == -1) return errno;
++  else if (p == 0) {
++    execve(path, argv, envp != NULL ? envp : environ);
++    error = errno;
++    _exit(127);
++  }
++  if (error != 0)
++    waitpid(p, NULL, WNOHANG);
++  else if (pid != NULL)
++    *pid = p;
++  return (error);
++}
+ #endif  // OS_LINUX || OS_ANDROID || OS_NACL
+ 
+ #include <cstdlib>
