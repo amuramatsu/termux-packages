@@ -1,13 +1,14 @@
 TERMUX_PKG_HOMEPAGE=https://www.vim.org
 TERMUX_PKG_DESCRIPTION="Vi IMproved - enhanced vi editor"
 TERMUX_PKG_LICENSE="VIM License"
+TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_DEPENDS="libiconv, ncurses, vim-runtime, python"
 TERMUX_PKG_RECOMMENDS="diffutils"
 # vim should only be updated every 50 releases on multiples of 50.
 # Update both vim and vim-python to the same version in one PR.
-TERMUX_PKG_VERSION=8.2.2100
+TERMUX_PKG_VERSION=8.2.2450
 TERMUX_PKG_SRCURL="https://github.com/vim/vim/archive/v${TERMUX_PKG_VERSION}.tar.gz"
-TERMUX_PKG_SHA256=5912f417d2818b7c889470d5e357809609eea6a5817491d344f7609d7fdf81fa
+TERMUX_PKG_SHA256=bb992b493834e234def32ad9ef27111a32f79f09495011a076d142507984598f
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 vim_cv_getcwd_broken=no
 vim_cv_memmove_handles_overlap=yes
@@ -73,9 +74,6 @@ termux_step_post_make_install() {
 	cp $TERMUX_PREFIX/share/vim/vim82/tutor/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PKG_TMPDIR/
 	rm -f $TERMUX_PREFIX/share/vim/vim82/tutor/*
 	cp $TERMUX_PKG_TMPDIR/{tutor,tutor.vim,tutor.utf-8} $TERMUX_PREFIX/share/vim/vim82/tutor/
-
-	cd $TERMUX_PREFIX/bin
-	ln -f -s vim vi
 }
 
 termux_step_create_debscripts() {
@@ -85,6 +83,8 @@ termux_step_create_debscripts() {
 		if [ -x "$TERMUX_PREFIX/bin/update-alternatives" ]; then
 			update-alternatives --install \
 				$TERMUX_PREFIX/bin/editor editor $TERMUX_PREFIX/bin/vim 50
+			update-alternatives --install \
+				$TERMUX_PREFIX/bin/vi vi $TERMUX_PREFIX/bin/vim 20
 		fi
 	fi
 	EOF
@@ -94,6 +94,7 @@ termux_step_create_debscripts() {
 	if [ "\$1" != "upgrade" ]; then
 		if [ -x "$TERMUX_PREFIX/bin/update-alternatives" ]; then
 			update-alternatives --remove editor $TERMUX_PREFIX/bin/vim
+			update-alternatives --remove vi $TERMUX_PREFIX/bin/vim
 		fi
 	fi
 	EOF

@@ -2,6 +2,7 @@ termux_step_setup_toolchain() {
 	[ "$TERMUX_PKG_METAPACKAGE" = "true" ] && return
 
 	export CFLAGS=""
+	export CPPFLAGS=""
 	export LDFLAGS="-L${TERMUX_PREFIX}/lib"
 
 	export AS=$TERMUX_HOST_PLATFORM-clang
@@ -53,6 +54,11 @@ termux_step_setup_toolchain() {
 		termux_error_exit "Invalid arch '$TERMUX_ARCH' - support arches are 'arm', 'i686', 'aarch64', 'x86_64'"
 	fi
 
+	# -static-openmp requires -fopenmp in LDFLAGS to work; hopefully this won't be problematic
+	# even when we don't have -fopenmp in CFLAGS / when we don't want to enable OpenMP
+	# We might also want to consider shipping libomp.so instead; since r21
+	LDFLAGS+=" -fopenmp -static-openmp"
+
 	# Android 7 started to support DT_RUNPATH (but not DT_RPATH).
 	LDFLAGS+=" -Wl,--enable-new-dtags"
 
@@ -64,13 +70,14 @@ termux_step_setup_toolchain() {
 	LDFLAGS+=" -Wl,-z,relro,-z,now"
 
 	if [ "$TERMUX_DEBUG" = "true" ]; then
-		CFLAGS+=" -g3 -O1 -D_FORTIFY_SOURCE=2"
+		CFLAGS+=" -g3 -O1"
+		CPPFLAGS+=" -D_FORTIFY_SOURCE=2 -D__USE_FORTIFY_LEVEL=2"
 	else
 		CFLAGS+=" -Oz"
 	fi
 
 	export CXXFLAGS="$CFLAGS"
-	export CPPFLAGS="-I${TERMUX_PREFIX}/include"
+	export CPPFLAGS+=" -I${TERMUX_PREFIX}/include"
 
 	# If libandroid-support is declared as a dependency, link to it explicitly:
 	if [ "$TERMUX_PKG_DEPENDS" != "${TERMUX_PKG_DEPENDS/libandroid-support/}" ]; then
@@ -81,6 +88,7 @@ termux_step_setup_toolchain() {
 	export CGO_ENABLED=1
 	export GO_LDFLAGS="-extldflags=-pie"
 	export CGO_LDFLAGS="${LDFLAGS/-Wl,-z,relro,-z,now/}"
+	CGO_LDFLAGS="${LDFLAGS/-static-openmp/}"
 	export CGO_CFLAGS="-I$TERMUX_PREFIX/include"
 
 	export ac_cv_func_getpwent=no

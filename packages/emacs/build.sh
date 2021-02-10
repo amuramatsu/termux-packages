@@ -1,8 +1,9 @@
 TERMUX_PKG_HOMEPAGE=https://www.gnu.org/software/emacs/
 TERMUX_PKG_DESCRIPTION="Extensible, customizable text editor-and more"
 TERMUX_PKG_LICENSE="GPL-3.0"
+TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=27.1
-TERMUX_PKG_REVISION=1
+TERMUX_PKG_REVISION=2
 TERMUX_PKG_SRCURL=https://ftp.gnu.org/gnu/emacs/emacs-${TERMUX_PKG_VERSION}.tar.xz
 TERMUX_PKG_SHA256=4a4c128f915fc937d61edfc273c98106711b540c9be3cd5d2e2b9b5b2f172e41
 TERMUX_PKG_DEPENDS="ncurses, gnutls, libxml2"
@@ -28,6 +29,15 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --with-pdumper=yes
 --with-dumping=none
 "
+
+if $TERMUX_DEBUG; then
+	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+="
+	--enable-checking=yes,glyphs
+	--enable-check-lisp-object-type
+	"
+	CFLAGS+=" -gdwarf-4"
+fi
+
 # Ensure use of system malloc:
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" emacs_cv_sanitize_address=yes"
 # Prevent configure from adding -nopie:

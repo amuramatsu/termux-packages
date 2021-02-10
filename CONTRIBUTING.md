@@ -28,7 +28,7 @@ containing incomplete work or disruptive changes will NOT be merged.
 
 ### A note about package requests
 
-We have more than 1000 packages in our repository. That is quite many, considering
+Termux keeps more than 1000 packages in its repositories. That is quite many, considering
 that Termux maintainers team is small and we prefer to use free hosting for packages
 repository. In order to be able to provide services at reasonable quality, we have
 to put restrictions on acceptable package requests.
@@ -49,6 +49,9 @@ our repositories:
 
 - Packages must NOT duplicate functionality of the already present ones.
 
+- Packages must NOT be phishing or pentesting tools. This does not apply for tools with
+  double purpose like Nmap.
+
 Also we will reject any requests for low-quality packages, simple utilities consisting
 of one-file scripts and scripts which automate use of existing packages.
 
@@ -59,41 +62,6 @@ because I need it"`, `"it's convenient to install it with package manager"` are
 NOT valid reasons to request a package.
 
 Please be ready that your package request will not be processed immediately.
-
-## Hosting a mirror
-
-Consider hosting own Termux repository mirror to help to distribute bandwidth usage
-between different servers. That will reduce chance of hitting the traffic quota on
-our [Bintray](https://bintray.com) account.
-
-When your mirror is ready, open the issue so we can include it into our mirror
-list.
-
-### Server requirements
-
-Since Bintray does not provide Rsync access to package repositories, you will need
-to mirror it over HTTP. We recommend to use `apt-mirror` for that.
-
-Here are the server requirements:
-
-- 20 GB of disk free space.
-- Stable network with 3+ TB of monthly bandwidth.
-- Cron job for updating mirror at least once in 3 days.
-
-It also preferrable that your server uses a caching CDN.
-
-Here are the URLs for mirroring:
-```
-https://dl.bintray.com/termux/termux-packages-24
-https://dl.bintray.com/grimler/game-packages-24
-https://dl.bintray.com/grimler/science-packages-24
-https://dl.bintray.com/grimler/termux-root-packages-24
-https://dl.bintray.com/xeffyr/unstable-packages
-https://dl.bintray.com/xeffyr/x11-packages
-```
-
-If you want to include your mirror into our mirror list, ensure that monthly server's
-uptime is 80% or higher.
 
 ## Updating packages
 

@@ -1,8 +1,9 @@
 TERMUX_PKG_HOMEPAGE=https://www.gnu.org/software/bash/
 TERMUX_PKG_DESCRIPTION="A sh-compatible shell that incorporates useful features from the Korn shell (ksh) and C shell (csh)"
 TERMUX_PKG_LICENSE="GPL-3.0"
+TERMUX_PKG_MAINTAINER="@termux"
 _MAIN_VERSION=5.1
-_PATCH_VERSION=0
+_PATCH_VERSION=4
 TERMUX_PKG_VERSION=${_MAIN_VERSION}.${_PATCH_VERSION}
 TERMUX_PKG_SRCURL=https://mirrors.kernel.org/gnu/bash/bash-${_MAIN_VERSION}.tar.gz
 TERMUX_PKG_SHA256=cc012bc860406dcf42f64431bcd3d2fa7560c02915a601aba9cd597a39329baa
@@ -36,7 +37,10 @@ TERMUX_PKG_RM_AFTER_INSTALL="share/man/man1/bashbug.1 bin/bashbug"
 termux_step_pre_configure() {
 	declare -A PATCH_CHECKSUMS
 
-	#PATCH_CHECKSUMS[001]=
+	PATCH_CHECKSUMS[001]=ebb07b3dbadd98598f078125d0ae0d699295978a5cdaef6282fe19adef45b5fa
+	PATCH_CHECKSUMS[002]=15ea6121a801e48e658ceee712ea9b88d4ded022046a6147550790caf04f5dbe
+	PATCH_CHECKSUMS[003]=22f2cc262f056b22966281babf4b0a2f84cb7dd2223422e5dcd013c3dcbab6b1
+	PATCH_CHECKSUMS[004]=9aaeb65664ef0d28c0067e47ba5652b518298b3b92d33327d84b98b28d873c86
 
 	for PATCH_NUM in $(seq -f '%03g' ${_PATCH_VERSION}); do
 		PATCHFILE=$TERMUX_PKG_CACHEDIR/bash_patch_${PATCH_NUM}.patch
@@ -47,12 +51,6 @@ termux_step_pre_configure() {
 		patch -p0 -i $PATCHFILE
 	done
 	unset PATCH_CHECKSUMS PATCHFILE PATCH_NUM
-
-	# Prefix verification patch should be applied only for the
-	# builds with original prefix.
-	if [ "$TERMUX_PREFIX" = "/data/data/com.termux/files/usr" ]; then
-		patch -p1 -i $TERMUX_PKG_BUILDER_DIR/verify-prefix.patch.txt
-	fi
 }
 
 termux_step_post_make_install() {

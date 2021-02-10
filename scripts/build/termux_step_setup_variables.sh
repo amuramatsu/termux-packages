@@ -18,26 +18,24 @@ termux_step_setup_variables() {
 		TERMUX_BUILT_PACKAGES_DIRECTORY="$TERMUX_TOPDIR/.built-packages"
 		TERMUX_NO_CLEAN="true"
 
-		# On device builds are considered as unofficial.
-		# Using device-specific value as default for maintainer field.
-		: "${TERMUX_PKG_MAINTAINER:="Termux ($(whoami))"}"
-
 		# On-device builds without termux-exec are unsupported.
 		if ! grep -q "${TERMUX_PREFIX}/lib/libtermux-exec.so" <<< "${LD_PRELOAD-x}"; then
 			termux_error_exit "On-device builds without termux-exec are not supported."
 		fi
 	else
 		TERMUX_BUILT_PACKAGES_DIRECTORY="/data/data/.built-packages"
-		: "${TERMUX_PKG_MAINTAINER:="Termux members @termux"}"
 	fi
 
+	# TERMUX_PKG_MAINTAINER should be explicitly set in build.sh of the package.
+	: "${TERMUX_PKG_MAINTAINER:="default"}"
+
 	TERMUX_REPO_URL=(
-		https://dl.bintray.com/termux/termux-packages-24
-		https://dl.bintray.com/grimler/game-packages-24
-		https://dl.bintray.com/grimler/science-packages-24
-		https://dl.bintray.com/grimler/termux-root-packages-24
-		https://dl.bintray.com/xeffyr/unstable-packages
-		https://dl.bintray.com/xeffyr/x11-packages
+		https://termux.org/packages
+		https://grimler.se/game-packages-24
+		https://grimler.se/science-packages-24
+		https://grimler.se/termux-root-packages-24
+		https://unstable.termux-mirror.ml
+		https://x11.termux-mirror.ml
 	)
 
 	TERMUX_REPO_DISTRIBUTION=(
