@@ -2,7 +2,7 @@ TERMUX_PKG_HOMEPAGE=http://linuxplayers.g1.xrea.com/mozc-ut.html
 TERMUX_PKG_DESCRIPTION="Japanese Input method with large dictionary (for emacs)"
 TERMUX_PKG_LICENSE="GPL-3.0"
 _MAJOR_VERSION=2.23.2815.102+dfsg
-_MINOR_VERSION=20210123.1
+_MINOR_VERSION=20210329.1
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_SHA256=258120e3e1af2268ec46455cdf50ff2c918af6e3928c5efc13e55eedbf0ce196
@@ -12,8 +12,8 @@ TERMUX_PKG_DEPENDS="libprotobuf, libiconv"
 TERMUX_PKG_BUILD_DEPENDS="protobuf"
 TERMUX_PKG_HOSTBUILD=yes
 
-_UTDIC_SRCURL=https://osdn.net/downloads/users/27/27430/mozcdic-ut-$_MINOR_VERSION.tar.bz2
-_UTDIC_SHA256=fa4bf67e82a5c276115de85d77311b538bb915aa6b6a59f34d7cb33b8563b320
+_UTDIC_SRCURL=https://osdn.net/downloads/users/28/28065/mozcdic-ut-$_MINOR_VERSION.tar.bz2
+_UTDIC_SHA256=057c5d1a5c66e7eed20979b7268d651da1999a52469abe2a9eab843d6b1e631f
 
 _GYP_REPO=https://chromium.googlesource.com/external/gyp.git
 _GYP_COMMIT=4ec6c4e3a94bd04a6da2858163d40b2429b8aad1
