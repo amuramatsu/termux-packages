@@ -8,23 +8,23 @@ if [ "$1" == "--help" ] || [ "$1" == "-help" ]; then
 fi
 
 select_repository() {
-    if [ "$1" == "Official repositories" ]; then
-        echo "[*] Official repositories selected"
-        MAIN="https://termux.org/packages/"
-        ROOT="https://dl.bintray.com/grimler/termux-root-packages-24"
-        GAME="https://dl.bintray.com/grimler/game-packages-24"
-        SCIENCE="https://dl.bintray.com/grimler/science-packages-24"
-        UNSTABLE="https://dl.bintray.com/xeffyr/unstable-packages"
-        X11="https://dl.bintray.com/xeffyr/x11-packages"
+    if [ "$1" == "Default repositories" ]; then
+        echo "[*] Default repositories selected"
+        MAIN="https://packages.termux.org/apt/termux-main"
+        GAME="https://packages.termux.org/apt/termux-games"
+        ROOT="https://packages.termux.org/apt/termux-root"
+        SCIENCE="https://packages.termux.org/apt/termux-science"
+        UNSTABLE="https://packages.termux.org/apt/termux-unstable"
+        X11="https://packages.termux.org/apt/termux-x11"
 
     elif [ "$1" == "Mirrors by A1batross" ]; then
         echo "[*] A1batross's mirrors selected"
-        MAIN="https://termux.mentality.rip/termux-packages-24"
-        GAME="https://termux.mentality.rip/game-packages-24"
-        ROOT="https://termux.mentality.rip/termux-root-packages-24"
-        SCIENCE="https://termux.mentality.rip/science-packages-24"
-        UNSTABLE="https://termux.mentality.rip/unstable-packages"
-        X11="https://termux.mentality.rip/x11-packages"
+        MAIN="https://termux.mentality.rip/termux-main"
+        GAME="https://termux.mentality.rip/termux-games"
+        ROOT="https://termux.mentality.rip/termux-root"
+        SCIENCE="https://termux.mentality.rip/termux-science"
+        UNSTABLE="https://termux.mentality.rip/termux-unstable"
+        X11="https://termux.mentality.rip/termux-x11"
 
     elif [ "$1" == "Mirrors by Grimler" ]; then
         echo "[*] Grimler's mirrors selected"
@@ -34,6 +34,15 @@ select_repository() {
         SCIENCE="https://grimler.se/science-packages-24"
         UNSTABLE="https://grimler.se/unstable-packages"
         X11="https://grimler.se/x11-packages"
+
+    elif [ "$1" == "Mirrors by Kcubeterm" ]; then
+        echo "[*] Kcubeterm's mirrors selected"
+        MAIN="https://dl.kcubeterm.me/termux-packages-24"
+        GAME="https://dl.kcubeterm.me/game-packages-24"
+        ROOT="https://dl.kcubeterm.me/termux-root-packages-24"
+        SCIENCE="https://dl.kcubeterm.me/science-packages-24"
+        UNSTABLE="https://dl.kcubeterm.me/unstable-packages"
+        X11="https://dl.kcubeterm.me/x11-packages"
 
     elif [ "$1" == "Mirrors by Xeffyr" ]; then
         echo "[*] Xeffyr's mirrors selected"
@@ -117,9 +126,10 @@ dialog \
     "${REPOSITORIES[@]}" --and-widget \
     --title "termux-change-repo" --clear \
     --radiolist "Which mirror do you want to use?" 0 0 0 \
-    "Official repositories" "Hosted on Bintray" on \
+    "Default repositories" "The default package hosting" on \
     "Mirrors by A1batross" "Hosted on termux.mentality.rip" off \
     "Mirrors by Grimler" "Hosted on grimler.se" off \
+    "Mirrors by Kcubeterm" "Hosted on dl.kcubeterm.me" off \
     "Mirrors by Xeffyr" "Hosted on IPFS" off \
     "Mirrors by Tsinghua University" "Hosted on mirrors.tuna.tsinghua.edu.cn" off \
     "Mirrors by BFSU" "Hosted on mirrors.bfsu.edu.cn" off \
