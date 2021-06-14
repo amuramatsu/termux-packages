@@ -1,7 +1,7 @@
---- a/src/base/process.cc.orig	2016-12-14 22:53:38.000000000 +0900
-+++ b/src/base/process.cc	2018-03-07 21:06:10.758648192 +0900
-@@ -47,8 +47,33 @@
- #if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_NACL)
+--- a/src/base/process.cc	2021-05-29 22:40:50.000000000 +0900
++++ b/src/base/process.cc	2021-06-15 08:47:24.000000000 +0900
+@@ -49,8 +49,33 @@
+ #if defined(OS_LINUX) || defined(OS_ANDROID)
  #include <fcntl.h>
  #include <signal.h>
 -#include <spawn.h>  // for posix_spawn().
@@ -32,6 +32,6 @@
 +    *pid = p;
 +  return (error);
 +}
- #endif  // OS_LINUX || OS_ANDROID || OS_NACL
+ #endif  // OS_LINUX || OS_ANDROID
  
  #include <cstdlib>

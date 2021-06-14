@@ -1,12 +1,12 @@
 TERMUX_PKG_HOMEPAGE=http://linuxplayers.g1.xrea.com/mozc-ut.html
 TERMUX_PKG_DESCRIPTION="Japanese Input method with large dictionary (for emacs)"
 TERMUX_PKG_LICENSE="GPL-3.0"
-_MAJOR_VERSION=2.23.2815.102+dfsg
+_MAJOR_VERSION=2.26.4388.102
 _MINOR_VERSION=20210603
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
-TERMUX_PKG_SHA256=258120e3e1af2268ec46455cdf50ff2c918af6e3928c5efc13e55eedbf0ce196
-TERMUX_PKG_SRCURL=ftp://ftp.jp.debian.org/debian/pool/main/m/mozc/mozc_${_MAJOR_VERSION}.orig.tar.xz
+TERMUX_PKG_SHA256=077d0fa8f5259a40916f2bb498d87e3efd8e92621461f898112497ad32167df8
+TERMUX_PKG_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-$_MAJOR_VERSION.tar.bz2
 TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_DEPENDS="libprotobuf, libiconv"
 TERMUX_PKG_BUILD_DEPENDS="protobuf"
@@ -16,7 +16,9 @@ _UTDIC_SRCURL=https://osdn.net/downloads/users/30/30562/mozcdic-ut-$_MINOR_VERSI
 _UTDIC_SHA256=46303f6d2ecc77a990834d5ae0607b52a4e7cb8cc512fc9f266861d777b4c192
 
 _GYP_REPO=https://chromium.googlesource.com/external/gyp.git
-_GYP_COMMIT=4ec6c4e3a94bd04a6da2858163d40b2429b8aad1
+_GYP_COMMIT=caa60026e223fc501e8b337fd5086ece4028b1c6
+_ABSEIL_REPO=https://github.com/abseil/abseil-cpp.git
+_ABSEIL_COMMIT=e1d388e7e74803050423d035e4374131b9b57919
 _JP_USAGE_DICT_REPO=https://github.com/hiroyuki-komatsu/japanese-usage-dictionary
 _JP_USAGE_DICT_COMMIT=e5b3425575734c323e1d947009dd74709437b684
 
@@ -33,6 +35,8 @@ termux_step_post_get_source() {
 	mkdir src/third_party
     	git clone $_GYP_REPO src/third_party/gyp
 	(cd src/third_party/gyp && git checkout $_GYP_COMMIT)
+    	git clone $_ABSEIL_REPO src/third_party/abseil-cpp
+	(cd src/third_party/abseil-cpp && git checkout $_ABSEIL_COMMIT)
 	git clone $_JP_USAGE_DICT_REPO src/third_party/japanese_usage_dictionary
 	(cd src/third_party/japanese_usage_dictionary && git checkout $_JP_USAGE_DICT_COMMIT)
 	termux_download \
@@ -47,8 +51,6 @@ termux_step_post_get_source() {
 	git clone $_MOZCTOROKU_REPO mozctoroku
 	(cd mozctoroku && git checkout $_MOZCTOROKU_COMMIT)
 	termux_setup_protobuf
-	find src -name '*.gyp' -exec sed -i.bak "s/'python'/'python2'/g" {} \;
-	find src -name '*.gypi' -exec sed -i.bak "s/'python'/'python2'/g" {} \;
 }
 
 termux_step_configure () {
@@ -58,7 +60,7 @@ termux_step_configure () {
 	cd "$TERMUX_PKG_SRCDIR"
 	cd src
 	GYP_DEFINES="use_libprotobuf=1 include_dirs=$TERMUX_PREFIX/include library_dirs=$TERMUX_PREFIX/lib" \
-	  python2 build_mozc.py gyp \
+	  python build_mozc.py gyp \
 		--gypdir=$TERMUX_PKG_SRCDIR/src/third_party/gyp \
 		--target_platform=Linux --noqt \
 		--server_dir=$TERMUX_PREFIX/lib/mozc
@@ -70,7 +72,7 @@ termux_step_make () {
 	cd "$TERMUX_PKG_SRCDIR"
 	cd src
 	export PATH="${PATH}:$TERMUX_TOPDIR/libprotobuf/host-build/install/bin"
-	python2 build_mozc.py build -c Release \
+	python build_mozc.py build -c Release \
 		server/server.gyp:mozc_server \
 		unixemacs/emacs.gyp:mozc_emacs_helper || true
 	cd "$TERMUX_PKG_SRCDIR"
