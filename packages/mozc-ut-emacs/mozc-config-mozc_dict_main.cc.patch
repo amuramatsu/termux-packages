@@ -8,7 +8,24 @@
  
  using namespace std;
  
-@@ -75,10 +76,11 @@ void MozcDict::set_entry_with_dic(string dic_name, string key, string value, str
+@@ -59,7 +60,7 @@ MozcDict::MozcDict() {
+ mozc::UserDictionaryStorage::UserDictionary* MozcDict::get_dic(string name) {
+     for (int i = 0; i < dic_num(); i++) {
+         mozc::UserDictionaryStorage::UserDictionary* dic =
+-                stor->mutable_dictionaries(i);
++                stor->GetProto().mutable_dictionaries(i);
+         if (dic->name() == name) return dic;
+     }
+     return NULL;
+@@ -68,17 +69,18 @@ mozc::UserDictionaryStorage::UserDictionary* MozcDict::get_dic(string name) {
+ void MozcDict::set_entry_with_dic(string dic_name, string key, string value, string pos, string comment) {
+     mozc::UserDictionaryStorage::UserDictionary* dic = get_dic(dic_name);//NULL;
+ //    for (int i = 0; i < dic_num(); i++) {
+-//        dic = stor->mutable_dictionaries(i);
++//        dic = stor->GetProto().mutable_dictionaries(i);
+ //        if (dic->name() == dic_name) break;
+ //    }
+     if (dic == NULL) {
          if (new_dic(dic_name)) return;
          dic = get_dic(dic_name);
      }
@@ -24,8 +41,20 @@
      if (!mozc::UserDictionaryImporter::ConvertEntry(from, &to)) {
          cerr << "Invalid POS Error - " << pos << endl;
          return;
-@@ -105,10 +107,11 @@ void MozcDict::set_entry(string key, string value, string pos, string comment) {
-             stor->mutable_dictionaries(0);
+@@ -95,20 +97,21 @@ void MozcDict::set_entry_with_dic(string dic_name, string key, string value, str
+ void MozcDict::set_entry(string key, string value, string pos, string comment) {
+     string dic_name = "ユーザー辞書 1";
+     if (dic_num() >= 1)
+-        dic_name = stor->mutable_dictionaries(0)->name();
++        dic_name = stor->GetProto().mutable_dictionaries(0)->name();
+     set_entry_with_dic(dic_name, key, value, pos, comment);
+     return;
+     if (dic_num() < 1)
+         if (new_dic("ユーザー辞書 1")) return;
+ 
+     mozc::UserDictionaryStorage::UserDictionary* dic =
+-            stor->mutable_dictionaries(0);
++            stor->GetProto().mutable_dictionaries(0);
      if (dic == NULL) return;
  
 -    mozc::UserDictionaryStorage::UserDictionaryEntry from, to;
@@ -53,6 +82,24 @@
    }
  
    return id;
+@@ -142,7 +141,7 @@ uint64 CreateID() {
+ void MozcDict::debug_print() {
+     for (int i = 0; i < dic_num(); i++) {
+         mozc::UserDictionaryStorage::UserDictionary* dic =
+-                stor->mutable_dictionaries(i);
++                stor->GetProto().mutable_dictionaries(i);
+         if (dic == NULL) continue;
+         cout << "name = " << dic->name() << endl;
+         for (int j = 0; j < dic->entries_size(); j ++) {
+@@ -156,7 +155,7 @@ void MozcDict::debug_print() {
+ }
+ 
+ int MozcDict::new_dic(string name) {
+-    mozc::UserDictionaryStorage::UserDictionary* dic = stor->add_dictionaries();
++    mozc::UserDictionaryStorage::UserDictionary* dic = stor->GetProto().add_dictionaries();
+     if (dic == NULL) return 1;
+     dic->set_name(name);
+     dic->set_id(CreateID());
 @@ -209,12 +208,24 @@ int MozcDict::import(string name, char* file_name) {
      is.close();
  
@@ -90,6 +137,24 @@
      mozc::UserDictionaryImporter::ErrorType error =
      mozc::UserDictionaryImporter::ImportFromTextLineIterator(
              mozc::UserDictionaryImporter::IME_AUTO_DETECT, &iter, dic);
+@@ -239,7 +249,7 @@ int MozcDict::import(string name, char* file_name) {
+ int MozcDict::delete_dic(string name) {
+     for (int i = 0; i < dic_num(); i++) {
+         mozc::UserDictionaryStorage::UserDictionary* dic =
+-                stor->mutable_dictionaries(i);
++                stor->GetProto().mutable_dictionaries(i);
+         if (dic->name() == name) {
+             if (dic->id() == 0)
+                 dic->set_id(CreateID());
+@@ -253,7 +263,7 @@ int MozcDict::delete_dic(string name) {
+ int MozcDict::export_dic(string name, const string file_name) {
+     for (int i = 0; i < dic_num(); i++) {
+         mozc::UserDictionaryStorage::UserDictionary* dic =
+-                stor->mutable_dictionaries(i);
++                stor->GetProto().mutable_dictionaries(i);
+         if (dic->name() == name) {
+             if (dic->id() == 0)
+                 dic->set_id(CreateID());
 @@ -286,17 +296,17 @@ void print_help() {
  namespace {
  struct POSMap {

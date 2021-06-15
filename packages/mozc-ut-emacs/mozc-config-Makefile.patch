@@ -1,6 +1,6 @@
 --- a/mozc-config/Makefile
 +++ b/mozc-config/Makefile
-@@ -1,38 +1,47 @@
+@@ -1,38 +1,48 @@
  DESTDIR =
 -prefix = /usr/local
 +prefix = @TERMUX_PREFIX@
@@ -17,7 +17,7 @@
 +MOZC_SRC = ../src
  
 -CFLAGS	= 
-+CFLAGS	+= -std=gnu++11 -DOS_LINUX
++CFLAGS	+= -std=gnu++17 -fpermissive -DOS_LINUX
  
 -LDFLAGS	=
 +LDFLAGS	?=
@@ -26,6 +26,7 @@
 -	      -I$(MOZC_SRC)/out/Release/obj/gen \
 -	      -I$(MOZC_SRC)/out/Release/obj/gen/proto_out
 +INCS	= -I$(MOZC_SRC) \
++	  -I$(MOZC_SRC)/third_party/abseil-cpp \
 +	  -I$(MOZC_SRC)/out_linux/Release/gen \
 +	  -I$(MOZC_SRC)/out_linux/Release/gen/proto_out \
 +	  -I@TERMUX_PREFIX@/include
@@ -58,7 +59,7 @@
 +$(patsubst lib%.a,-l%,$(notdir $(wildcard $(MOZC_SRC)/out_linux/Release/obj/dictionary/lib*.a))) \
 +-L$(MOZC_SRC)/out_linux/Release/obj/base \
 +$(patsubst lib%.a,-l%,$(notdir $(wildcard $(MOZC_SRC)/out_linux/Release/obj/base/lib*.a)))
-+EXTOBJS	:= $(EXTOBJS_) $(EXTOBJS_)
++EXTOBJS	:= $(EXTOBJS_) $(EXTOBJS_) $(EXTOBJS_) $(EXTOBJS_)
 +
 +LIBS	= -lprotobuf
  

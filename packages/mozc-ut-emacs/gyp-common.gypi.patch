@@ -1,6 +1,15 @@
---- a/src/gyp/common.gypi.orig	2016-12-14 22:53:38.000000000 +0900
-+++ b/src/gyp/common.gypi	2018-03-07 23:16:09.761661465 +0900
-@@ -130,8 +130,8 @@
+--- a/src/gyp/common.gypi	2021-05-29 22:40:50.000000000 +0900
++++ b/src/gyp/common.gypi	2021-06-15 11:35:02.000000000 +0900
+@@ -105,7 +105,7 @@
+     ],
+     # Libraries for GNU/Linux environment.
+     'linux_ldflags': [
+-      '-lc++',
++      '-lstdc++',
+       '-pthread',
+     ],
+ 
+@@ -125,8 +125,8 @@
        ['target_platform=="Linux"', {
          'compiler_target': 'clang',
          'compiler_target_version_int': 304,  # Clang 3.4 or higher
@@ -11,7 +20,7 @@
        }],
      ],
    },
-@@ -272,6 +272,15 @@
+@@ -259,6 +259,15 @@
            ['target_platform=="Linux"', {
              # OS_LINUX is defined always (target and host).
              'defines': ['OS_LINUX',],
@@ -27,7 +36,7 @@
            }],
            ['target_platform=="Android"', {
              'defines': ['NO_USAGE_REWRITER'],
-@@ -450,6 +459,12 @@
+@@ -415,6 +424,12 @@
          ['LD', '<!(which ld)'],
          ['NM', '<!(which nm)'],
          ['READELF', '<!(which readelf)'],
