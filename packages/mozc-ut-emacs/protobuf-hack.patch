@@ -1,7 +1,8 @@
 --- /dev/null	2020-06-08 01:53:10.000000000 +0900
 +++ b/src/google/protobuf/port_def.inc	2020-06-08 01:52:27.000000000 +0900
-@@ -0,0 +1,4 @@
+@@ -0,0 +1,5 @@
 +#include_next <google/protobuf/port_def.inc>
 +
 +#undef PROTOBUF_FINAL
 +#define PROTOBUF_FINAL
++#define final
