@@ -173,7 +173,7 @@
 -        if (kPOSMap[i].b != NULL)
 -            ss.insert(kPOSMap[i].b);
 +        if (kPOSMap[i].b != static_cast<mozc::user_dictionary::UserDictionary::PosType>(-1))
-+            ss.insert(kPOSMap[i].a);
++            ss.insert(mozc::UserDictionaryUtil::GetStringPosType(kPOSMap[i].b));
  
      set<string>::iterator it;
      for (it = ss.begin(); it != ss.end(); it++)

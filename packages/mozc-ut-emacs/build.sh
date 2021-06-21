@@ -4,6 +4,7 @@ TERMUX_PKG_LICENSE="GPL-3.0"
 _MAJOR_VERSION=2.26.4388.102
 _MINOR_VERSION=20210603
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_SHA256=077d0fa8f5259a40916f2bb498d87e3efd8e92621461f898112497ad32167df8
 TERMUX_PKG_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-$_MAJOR_VERSION.tar.bz2
@@ -12,7 +13,7 @@ TERMUX_PKG_DEPENDS="libprotobuf, libiconv"
 TERMUX_PKG_BUILD_DEPENDS="protobuf"
 TERMUX_PKG_HOSTBUILD=yes
 
-_UTDIC_SRCURL=https://osdn.net/downloads/users/30/30562/mozcdic-ut-$_MINOR_VERSION.tar.bz2
+_UTDIC_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozcdic-ut-$_MINOR_VERSION.tar.bz2
 _UTDIC_SHA256=46303f6d2ecc77a990834d5ae0607b52a4e7cb8cc512fc9f266861d777b4c192
 
 _GYP_REPO=https://chromium.googlesource.com/external/gyp.git
@@ -34,11 +35,11 @@ termux_step_host_build() {
 termux_step_post_get_source() {
 	mkdir src/third_party
     	git clone $_GYP_REPO src/third_party/gyp
-	(cd src/third_party/gyp && git checkout $_GYP_COMMIT)
+	(cd src/third_party/gyp && git reset --hard $_GYP_COMMIT)
     	git clone $_ABSEIL_REPO src/third_party/abseil-cpp
-	(cd src/third_party/abseil-cpp && git checkout $_ABSEIL_COMMIT)
+	(cd src/third_party/abseil-cpp && git reset --hard $_ABSEIL_COMMIT)
 	git clone $_JP_USAGE_DICT_REPO src/third_party/japanese_usage_dictionary
-	(cd src/third_party/japanese_usage_dictionary && git checkout $_JP_USAGE_DICT_COMMIT)
+	(cd src/third_party/japanese_usage_dictionary && git reset --hard $_JP_USAGE_DICT_COMMIT)
 	termux_download \
 		$_UTDIC_SRCURL \
 		mozcdic-ut-${_MINOR_VERSION}.tar.bz2 \
@@ -47,9 +48,9 @@ termux_step_post_get_source() {
 	cat mozcdic-ut-${_MINOR_VERSION}/mozcdic-*-${_MINOR_VERSION}.txt \
 	    >> src/data/dictionary_oss/dictionary00.txt
 	git clone $_MOZC_CONFIG_REPO mozc-config
-	(cd mozc-config && git checkout $_MOZC_CONFIG_COMMIT)
+	(cd mozc-config && git reset --hard $_MOZC_CONFIG_COMMIT)
 	git clone $_MOZCTOROKU_REPO mozctoroku
-	(cd mozctoroku && git checkout $_MOZCTOROKU_COMMIT)
+	(cd mozctoroku && git reset --hard $_MOZCTOROKU_COMMIT)
 	termux_setup_protobuf
 }
 
@@ -57,8 +58,7 @@ termux_step_configure () {
         LDFLAGS="${LDFLAGS/-static-openmp/}"
         LDFLAGS="${LDFLAGS/-fopenmp/}"
 	termux_setup_ninja
-	cd "$TERMUX_PKG_SRCDIR"
-	cd src
+	cd "$TERMUX_PKG_SRCDIR/src"
 	GYP_DEFINES="use_libprotobuf=1 include_dirs=$TERMUX_PREFIX/include library_dirs=$TERMUX_PREFIX/lib" \
 	  python build_mozc.py gyp \
 		--gypdir=$TERMUX_PKG_SRCDIR/src/third_party/gyp \
@@ -69,15 +69,13 @@ termux_step_configure () {
 termux_step_make () {
         LDFLAGS="${LDFLAGS/-static-openmp/}"
         LDFLAGS="${LDFLAGS/-fopenmp/}"
-	cd "$TERMUX_PKG_SRCDIR"
-	cd src
+	cd "$TERMUX_PKG_SRCDIR/src"
 	export PATH="${PATH}:$TERMUX_TOPDIR/libprotobuf/host-build/install/bin"
 	python build_mozc.py build -c Release \
 		server/server.gyp:mozc_server \
 		unixemacs/emacs.gyp:mozc_emacs_helper || true
-	cd "$TERMUX_PKG_SRCDIR"
-	cd mozc-config
-	make mozc-config mozc-dict LIBS="-lprotobuf -liconv"
+	cd "$TERMUX_PKG_SRCDIR/mozc-config"
+	make mozc-config mozc-dict
 }
 
 termux_step_make_install () {

@@ -59,9 +59,9 @@
 +$(patsubst lib%.a,-l%,$(notdir $(wildcard $(MOZC_SRC)/out_linux/Release/obj/dictionary/lib*.a))) \
 +-L$(MOZC_SRC)/out_linux/Release/obj/base \
 +$(patsubst lib%.a,-l%,$(notdir $(wildcard $(MOZC_SRC)/out_linux/Release/obj/base/lib*.a)))
-+EXTOBJS	:= $(EXTOBJS_) $(EXTOBJS_) $(EXTOBJS_) $(EXTOBJS_)
++EXTOBJS	:= $(EXTOBJS_) $(EXTOBJS_) $(EXTOBJS_)
 +
-+LIBS	= -lprotobuf
++LIBS	= -lprotobuf -liconv
  
  IBUS_SETUP_MOZC = ibus-setup-mozc
  
