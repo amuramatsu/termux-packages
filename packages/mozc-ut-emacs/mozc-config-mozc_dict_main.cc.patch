@@ -91,7 +91,14 @@
          if (dic == NULL) continue;
          cout << "name = " << dic->name() << endl;
          for (int j = 0; j < dic->entries_size(); j ++) {
-@@ -156,7 +155,7 @@ void MozcDict::debug_print() {
+@@ -150,13 +149,13 @@ void MozcDict::debug_print() {
+                     dic->mutable_entries(j);
+             if (entry == NULL) continue;
+             cout << "\t" << entry->key() << "\t" << entry->value()
+-                 << "\t" << entry->pos() << "\t" << entry->comment() << endl;
++                 << "\t" << mozc::UserDictionaryUtil::GetStringPosType(entry->pos()) << "\t" << entry->comment() << endl;
+         }
+     }
  }
  
  int MozcDict::new_dic(string name) {
