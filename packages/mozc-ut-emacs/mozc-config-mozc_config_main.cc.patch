@@ -54,7 +54,29 @@
  
      const google::protobuf::FieldDescriptor* field =
              conf.GetDescriptor()->FindFieldByName(name);
-@@ -288,10 +290,10 @@ void print_modifier() {
+@@ -263,12 +265,21 @@ void clear(string name) {
+ }
+ 
+ int reboot() {
++#ifdef WITHOUT_IBUS
++    const char *path = "@TERMUX_PREFIX@/bin/killall";
++    char *const argv[] = {
++        (char *)"@TERMUX_PREFIX/bin/killall",
++        (char *)"mozc_server",
++        (char *)NULL
++    };
++#else
+     const char *path = "/usr/bin/ibus-daemon";
+     char *const argv[] = {
+         (char *)"/usr/bin/ibus-daemon",
+         (char *)"-xrd",
+         (char *)NULL
+     };
++#endif
+ 
+     return execv(path, argv);
+ }
+@@ -288,10 +299,10 @@ void print_modifier() {
  }
  
  void print_all() {
@@ -68,7 +90,7 @@
  
      const google::protobuf::Descriptor* desc = conf.GetDescriptor();//mozc::config::Config::descriptor();
      const google::protobuf::Reflection* ref = conf.GetReflection();
-@@ -460,13 +462,13 @@ int main(int argc, char **argv) {
+@@ -460,13 +471,13 @@ int main(int argc, char **argv) {
          print_modifier();
      } else if (flg == "-g") {
          if (argc > 2)

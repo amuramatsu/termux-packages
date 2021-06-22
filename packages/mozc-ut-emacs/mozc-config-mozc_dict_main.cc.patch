@@ -107,7 +107,29 @@
      if (dic == NULL) return 1;
      dic->set_name(name);
      dic->set_id(CreateID());
-@@ -209,12 +208,24 @@ int MozcDict::import(string name, char* file_name) {
+@@ -173,12 +172,21 @@ bool MozcDict::save() {
+ }
+ 
+ int reboot() {
++#ifdef NO_IBUS
++    const char *path = "@TERMUX_PREFIX@/bin/killall";
++    char *const argv[] = {
++        (char *)"@TERMUX_PREFIX/bin/killall",
++        (char *)"mozc_server",
++        (char *)NULL
++    };
++#else
+     const char *path = "/usr/bin/ibus-daemon";
+     char *const argv[] = {
+         (char *)"/usr/bin/ibus-daemon",
+         (char *)"-xrd",
+         (char *)NULL
+     };
++#endif
+ 
+     return execv(path, argv);
+ }
+@@ -209,12 +217,24 @@ int MozcDict::import(string name, char* file_name) {
      is.close();
  
      mozc::UserDictionaryImporter::EncodingType type =
@@ -134,7 +156,7 @@
          if (output == "") {
              cerr << "Convert Error" << endl;
              delete[] input;
-@@ -226,8 +237,7 @@ int MozcDict::import(string name, char* file_name) {
+@@ -226,8 +246,7 @@ int MozcDict::import(string name, char* file_name) {
          return -1;
      }
  
@@ -144,7 +166,7 @@
      mozc::UserDictionaryImporter::ErrorType error =
      mozc::UserDictionaryImporter::ImportFromTextLineIterator(
              mozc::UserDictionaryImporter::IME_AUTO_DETECT, &iter, dic);
-@@ -239,7 +249,7 @@ int MozcDict::import(string name, char* file_name) {
+@@ -239,7 +258,7 @@ int MozcDict::import(string name, char* file_name) {
  int MozcDict::delete_dic(string name) {
      for (int i = 0; i < dic_num(); i++) {
          mozc::UserDictionaryStorage::UserDictionary* dic =
@@ -153,7 +175,7 @@
          if (dic->name() == name) {
              if (dic->id() == 0)
                  dic->set_id(CreateID());
-@@ -253,7 +263,7 @@ int MozcDict::delete_dic(string name) {
+@@ -253,7 +272,7 @@ int MozcDict::delete_dic(string name) {
  int MozcDict::export_dic(string name, const string file_name) {
      for (int i = 0; i < dic_num(); i++) {
          mozc::UserDictionaryStorage::UserDictionary* dic =
@@ -162,7 +184,7 @@
          if (dic->name() == name) {
              if (dic->id() == 0)
                  dic->set_id(CreateID());
-@@ -286,17 +296,17 @@ void print_help() {
+@@ -286,17 +305,17 @@ void print_help() {
  namespace {
  struct POSMap {
      const char *a;
