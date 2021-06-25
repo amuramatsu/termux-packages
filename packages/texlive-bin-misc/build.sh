@@ -2,12 +2,11 @@ TERMUX_PKG_HOMEPAGE=https://www.tug.org/texlive/
 TERMUX_PKG_DESCRIPTION="TeX Live is a distribution of the TeX typesetting system. This package contains architecture dependent binaries."
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
-TERMUX_PKG_VERSION=20200406
-_SVN_VERSION=54456
-TERMUX_PKG_REVISION=8
+TERMUX_PKG_VERSION=20210325
+_SVN_VERSION=58837
 TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/svn${_SVN_VERSION}.tar.gz
-TERMUX_PKG_SHA256=093caf1e502f80219342e137d53222ad9f0d59916d8e5323eefc1e211056b86f
-TERMUX_PKG_DEPENDS="libc++, libiconv, freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua52, poppler, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib, zziplib, texlive-bin"
+TERMUX_PKG_SHA256=0afa6919e44675b7afe0fa45344747afef07b6ee98eeb14ff6a2ef78f458fc12
+TERMUX_PKG_DEPENDS="libc++, libiconv, freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua52, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib, zziplib, texlive-bin"
 # libpcre, glib, fonconfig are dependencies to libcairo. pkg-config gives an error if they are missing
 # libuuid, libxml2 are needed by fontconfig
 TERMUX_PKG_BUILD_DEPENDS="icu-devtools, pcre, glib, fontconfig, libuuid, libxml2"
@@ -59,9 +58,7 @@ RANLIB=ranlib
 --with-system-gmp
 --with-system-icu
 --with-system-mpfr
---with-system-poppler
 --with-system-zlib
---with-system-xpdf
 --with-system-lua
 --with-system-teckit
 --with-system-zziplib
@@ -100,6 +97,7 @@ bin/texlive/adhocfilelist
 bin/texlive/afm2afm
 bin/texlive/afm2pl
 bin/texlive/afm2tfm
+bin/texlive/albatross
 bin/texlive/aleph
 bin/texlive/allcm
 bin/texlive/allec
@@ -219,6 +217,7 @@ bin/texlive/getmapdl
 bin/texlive/gftodvi
 bin/texlive/gftopk
 bin/texlive/gftype
+bin/texlive/git-latexdiff
 bin/texlive/gsftopk
 bin/texlive/hbf2gf
 bin/texlive/ht
@@ -229,6 +228,7 @@ bin/texlive/httex
 bin/texlive/httexi
 bin/texlive/htxelatex
 bin/texlive/htxetex
+bin/texlive/hyperxmp-add-bytecount
 bin/texlive/inimf
 bin/texlive/initex
 bin/texlive/installfont-tl
@@ -267,6 +267,7 @@ bin/texlive/lily-image-commands
 bin/texlive/lily-rebuild-pdfs
 bin/texlive/listbib
 bin/texlive/listings-ext.sh
+bin/texlive/llmk
 bin/texlive/ltx2crossrefxml
 bin/texlive/ltxfileinfo
 bin/texlive/ltximg
@@ -384,6 +385,7 @@ bin/texlive/simpdftex
 bin/texlive/sjisconv
 bin/texlive/sjislatex
 bin/texlive/sjispdflatex
+bin/texlive/spix
 bin/texlive/splitindex
 bin/texlive/srcredact
 bin/texlive/sty2dtx
@@ -423,6 +425,7 @@ bin/texlive/texosquery-jre8
 bin/texlive/tftopl
 bin/texlive/thumbpdf
 bin/texlive/tie
+bin/texlive/tikztosvg
 bin/texlive/tlcockpit
 bin/texlive/tlmgr
 bin/texlive/tlshell
@@ -463,6 +466,7 @@ bin/texlive/xdvipdfmx
 bin/texlive/xetex
 bin/texlive/xhlatex
 bin/texlive/xindex
+bin/texlive/xml2pmx
 bin/texlive/yplan
 lib/libkpathsea.so
 lib/libptexenc.so
@@ -635,6 +639,7 @@ share/man/man1/weave.1
 share/man/man1/xdvipdfmx.1
 share/man/man1/xetex.1
 share/man/man1/xelatex-dev.1
+share/man/man1/xml2pmx.1
 share/man/man5/fmtutil.cnf.5
 share/man/man5/synctex.5
 share/man/man5/updmap.cfg.5
@@ -674,17 +679,4 @@ termux_step_pre_configure() {
 	export CTANGLEBOOT=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/ctangleboot
 	export TIE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/tie
 	export OTANGLE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/otangle
-
-	find "$TERMUX_PKG_SRCDIR"/texk/web2c/luatexdir -type f -exec sed -i \
-	     -e 's|gTrue|true|g' \
-	     -e 's|gFalse|false|g' \
-	     -e 's|GBool|bool|g' \
-	     -e 's|getCString|c_str|g' \
-	     -e 's|Guint|unsigned int|g' \
-	     -e 's|Guchar|unsigned char|g' \
-	     {} +
-
-	# These files are from upstream master:
-	cp "$TERMUX_PKG_BUILDER_DIR"/pdftoepdf-poppler0.86.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftoepdf.cc # commit 7cabe29
-	cp "$TERMUX_PKG_BUILDER_DIR"/pdftosrc-poppler0.83.0.cc "$TERMUX_PKG_SRCDIR"/texk/web2c/pdftexdir/pdftosrc.cc # commit f0d0598b
 }
