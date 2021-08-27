@@ -1,0 +1,22 @@
+TERMUX_SUBPKG_INCLUDE="
+opt/llvm11/bin/bugpoint
+opt/llvm11/bin/dsymutil
+opt/llvm11/bin/llc
+opt/llvm11/bin/lli
+opt/llvm11/bin/llvm*
+opt/llvm11/bin/obj2yaml
+opt/llvm11/bin/opt
+opt/llvm11/bin/sancov
+opt/llvm11/bin/sanstats
+opt/llvm11/bin/verify-uselistorder
+opt/llvm11/bin/yaml2obj
+opt/llvm11/share/opt-viewer
+opt/llvm11/share/man/man1/llc.1.gz
+opt/llvm11/share/man/man1/lli.1.gz
+opt/llvm11/share/man/man1/llvm*
+opt/llvm11/share/man/man1/opt.1.gz
+opt/llvm11/share/man/man1/bugpoint.1.gz
+opt/llvm11/share/man/man1/dsymutil.1.gz
+opt/llvm11/share/man/man1/tblgen.1.gz
+"
+TERMUX_SUBPKG_DESCRIPTION="LLVM modular compiler and toolchain executables"
