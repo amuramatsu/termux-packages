@@ -68,7 +68,7 @@ PACKAGES+=" ed"
 # Provides utility hexdump which is needed by package bitcoin.
 PACKAGES+=" bsdmainutils"
 
-# Needed by package ccnet.
+# Needed by package seafile-client.
 PACKAGES+=" valac"
 
 # Needed by package libgcrypt.
@@ -126,7 +126,6 @@ PACKAGES+=" zlib1g-dev:i386"
 
 # For swift.
 PACKAGES+=" lld"
-PACKAGES+=" patchelf"
 
 # Needed by wrk.
 PACKAGES+=" luajit"
@@ -138,10 +137,13 @@ PACKAGES+=" npm"
 PACKAGES+=" python-yaml"
 
 # Java.
-PACKAGES+=" openjdk-8-jdk"
+PACKAGES+=" openjdk-8-jdk openjdk-16-jdk"
 
 # needed by ovmf
 PACKAGES+=" libarchive-tools"
+
+# Needed by cavif-rs
+PACKAGES+=" nasm"
 
 # Needed by packages in unstable repository.
 PACKAGES+=" docbook-to-man"
@@ -178,6 +180,8 @@ PACKAGES+=" xfce4-dev-tools"
 PACKAGES+=" xfonts-utils"
 PACKAGES+=" xutils-dev"
 PACKAGES+=" libdbus-glib-1-dev-bin"
+PACKAGES+=" wayland-scanner++"
+PACKAGES+=" libwayland-dev"
 
 # Needed by packages in science repository
 PACKAGES+=" sqlite3"
@@ -206,6 +210,11 @@ $SUDO apt-get -yq update
 
 $SUDO DEBIAN_FRONTEND=noninteractive \
 	apt-get install -yq --no-install-recommends $PACKAGES
+
+# Pip for python2.
+curl -L --output /tmp/py2-get-pip.py https://bootstrap.pypa.io/pip/2.7/get-pip.py
+$SUDO python2 /tmp/py2-get-pip.py
+rm -f /tmp/py2-get-pip.py
 
 $SUDO locale-gen --purge en_US.UTF-8
 echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' | $SUDO tee -a /etc/default/locale

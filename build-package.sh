@@ -100,9 +100,21 @@ source "$TERMUX_SCRIPTDIR/scripts/build/termux_download_deb.sh"
 # shellcheck source=scripts/build/termux_get_repo_files.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/termux_get_repo_files.sh"
 
+# Download or build dependencies. Not to be overridden by packages.
+# shellcheck source=scripts/build/termux_step_get_dependencies.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_get_dependencies.sh"
+
+# Remove old src and build folders and create new ones
+# shellcheck source=scripts/build/termux_step_setup_build_folders.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_setup_build_folders.sh"
+
 # Source the package build script and start building. Not to be overridden by packages.
 # shellcheck source=scripts/build/termux_step_start_build.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_start_build.sh"
+
+# Download or build dependencies. Not to be overridden by packages.
+# shellcheck source=scripts/build/termux_step_create_timestamp_file.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_create_timestamp_file.sh"
 
 # Run just after sourcing $TERMUX_PKG_BUILDER_SCRIPT. Can be overridden by packages.
 # shellcheck source=scripts/build/get_source/termux_step_get_source.sh
@@ -245,6 +257,12 @@ if [ "$TERMUX_ON_DEVICE_BUILD" = "true" ]; then
 	export TERMUX_ARCH
 fi
 
+# Special hook to prevent use of "sudo" inside package build scripts.
+# build-package.sh shouldn't perform any privileged operations.
+sudo() {
+	termux_error_exit "Do not use 'sudo' inside build scripts. Build environment should be configured through ./scripts/setup-ubuntu.sh."
+}
+
 _show_usage() {
 	echo "Usage: ./build-package.sh [options] PACKAGE_1 PACKAGE_2 ..."
 	echo
@@ -263,7 +281,7 @@ _show_usage() {
 	exit 1
 }
 
-while getopts :a:hdDfiIqso: option; do
+while getopts :a:hdDfiIqso:c option; do
 	case "$option" in
 		a)
 			if [ "$TERMUX_ON_DEVICE_BUILD" = "true" ]; then
@@ -273,7 +291,7 @@ while getopts :a:hdDfiIqso: option; do
 			fi
 			;;
 		h) _show_usage;;
-		d) export TERMUX_DEBUG=true;;
+		d) export TERMUX_DEBUG_BUILD=true;;
 		D) TERMUX_IS_DISABLED=true;;
 		f) TERMUX_FORCE_BUILD=true;;
 		i)
@@ -287,6 +305,7 @@ while getopts :a:hdDfiIqso: option; do
 		q) export TERMUX_QUIET_BUILD=true;;
 		s) export TERMUX_SKIP_DEPCHECK=true;;
 		o) TERMUX_DEBDIR=$(realpath -m "$OPTARG");;
+		c) TERMUX_CONTINUE_BUILD="true";;
 		?) termux_error_exit "./build-package.sh: illegal option -$OPTARG";;
 	esac
 done
@@ -332,7 +351,7 @@ while (($# > 0)); do
 			for arch in 'aarch64' 'arm' 'i686' 'x86_64'; do
 				env TERMUX_ARCH="$arch" TERMUX_BUILD_IGNORE_LOCK=true ./build-package.sh \
 					${TERMUX_FORCE_BUILD+-f} ${TERMUX_INSTALL_DEPS+-i} ${TERMUX_IS_DISABLED+-D} \
-					${TERMUX_DEBUG+-d} ${TERMUX_DEBDIR+-o $TERMUX_DEBDIR} "$1"
+					${TERMUX_DEBUG_BUILD+-d} ${TERMUX_DEBDIR+-o $TERMUX_DEBDIR} "$1"
 			done
 			exit
 		fi
@@ -359,21 +378,45 @@ while (($# > 0)); do
 
 		termux_step_setup_variables
 		termux_step_handle_buildarch
+
+		if [ "$TERMUX_CONTINUE_BUILD" == "false" ]; then
+			termux_step_setup_build_folders
+		fi
+
 		termux_step_start_build
-		cd "$TERMUX_PKG_CACHEDIR"
-		termux_step_get_source
-		cd "$TERMUX_PKG_SRCDIR"
-		termux_step_post_get_source
-		termux_step_handle_hostbuild
+
+		if [ "$TERMUX_CONTINUE_BUILD" == "false" ]; then
+			termux_step_get_dependencies
+		fi
+
+		termux_step_create_timestamp_file
+
+		if [ "$TERMUX_CONTINUE_BUILD" == "false" ]; then
+			cd "$TERMUX_PKG_CACHEDIR"
+			termux_step_get_source
+			cd "$TERMUX_PKG_SRCDIR"
+			termux_step_post_get_source
+			termux_step_handle_hostbuild
+		fi
+
 		termux_step_setup_toolchain
-		termux_step_patch_package
-		termux_step_replace_guess_scripts
-		cd "$TERMUX_PKG_SRCDIR"
-		termux_step_pre_configure
+
+		if [ "$TERMUX_CONTINUE_BUILD" == "false" ]; then
+			termux_step_patch_package
+			termux_step_replace_guess_scripts
+			cd "$TERMUX_PKG_SRCDIR"
+			termux_step_pre_configure
+		fi
+
+		# Even on continued build we might need to setup paths
+		# to tools so need to run part of configure step
 		cd "$TERMUX_PKG_BUILDDIR"
 		termux_step_configure
-		cd "$TERMUX_PKG_BUILDDIR"
-		termux_step_post_configure
+
+		if [ "$TERMUX_CONTINUE_BUILD" == "false" ]; then
+			cd "$TERMUX_PKG_BUILDDIR"
+			termux_step_post_configure
+		fi
 		cd "$TERMUX_PKG_BUILDDIR"
 		termux_step_make
 		cd "$TERMUX_PKG_BUILDDIR"
