@@ -1,0 +1,43 @@
+--- a/src/base/file_util.cc	2021-08-21 19:51:32.000000000 +0900
++++ b/src/base/file_util.cc	2021-08-29 23:46:53.000000000 +0900
+@@ -38,7 +38,12 @@
+ #include <unistd.h>
+ #endif  // OS_WIN
+ 
++#if 1
++#include <stdlib.h>
++#include <string.h>
++#else
+ #include <filesystem>
++#endif
+ 
+ #include "base/file_stream.h"
+ #include "base/logging.h"
+@@ -354,6 +359,18 @@
+ #ifdef __APPLE__
+   // std::filesystem is only available on macOS 10.15, iOS 13.0, or later.
+   return false;
++#elif 1
++  const char *src = realpath(filename1.c_str(), NULL);
++  const char *dst = realpath(filename2.c_str(), NULL);
++  if (src == NULL || dst == NULL) {
++    free((void*)src);
++    free((void*)dst);
++    return false;
++  }
++  int s = strcmp(src, dst);
++  free((void*)src);
++  free((void*)dst);
++  return s == 0;
+ #else
+ 
+   // u8path is deprecated in C++20. The current target is C++17.
+@@ -408,6 +425,8 @@
+ #ifdef __APPLE__
+   // std::filesystem is only available on macOS 10.15, iOS 13.0, or later.
+   return false;
++#elif 1
++  return false;
+ #else
+ 
+   // u8path is deprecated in C++20. The current target is C++17.
