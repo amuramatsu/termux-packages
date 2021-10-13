@@ -23,9 +23,9 @@ PACKAGES+=" unzip"
 
 # Used by common build systems.
 PACKAGES+=" autoconf"
+PACKAGES+=" autogen"
 PACKAGES+=" automake"
 PACKAGES+=" autopoint"
-PACKAGES+=" autogen"
 PACKAGES+=" bison"
 PACKAGES+=" flex"
 PACKAGES+=" g++"
@@ -35,8 +35,8 @@ PACKAGES+=" gettext"
 PACKAGES+=" gperf"
 PACKAGES+=" intltool"
 PACKAGES+=" libglib2.0-dev"
-PACKAGES+=" libtool-bin"
 PACKAGES+=" libltdl-dev"
+PACKAGES+=" libtool-bin"
 PACKAGES+=" m4"
 PACKAGES+=" pkg-config"
 PACKAGES+=" scons"
@@ -50,15 +50,14 @@ PACKAGES+=" pandoc"
 PACKAGES+=" python3-docutils"
 PACKAGES+=" python3-recommonmark"
 PACKAGES+=" python3-sphinx"
+PACKAGES+=" scdoc"
 PACKAGES+=" texinfo"
 PACKAGES+=" xmlto"
 PACKAGES+=" xmltoman"
-PACKAGES+=" scdoc"
 
 # Needed by python modules (e.g. asciinema) and some build systems.
-PACKAGES+=" python3.7"
-PACKAGES+=" python3.8"
 PACKAGES+=" python3.9"
+PACKAGES+=" python3.10"
 PACKAGES+=" python3-pip"
 PACKAGES+=" python3-setuptools"
 
@@ -149,21 +148,21 @@ PACKAGES+=" nasm"
 PACKAGES+=" rsync"
 
 # Needed by packages in unstable repository.
+PACKAGES+=" comerr-dev"
 PACKAGES+=" docbook-to-man"
 PACKAGES+=" docbook-utils"
 PACKAGES+=" erlang-nox"
+PACKAGES+=" heimdal-multidev"
+PACKAGES+=" libconfig-dev"
+PACKAGES+=" libevent-dev"
 PACKAGES+=" libgc-dev"
 PACKAGES+=" libgmp-dev"
-PACKAGES+=" libunistring-dev"
-PACKAGES+=" libparse-yapp-perl"
-PACKAGES+=" heimdal-multidev"
-PACKAGES+=" comerr-dev"
-PACKAGES+=" llvm-10-tools"
-PACKAGES+=" llvm-10-dev"
-PACKAGES+=" libevent-dev"
-PACKAGES+=" libreadline-dev"
-PACKAGES+=" libconfig-dev"
 PACKAGES+=" libjansson-dev"
+PACKAGES+=" libparse-yapp-perl"
+PACKAGES+=" libreadline-dev"
+PACKAGES+=" libunistring-dev"
+PACKAGES+=" llvm-10-dev"
+PACKAGES+=" llvm-10-tools"
 
 # Needed by packages in X11 repository.
 PACKAGES+=" alex"
@@ -174,25 +173,25 @@ PACKAGES+=" gtk-3-examples"
 PACKAGES+=" gtk-doc-tools"
 PACKAGES+=" happy"
 PACKAGES+=" itstool"
+PACKAGES+=" libdbus-glib-1-dev-bin"
 PACKAGES+=" libgdk-pixbuf2.0-dev"
+PACKAGES+=" libwayland-dev"
 PACKAGES+=" python-setuptools"
 PACKAGES+=" python3-xcbgen"
 PACKAGES+=" sassc"
 PACKAGES+=" texlive-extra-utils"
+PACKAGES+=" wayland-scanner++"
 PACKAGES+=" xfce4-dev-tools"
 PACKAGES+=" xfonts-utils"
 PACKAGES+=" xutils-dev"
-PACKAGES+=" libdbus-glib-1-dev-bin"
-PACKAGES+=" wayland-scanner++"
-PACKAGES+=" libwayland-dev"
 
 # Needed by packages in science repository
-PACKAGES+=" sqlite3"
 PACKAGES+=" protobuf-c-compiler"
+PACKAGES+=" sqlite3"
 
 # Needed by packages in game repository
-PACKAGES+=" python3-yaml"
 PACKAGES+=" cvs"
+PACKAGES+=" python3-yaml"
 
 # Needed by apt.
 PACKAGES+=" triehash"
@@ -211,8 +210,23 @@ fi
 $SUDO dpkg --add-architecture i386
 $SUDO apt-get -yq update
 
+# Newer Python versions for host builds
+if dpkg --compare-versions $(lsb_release -rs) lt 21.04; then
+	$SUDO add-apt-repository -y ppa:deadsnakes/ppa
+	INSTALL_NEW_PIP3=true
+	PACKAGES+=" python3.10-distutils"
+else
+	INSTALL_NEW_PIP3=false
+fi
+
 $SUDO DEBIAN_FRONTEND=noninteractive \
 	apt-get install -yq --no-install-recommends $PACKAGES
+
+if $INSTALL_NEW_PIP3; then
+	curl -L --output /tmp/get-pip.py https://bootstrap.pypa.io/pip/get-pip.py
+	$SUDO python3.10 /tmp/get-pip.py
+	rm -f /tmp/get-pip.py
+fi
 
 # Pip for python2.
 curl -L --output /tmp/py2-get-pip.py https://bootstrap.pypa.io/pip/2.7/get-pip.py
