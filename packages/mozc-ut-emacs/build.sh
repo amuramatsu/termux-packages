@@ -1,11 +1,11 @@
 TERMUX_PKG_HOMEPAGE=http://linuxplayers.g1.xrea.com/mozc-ut.html
 TERMUX_PKG_DESCRIPTION="Japanese Input method with large dictionary (for emacs)"
 TERMUX_PKG_LICENSE="GPL-3.0"
-_MAJOR_VERSION=2.26.4486.102
-_MINOR_VERSION=20210907
+_MAJOR_VERSION=2.26.4520.102
+_MINOR_VERSION=20211009
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
-TERMUX_PKG_SHA256=ff54af870892c9e5e1586e54dda805a27c3f61e32c0ef7f1bd6fe4a70b62f62d
+TERMUX_PKG_SHA256=2a32d4a2552ae4d5bb2f2a6eb7348923a653da84bfcdccfd613a39c249eef920
 TERMUX_PKG_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-$_MAJOR_VERSION.tar.bz2
 TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_DEPENDS="libc++, libprotobuf, libiconv"
@@ -13,14 +13,7 @@ TERMUX_PKG_BUILD_DEPENDS="protobuf"
 TERMUX_PKG_HOSTBUILD=yes
 
 _UTDIC_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozcdic-ut-$_MINOR_VERSION.tar.bz2
-_UTDIC_SHA256=8a3642e12f26b63c93547a037e1910d1462863bc44c821fbe05a6f86197a5a93
-
-_GYP_REPO=https://chromium.googlesource.com/external/gyp.git
-_GYP_COMMIT=caa60026e223fc501e8b337fd5086ece4028b1c6
-_ABSEIL_REPO=https://github.com/abseil/abseil-cpp.git
-_ABSEIL_COMMIT=e1d388e7e74803050423d035e4374131b9b57919
-_JP_USAGE_DICT_REPO=https://github.com/hiroyuki-komatsu/japanese-usage-dictionary
-_JP_USAGE_DICT_COMMIT=e5b3425575734c323e1d947009dd74709437b684
+_UTDIC_SHA256=4268426dbc0df65eb2563beba034cfc6f24b3b95afc839aaa77e1c77ce57dd5c
 
 _MOZC_CONFIG_REPO=https://github.com/hidegit/mozc-config.git
 _MOZC_CONFIG_COMMIT=79bd032431320dbb79d3e16d41686e5a58f22218
@@ -32,13 +25,6 @@ termux_step_host_build() {
 }
 
 termux_step_post_get_source() {
-	mkdir src/third_party
-    	git clone $_GYP_REPO src/third_party/gyp
-	(cd src/third_party/gyp && git reset --hard $_GYP_COMMIT)
-    	git clone $_ABSEIL_REPO src/third_party/abseil-cpp
-	(cd src/third_party/abseil-cpp && git reset --hard $_ABSEIL_COMMIT)
-	git clone $_JP_USAGE_DICT_REPO src/third_party/japanese_usage_dictionary
-	(cd src/third_party/japanese_usage_dictionary && git reset --hard $_JP_USAGE_DICT_COMMIT)
 	termux_download \
 		$_UTDIC_SRCURL \
 		mozcdic-ut-${_MINOR_VERSION}.tar.bz2 \

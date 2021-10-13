@@ -1,6 +1,18 @@
---- a/src/build_mozc.py	2021-05-29 22:40:50.000000000 +0900
-+++ b/src/build_mozc.py	2021-06-15 08:32:49.000000000 +0900
-@@ -264,9 +264,7 @@
+--- a/src/build_mozc.py	2021-10-12 05:45:40.000000000 +0900
++++ b/src/build_mozc.py	2021-10-13 16:55:14.000000000 +0900
+@@ -161,6 +161,11 @@
+     if not PkgExists('ibus-1.0 >= 1.4.1'):
+       logging.info('removing ibus.gyp.')
+       gyp_file_names.remove('%s/unix/ibus/ibus.gyp' % SRC_DIR)
++    # Add fcitx.gyp/fcitx5.gyp if fcitx version is >=4.
++    if not PkgExists('fcitx >= 4'):
++      logging.info('removing fcitx.gyp.')
++      gyp_file_names.remove('%s/unix/fcitx/fcitx.gyp' % SRC_DIR)
++      gyp_file_names.remove('%s/unix/fcitx5/fcitx5.gyp' % SRC_DIR)
+   gyp_file_names.sort()
+   return gyp_file_names
+ 
+@@ -264,9 +269,7 @@
      return dependencies + [meta_target_name]
  
    if target_platform == 'Linux':
@@ -11,7 +23,7 @@
      if PkgExists('ibus-1.0 >= 1.4.1'):
        targets.append(SRC_DIR + '/unix/ibus/ibus.gyp:ibus_mozc')
    elif target_platform == 'Mac':
-@@ -501,6 +499,7 @@
+@@ -501,6 +504,7 @@
    # TODO(yukawa): Enable GYP_CROSSCOMPILE for Windows.
    if not IsWindows():
      os.environ['GYP_CROSSCOMPILE'] = '1'

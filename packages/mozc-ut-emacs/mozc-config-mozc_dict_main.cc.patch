@@ -184,9 +184,12 @@
          if (dic->name() == name) {
              if (dic->id() == 0)
                  dic->set_id(CreateID());
-@@ -286,17 +305,17 @@ void print_help() {
+@@ -284,19 +303,19 @@ void print_help() {
+ }
+ 
  namespace {
- struct POSMap {
+-struct POSMap {
++struct PosMap {
      const char *a;
 -    const char *b;
 +    mozc::user_dictionary::UserDictionary::PosType b;
@@ -198,11 +201,12 @@
  
  void list_pos() {
      set<string> ss;
-     for (int i = 0; i < arraysize(kPOSMap); i++)
+-    for (int i = 0; i < arraysize(kPOSMap); i++)
 -        if (kPOSMap[i].b != NULL)
 -            ss.insert(kPOSMap[i].b);
-+        if (kPOSMap[i].b != static_cast<mozc::user_dictionary::UserDictionary::PosType>(-1))
-+            ss.insert(mozc::UserDictionaryUtil::GetStringPosType(kPOSMap[i].b));
++    for (int i = 0; i < arraysize(kPosMap); i++)
++        if (kPosMap[i].b != static_cast<mozc::user_dictionary::UserDictionary::PosType>(-1))
++            ss.insert(mozc::UserDictionaryUtil::GetStringPosType(kPosMap[i].b));
  
      set<string>::iterator it;
      for (it = ss.begin(); it != ss.end(); it++)
