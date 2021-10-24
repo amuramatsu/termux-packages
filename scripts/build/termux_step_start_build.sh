@@ -2,7 +2,7 @@ termux_step_start_build() {
 	TERMUX_STANDALONE_TOOLCHAIN="$TERMUX_COMMON_CACHEDIR/android-r${TERMUX_NDK_VERSION}-api-${TERMUX_PKG_API_LEVEL}"
 	# Bump the below version if a change is made in toolchain setup to ensure
 	# that everyone gets an updated toolchain:
-	TERMUX_STANDALONE_TOOLCHAIN+="-v5"
+	TERMUX_STANDALONE_TOOLCHAIN+="-v1"
 
 	# shellcheck source=/dev/null
 	source "$TERMUX_PKG_BUILDER_SCRIPT"
@@ -71,28 +71,6 @@ termux_step_start_build() {
 		return
 	fi
 
-	if [ "$TERMUX_INSTALL_DEPS" == true ] && [ "$TERMUX_PKG_DEPENDS" != "${TERMUX_PKG_DEPENDS/libllvm/}" ]; then
-		LLVM_DEFAULT_TARGET_TRIPLE=$TERMUX_HOST_PLATFORM
-		if [ $TERMUX_ARCH = "arm" ]; then
-			LLVM_TARGET_ARCH=ARM
-		elif [ $TERMUX_ARCH = "aarch64" ]; then
-			LLVM_TARGET_ARCH=AArch64
-		elif [ $TERMUX_ARCH = "i686" ]; then
-			LLVM_TARGET_ARCH=X86
-		elif [ $TERMUX_ARCH = "x86_64" ]; then
-			LLVM_TARGET_ARCH=X86
-		fi
-		LIBLLVM_VERSION=$(. $TERMUX_SCRIPTDIR/packages/libllvm/build.sh; echo $TERMUX_PKG_VERSION)
-		sed $TERMUX_SCRIPTDIR/packages/libllvm/llvm-config.in \
-			-e "s|@TERMUX_PKG_VERSION@|$LIBLLVM_VERSION|g" \
-			-e "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|g" \
-			-e "s|@TERMUX_PKG_SRCDIR@|$TERMUX_TOPDIR/libllvm/src|g" \
-			-e "s|@LLVM_TARGET_ARCH@|$LLVM_TARGET_ARCH|g" \
-			-e "s|@LLVM_DEFAULT_TARGET_TRIPLE@|$LLVM_DEFAULT_TARGET_TRIPLE|g" \
-			-e "s|@TERMUX_ARCH@|$TERMUX_ARCH|g" > $TERMUX_PREFIX/bin/llvm-config
-		chmod 755 $TERMUX_PREFIX/bin/llvm-config
-	fi
-
 	# Make $TERMUX_PREFIX/bin/sh executable on the builder, so that build
 	# scripts can assume that it works on both builder and host later on:
 	[ "$TERMUX_ON_DEVICE_BUILD" = "false" ] && ln -sf /bin/sh "$TERMUX_PREFIX/bin/sh"
@@ -103,7 +81,7 @@ termux_step_start_build() {
 	termux_download \
 		"https://raw.githubusercontent.com/termux/termux-elf-cleaner/v$TERMUX_ELF_CLEANER_VERSION/termux-elf-cleaner.cpp" \
 		"$TERMUX_ELF_CLEANER_SRC" \
-		35a4a88542352879ca1919e2e0a62ef458c96f34ee7ce3f70a3c9f74b721d77a
+		022197c19129c4e57a37515bd4adcc19e05f9aa7f9ba4fbcab85a20210c39632
 	if [ "$TERMUX_ELF_CLEANER_SRC" -nt "$TERMUX_ELF_CLEANER" ]; then
 		g++ -std=c++11 -Wall -Wextra -pedantic -Os -D__ANDROID_API__=$TERMUX_PKG_API_LEVEL \
 			"$TERMUX_ELF_CLEANER_SRC" -o "$TERMUX_ELF_CLEANER"

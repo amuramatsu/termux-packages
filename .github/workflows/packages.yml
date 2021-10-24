@@ -71,14 +71,14 @@ jobs:
             # This file does not belong to a package, so ignore it
             continue
           fi
-          if [[ $file =~ ^packages/([a-z0-9-]*)/([a-z0-9-]*).subpackage.sh$ ]]; then
+          if [[ $file =~ ^packages/([a-z0-9+-]*)/([a-z0-9+-]*).subpackage.sh$ ]]; then
             # A subpackage was modified, check if it was deleted or just updated
             pkg=${BASH_REMATCH[1]}
             subpkg=${BASH_REMATCH[2]}
             if [ ! -f "packages/${pkg}/${subpkg}.subpackage.sh" ]; then
               echo "$subpkg" >> ./deleted_packages.txt
             fi
-          elif [[ $file =~ ^packages/([a-z0-9-]*)/.*$ ]]; then
+          elif [[ $file =~ ^packages/([a-z0-9+-]*)/.*$ ]]; then
             # package, check if it was deleted or updated
             pkg=${BASH_REMATCH[1]}
             if [ ! -d "packages/${pkg}" ]; then
@@ -118,7 +118,7 @@ jobs:
 
         if [ -f ./built_packages.txt ]; then
           ./scripts/lint-packages.sh $(cat ./built_packages.txt | awk '{print "packages/"$1"/build.sh"}')
-          ./scripts/run-docker.sh ./build-package.sh -I -a ${{ matrix.target_arch }} $(cat ./built_packages.txt)
+          ./scripts/run-docker.sh ./build-package.sh -o ./debs -I -a ${{ matrix.target_arch }} $(cat ./built_packages.txt)
         fi
 
         test -d ./termux-packages/debs && mv ./termux-packages/debs/* ./debs/
@@ -137,8 +137,9 @@ jobs:
     - name: Store *.deb files
       uses: actions/upload-artifact@v2
       with:
-        name: termux-packages-${{ github.sha }}
+        name: termux-packages-${{ matrix.target_arch }}-${{ github.sha }}
         path: ./artifacts
+
   upload:
     if: github.event_name != 'pull_request'
     needs: build
@@ -149,26 +150,28 @@ jobs:
     - name: Get *.deb files
       uses: actions/download-artifact@v2
       with:
-        name: termux-packages-${{ github.sha }}
         path: ./
     - name: Upload to packages.termux.org
       env:
         REPOSITORY_NAME: termux-main
         REPOSITORY_DISTRIBUTION: stable
       run: |
-        for archive in *.tar; do
+        for archive in termux-packages-*/*.tar; do
           tar xf "$archive"
         done
 
         # Function for deleting temporary directory with uploaded files from
         # the server.
         aptly_delete_dir() {
-          echo "[*] Deleting uploads temporary directory."
+          echo "[$(date +%H:%M:%S)] Deleting uploads temporary directory..."
 
           curl_response=$(
             curl \
               --silent \
+              --retry 2 \
+              --retry-delay 3 \
               --user "${{ secrets.APTLY_API_AUTH }}" \
+              --user-agent "Termux-Packages/1.0 (https://github.com/termux/termux-packages)" \
               --request DELETE \
               --write-out "|%{http_code}" \
               https://packages.termux.org/aptly-api/files/${REPOSITORY_NAME}-${{ github.sha }}
@@ -177,7 +180,7 @@ jobs:
           http_status_code=$(echo "$curl_response" | cut -d'|' -f2)
 
           if [ "$http_status_code" != "200" ]; then
-            echo "[!] Server returned $http_status_code code while deleting temporary directory."
+            echo "[$(date +%H:%M:%S)] Warning: server returned $http_status_code code while deleting temporary directory."
           fi
         }
 
@@ -188,22 +191,30 @@ jobs:
           curl_response=$(
             curl \
               --silent \
+              --retry 2 \
+              --retry-delay 3 \
               --user "${{ secrets.APTLY_API_AUTH }}" \
+              --user-agent "Termux-Packages/1.0 (https://github.com/termux/termux-packages)" \
               --request POST \
               --form file=@${filename} \
               --write-out "|%{http_code}" \
-              https://packages.termux.org/aptly-api/files/${REPOSITORY_NAME}-${{ github.sha }}
+              https://packages.termux.org/aptly-api/files/${REPOSITORY_NAME}-${{ github.sha }} || true
           )
 
           http_status_code=$(echo "$curl_response" | cut -d'|' -f2)
 
           if [ "$http_status_code" = "200" ]; then
-            echo "[*] Uploaded: $(echo "$curl_response" | cut -d'|' -f1 | jq -r '.[]' | cut -d'/' -f2)"
+            echo "[$(date +%H:%M:%S)] Uploaded: $(echo "$curl_response" | cut -d'|' -f1 | jq -r '.[]' | cut -d'/' -f2)"
+          elif [ "$http_status_code" = "000" ]; then
+            echo "[$(date +%H:%M:%S)]: Failed to upload '$filename'. Server/proxy dropped connection during upload."
+            echo "[$(date +%H:%M:%S)]: Aborting any further uploads."
+            aptly_delete_dir
+            exit 1
           else
             # Manually cleaning up the temporary directory to reclaim disk space.
             # Don't rely on scheduled server-side scripts.
-            echo "[!] Failed to upload '$filename'. Server returned $http_status_code code."
-            echo "[!] Aborting any further uploads."
+            echo "[$(date +%H:%M:%S)] Error: failed to upload '$filename'. Server returned $http_status_code code."
+            echo "[$(date +%H:%M:%S)] Aborting any further uploads."
             aptly_delete_dir
             exit 1
           fi
@@ -214,59 +225,62 @@ jobs:
 
         # Publishing repository changes.
         if [ "$uploaded_files" = "true" ]; then
-          echo "[*] Adding packages to repository '$REPOSITORY_NAME'..."
-
+          echo "[$(date +%H:%M:%S)] Adding packages to repository '$REPOSITORY_NAME'..."
+          http_status_code=""
           curl_response=$(
             curl \
               --silent \
+              --retry 2 \
+              --retry-delay 3 \
               --user "${{ secrets.APTLY_API_AUTH }}" \
+              --user-agent "Termux-Packages/1.0 (https://github.com/termux/termux-packages)" \
               --request POST \
               --write-out "|%{http_code}" \
-              https://packages.termux.org/aptly-api/repos/${REPOSITORY_NAME}/file/${REPOSITORY_NAME}-${{ github.sha }}
+              https://packages-cf.termux.org/aptly-api/repos/${REPOSITORY_NAME}/file/${REPOSITORY_NAME}-${{ github.sha }} || true
           )
-
           http_status_code=$(echo "$curl_response" | cut -d'|' -f2)
 
           if [ "$http_status_code" = "200" ]; then
             warnings=$(echo "$curl_response" | cut -d'|' -f1 | jq '.Report.Warnings' | jq -r '.[]')
             if [ -n "$warnings" ]; then
-              echo "[!] WARNINGS (NON-CRITICAL):"
+              echo "[$(date +%H:%M:%S)] APTLY WARNINGS (NON-CRITICAL):"
               echo
               echo "$warnings"
               echo
             fi
-
-            # Upload directory is usually deleted automatically once all deb
-            # files were added without issues. Attempting to do this manually
-            # in case it left for some reason (e.g. some debs not added due to
-            # conflicts).
-            aptly_delete_dir
           else
-            echo "[*] Server returned $http_status_code. Not publishing repository!"
-            aptly_delete_dir
-            exit 1
+            echo "[$(date +%H:%M:%S)] Error: got http_status_code == '$http_status_code', packages may not appear in repository."
           fi
 
-          # Final part to make changes appear in web root.
-          echo "[*] Publishing repository changes..."
-          set +e
-          curl \
-            --silent \
-            --user "${{ secrets.APTLY_API_AUTH }}" \
-            --header 'Content-Type: application/json' \
-            --request PUT \
-            --data '{"Signing": {"Passphrase": "${{ secrets.GPG_PASSPHRASE }}"}}' \
-            https://packages.termux.org/aptly-api/publish/${REPOSITORY_NAME}/${REPOSITORY_DISTRIBUTION}
-          exit_code=$?
-          echo
+          # Usually temporary directory is deleted automatically, but in certain cases it is left.
+          aptly_delete_dir
 
-          if [ "$exit_code" = 0 ]; then
-            echo "[*] Repository updated successfully."
-          elif [ "$exit_code" = 52 ]; then
-            echo "[!] Repository update takes more time than expected, server returned empty response."
-            echo "[!] This is expected if large amount of data has been submitted."
+          # Final part to make changes appear in web root.
+          echo "[$(date +%H:%M:%S)] Publishing repository changes..."
+          http_status_code=""
+          curl_response=$(
+            curl \
+              --silent \
+              --retry 2 \
+              --retry-delay 3 \
+              --user "${{ secrets.APTLY_API_AUTH }}" \
+              --user-agent "Termux-Packages/1.0 (https://github.com/termux/termux-packages)" \
+              --header 'Content-Type: application/json' \
+              --request PUT \
+              --data '{"Signing": {"Passphrase": "${{ secrets.GPG_PASSPHRASE }}"}}' \
+              --write-out '|%{http_code}' \
+              https://packages-cf.termux.org/aptly-api/publish/${REPOSITORY_NAME}/${REPOSITORY_DISTRIBUTION} || true
+          )
+          http_status_code=$(echo "$curl_response" | cut -d'|' -f2)
+
+          if [ "$http_status_code" = "200" ]; then
+            echo "[$(date +%H:%M:%S)] Repository has been updated successfully."
+          elif [ "$http_status_code" = "000" ]; then
+            echo "[$(date +%H:%M:%S)] Error: server/proxy has dropped connection."
+            # Ignore - nothing can be done with that unless we change proxy.
+            #exit 1
           else
-            echo "[!] curl exited with error code $exit_status."
-            exit "$exit_code"
+            echo "[$(date +%H:%M:%S)] Error: got http_status_code == '$http_status_code'"
+            exit 1
           fi
         fi

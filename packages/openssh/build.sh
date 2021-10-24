@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://www.openssh.com/
 TERMUX_PKG_DESCRIPTION="Secure shell for logging into a remote machine"
 TERMUX_PKG_LICENSE="BSD"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=8.6p1
+TERMUX_PKG_VERSION=8.8p1
 TERMUX_PKG_SRCURL=https://fastly.cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=c3e6e4da1621762c850d03b47eed1e48dff4cc9608ddeb547202a234df8ed7ae
+TERMUX_PKG_SHA256=4590890ea9bb9ace4f71ae331785a3a5823232435161960ed5fc86588f331fe9
 TERMUX_PKG_DEPENDS="libandroid-support, ldns, openssl, libedit, termux-auth, krb5, zlib"
 TERMUX_PKG_CONFLICTS="dropbear"
 # --disable-strip to prevent host "install" command to use "-s", which won't work for target binaries:
@@ -73,6 +73,7 @@ termux_step_post_make_install() {
 	install -Dm700 $TERMUX_PKG_BUILDER_DIR/source-ssh-agent.sh $TERMUX_PREFIX/bin/source-ssh-agent
 	install -Dm700 $TERMUX_PKG_BUILDER_DIR/ssh-with-agent.sh $TERMUX_PREFIX/bin/ssha
 	install -Dm700 $TERMUX_PKG_BUILDER_DIR/sftp-with-agent.sh $TERMUX_PREFIX/bin/sftpa
+	install -Dm700 $TERMUX_PKG_BUILDER_DIR/scp-with-agent.sh $TERMUX_PREFIX/bin/scpa
 
 	# Install ssh-copy-id:
 	sed -e "s|@TERMUX_PREFIX@|${TERMUX_PREFIX}|g" \

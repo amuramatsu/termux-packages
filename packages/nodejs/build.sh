@@ -1,13 +1,11 @@
 TERMUX_PKG_HOMEPAGE=https://nodejs.org/
-TERMUX_PKG_DESCRIPTION="Platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications"
+TERMUX_PKG_DESCRIPTION="Open Source, cross-platform JavaScript runtime environment"
 TERMUX_PKG_LICENSE="MIT"
-TERMUX_PKG_MAINTAINER="@termux"
-# Note: package build may fail on Github Actions CI due to out-of-memory
-# condition. It should be built locally instead.
-TERMUX_PKG_VERSION=14.15.4
-TERMUX_PKG_REVISION=2
+TERMUX_PKG_MAINTAINER="Yaksh Bariya <yakshbari4@gmail.com>"
+TERMUX_PKG_VERSION=16.11.1
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://nodejs.org/dist/v${TERMUX_PKG_VERSION}/node-v${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=adb7ecf66c74b52a14a08cc22bb0f9aedc157cac1ac93240f7f455e8c8edec9c
+TERMUX_PKG_SHA256=67587f4de25e30a9cc0b51a6033eca3bc82d7b4e0d79bb84a265e88f76ab6278
 # Note that we do not use a shared libuv to avoid an issue with the Android
 # linker, which does not use symbols of linked shared libraries when resolving
 # symbols on dlopen(). See https://github.com/termux/termux-packages/issues/462.
@@ -19,18 +17,6 @@ TERMUX_PKG_SUGGESTS="clang, make, pkg-config, python"
 TERMUX_PKG_RM_AFTER_INSTALL="lib/node_modules/npm/html lib/node_modules/npm/make.bat share/systemtap lib/dtrace"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_HOSTBUILD=true
-# Build fails on x86_64 with:
-# g++ -rdynamic -m64 -pthread -m64 -fPIC  -o /home/builder/.termux-build/nodejs/src/out/Release/mksnapshot ...
-# /usr/bin/ld: /home/builder/.termux-build/nodejs/src/out/Release/obj.host/v8_base_without_compiler/deps/v8/src/api/api.o: 
-# in function `v8::TryHandleWebAssemblyTrapPosix(int, siginfo_t*, void*)':
-# api.cc:(.text._ZN2v829TryHandleWebAssemblyTrapPosixEiP9siginfo_tPv+0x5):
-# undefined reference to `v8::internal::trap_handler::TryHandleSignal(int, siginfo_t*, void*)'
-# /usr/bin/ld: /home/builder/.termux-build/nodejs/src/out/Release/obj.host/v8_base_without_compiler/deps/v8/src/trap-handler/handler-outside.o:
-# in function `v8::internal::trap_handler::EnableTrapHandler(bool)':
-# handler-outside.cc:(.text._ZN2v88internal12trap_handler17EnableTrapHandlerEb+0x25):
-# undefined reference to `v8::internal::trap_handler::RegisterDefaultTrapHandler()'
-# collect2: error: ld returned 1 exit status
-TERMUX_PKG_BLACKLISTED_ARCHES="x86_64"
 
 termux_step_post_get_source() {
 	# Prevent caching of host build:
@@ -66,6 +52,7 @@ termux_step_configure() {
 		DEST_CPU="arm"
 	elif [ $TERMUX_ARCH = "i686" ]; then
 		DEST_CPU="ia32"
+		LDFLAGS+=" -u __atomic_fetch_add_8 -u __atomic_load_8 -u __atomic_compare_exchange_8 -latomic"
 	elif [ $TERMUX_ARCH = "aarch64" ]; then
 		DEST_CPU="arm64"
 	elif [ $TERMUX_ARCH = "x86_64" ]; then
@@ -77,8 +64,9 @@ termux_step_configure() {
 	export GYP_DEFINES="host_os=linux"
 	export CC_host=gcc
 	export CXX_host=g++
-	export LINK_host=g++
+	export LINK_host="g++ -Wl,--no-as-needed -ldl -lz"
 
+	LDFLAGS+=" -ldl"
 	# See note above TERMUX_PKG_DEPENDS why we do not use a shared libuv.
 	./configure \
 		--prefix=$TERMUX_PREFIX \

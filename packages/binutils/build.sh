@@ -3,7 +3,7 @@ TERMUX_PKG_DESCRIPTION="Collection of binary tools, the main ones being ld, the 
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=2.37
-TERMUX_PKG_REVISION=1
+TERMUX_PKG_REVISION=3
 TERMUX_PKG_SRCURL=https://mirrors.kernel.org/gnu/binutils/binutils-${TERMUX_PKG_VERSION}.tar.xz
 TERMUX_PKG_SHA256=820d9724f020a3e69cb337893a0b63c2db161dadcb0e06fc11dc29eb1e84a32c
 TERMUX_PKG_DEPENDS="libc++, zlib"
@@ -13,6 +13,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--enable-gold --enable-plugins --disable-werror
 TERMUX_PKG_EXTRA_MAKE_ARGS="tooldir=$TERMUX_PREFIX"
 TERMUX_PKG_RM_AFTER_INSTALL="share/man/man1/windmc.1 share/man/man1/windres.1 bin/ld.bfd"
 TERMUX_PKG_NO_STATICSPLIT=true
+TERMUX_PKG_GROUPS="base-devel"
 
 # Avoid linking against libfl.so from flex if available:
 export LEXLIB=

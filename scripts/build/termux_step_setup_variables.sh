@@ -1,6 +1,7 @@
 termux_step_setup_variables() {
+	: "${TERMUX_PACKAGE_FORMAT:="debian"}" # debian, pacman
 	: "${TERMUX_ARCH:="aarch64"}" # arm, aarch64, i686 or x86_64.
-	: "${TERMUX_DEBDIR:="${TERMUX_SCRIPTDIR}/debs"}"
+	: "${TERMUX_OUTPUT_DIR:="${TERMUX_SCRIPTDIR}/output"}"
 	: "${TERMUX_DEBUG_BUILD:="false"}"
 	: "${TERMUX_FORCE_BUILD:="false"}"
 	: "${TERMUX_INSTALL_DEPS:="false"}"
@@ -12,6 +13,7 @@ termux_step_setup_variables() {
 	: "${TERMUX_QUIET_BUILD:="false"}"
 	: "${TERMUX_SKIP_DEPCHECK:="false"}"
 	: "${TERMUX_TOPDIR:="$HOME/.termux-build"}"
+	: "${TERMUX_PACMAN_PACKAGE_COMPRESSION:="xz"}"
 
 	if [ "$TERMUX_ON_DEVICE_BUILD" = "true" ]; then
 		# For on-device builds cross-compiling is not supported so we can
@@ -31,12 +33,12 @@ termux_step_setup_variables() {
 	: "${TERMUX_PKG_MAINTAINER:="default"}"
 
 	TERMUX_REPO_URL=(
-		https://packages.termux.org/apt/termux-main
-		https://packages.termux.org/apt/termux-games
-		https://packages.termux.org/apt/termux-science
-		https://packages.termux.org/apt/termux-root
-		https://packages.termux.org/apt/termux-unstable
-		https://packages.termux.org/apt/termux-x11
+		https://packages-cf.termux.org/apt/termux-main
+		https://packages-cf.termux.org/apt/termux-games
+		https://packages-cf.termux.org/apt/termux-science
+		https://packages-cf.termux.org/apt/termux-root
+		https://packages-cf.termux.org/apt/termux-unstable
+		https://packages-cf.termux.org/apt/termux-x11
 	)
 
 	TERMUX_REPO_DISTRIBUTION=(
@@ -132,6 +134,7 @@ termux_step_setup_variables() {
 	TERMUX_PKG_SUGGESTS=""
 	TERMUX_PKG_TMPDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/tmp
 	TERMUX_PKG_SERVICE_SCRIPT=() # Fill with entries like: ("daemon name" 'script to execute'). Script is echoed with -e so can contain \n for multiple lines
+	TERMUX_PKG_GROUPS="" # https://wiki.archlinux.org/title/Pacman#Installing_package_groups
 
 	unset CFLAGS CPPFLAGS LDFLAGS CXXFLAGS
 }
