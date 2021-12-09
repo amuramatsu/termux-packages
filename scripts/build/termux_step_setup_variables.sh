@@ -34,28 +34,19 @@ termux_step_setup_variables() {
 
 	TERMUX_REPO_URL=(
 		https://packages-cf.termux.org/apt/termux-main
-		https://packages-cf.termux.org/apt/termux-games
-		https://packages-cf.termux.org/apt/termux-science
 		https://packages-cf.termux.org/apt/termux-root
-		https://packages-cf.termux.org/apt/termux-unstable
 		https://packages-cf.termux.org/apt/termux-x11
 	)
 
 	TERMUX_REPO_DISTRIBUTION=(
 		stable
-		games
-		science
 		root
-		unstable
 		x11
 	)
 
 	TERMUX_REPO_COMPONENT=(
 		main
 		stable
-		stable
-		stable
-		main
 		main
 	)
 
@@ -135,6 +126,7 @@ termux_step_setup_variables() {
 	TERMUX_PKG_TMPDIR=$TERMUX_TOPDIR/$TERMUX_PKG_NAME/tmp
 	TERMUX_PKG_SERVICE_SCRIPT=() # Fill with entries like: ("daemon name" 'script to execute'). Script is echoed with -e so can contain \n for multiple lines
 	TERMUX_PKG_GROUPS="" # https://wiki.archlinux.org/title/Pacman#Installing_package_groups
+	TERMUX_PKG_NO_SHEBANG_FIX=false # if true, skip fixing shebang accordingly to TERMUX_PREFIX
 
 	unset CFLAGS CPPFLAGS LDFLAGS CXXFLAGS
 }
