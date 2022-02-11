@@ -9,7 +9,7 @@ fi
 
 select_repository() {
     if [ "$1" == "Default repositories" ]; then
-        echo "[*] Termux primary host (USA) selected"
+        echo "[*] Termux primary host (EU) selected"
         MAIN="https://packages.termux.org/apt/termux-main"
         ROOT="https://packages.termux.org/apt/termux-root"
         X11="https://packages.termux.org/apt/termux-x11"
@@ -45,7 +45,7 @@ select_repository() {
         X11="https://mirror.bardia.tech/termux/x11-packages/"
 
     elif [ "$1" == "Mirrors by Grimler" ]; then
-        echo "[*] Grimler's mirrors selected"
+        echo "[*] Grimler's (NL) mirrors selected"
         MAIN="https://grimler.se/termux-packages-24"
         ROOT="https://grimler.se/termux-root-packages-24"
         X11="https://grimler.se/x11-packages"
@@ -55,6 +55,12 @@ select_repository() {
         MAIN="https://termux.librehat.com/apt/termux-main"
         ROOT="https://termux.librehat.com/apt/termux-root"
         X11="https://termux.librehat.com/apt/termux-x11"
+
+    elif [ "$1" == "Mirrors by Mwt" ]; then
+        echo "[*] Mwt's (USA) mirrors selected"
+        MAIN="https://mirror.mwt.me/termux/main"
+        ROOT="https://mirror.mwt.me/termux/root"
+        X11="https://mirror.mwt.me/termux/x11"
 
     elif [ "$1" == "Mirrors by Sahilister" ]; then
         echo "[*] Sahilister's (DE) mirrors selected"
@@ -137,6 +143,7 @@ dialog \
     "Mirrors by Bardia Moshiri" "Hosted on mirror.bardia.tech" off \
     "Mirrors by Grimler" "Hosted on grimler.se" off \
     "Mirrors by Librehat" "Hosted on termux.librehat.com" off \
+    "Mirrors by Mwt" "Hosted on mirror.mwt.me" off \
     "Mirrors by Sahilister" "Hosted on termux.sahilister.in" off \
     "Mirrors by Tsinghua University" "Hosted on mirrors.tuna.tsinghua.edu.cn" off \
     "Mirrors by BFSU" "Hosted on mirrors.bfsu.edu.cn" off \
