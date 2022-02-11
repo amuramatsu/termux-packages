@@ -35,17 +35,7 @@ termux_step_create_pacman_package() {
 			PKG_FORMAT="xz";;
 	esac
 
-	# Version view revisions.
-	local TERMUX_PKG_VERSION=$(echo $TERMUX_PKG_VERSION | sed "s|-|.|g")
-	local TERMUX_PKG_VERSION=${TERMUX_PKG_VERSION/[a-z]/.${TERMUX_PKG_VERSION//[0-9.]/}}
-	local TERMUX_PKG_FULLVERSION="${TERMUX_PKG_VERSION}"
-	if [ -n "$TERMUX_PKG_REVISION" ]; then
-		TERMUX_PKG_FULLVERSION+="-${TERMUX_PKG_REVISION}"
-	else
-		TERMUX_PKG_FULLVERSION+="-0"
-	fi
-
-	local PACMAN_FILE=$TERMUX_OUTPUT_DIR/${TERMUX_PKG_NAME}${DEBUG}-${TERMUX_PKG_FULLVERSION}-${TERMUX_ARCH}.pkg.tar.${PKG_FORMAT}
+	local PACMAN_FILE=$TERMUX_OUTPUT_DIR/${TERMUX_PKG_NAME}${DEBUG}-${TERMUX_PKG_FULLVERSION_FOR_PACMAN}-${TERMUX_ARCH}.pkg.tar.${PKG_FORMAT}
 
 	local BUILD_DATE
 	BUILD_DATE=$(date +%s)
@@ -54,7 +44,7 @@ termux_step_create_pacman_package() {
 	{
 		echo "pkgname = $TERMUX_PKG_NAME"
 		echo "pkgbase = $TERMUX_PKG_NAME"
-		echo "pkgver = $TERMUX_PKG_FULLVERSION"
+		echo "pkgver = $TERMUX_PKG_FULLVERSION_FOR_PACMAN"
 		echo "pkgdesc = $(echo "$TERMUX_PKG_DESCRIPTION" | tr '\n' ' ')"
 		echo "url = $TERMUX_PKG_HOMEPAGE"
 		echo "builddate = $BUILD_DATE"
@@ -112,7 +102,7 @@ termux_step_create_pacman_package() {
 		echo "format = 2"
 		echo "pkgname = $TERMUX_PKG_NAME"
 		echo "pkgbase = $TERMUX_PKG_NAME"
-		echo "pkgver = $TERMUX_PKG_FULLVERSION"
+		echo "pkgver = $TERMUX_PKG_FULLVERSION_FOR_PACMAN"
 		echo "pkgarch = $TERMUX_ARCH"
 		echo "packager = $TERMUX_PKG_MAINTAINER"
 		echo "builddate = $BUILD_DATE"

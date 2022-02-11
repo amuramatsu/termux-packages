@@ -1,4 +1,4 @@
-TERMUX_PKG_HOMEPAGE=http://rephial.org/
+TERMUX_PKG_HOMEPAGE=https://rephial.org/
 TERMUX_PKG_DESCRIPTION="Dungeon exploration adventure game"
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
@@ -19,6 +19,7 @@ share/angband/icons
 share/angband/sounds
 share/angband/xtra
 "
+TERMUX_PKG_GROUPS="games"
 
 termux_step_pre_configure () {
 	./autogen.sh

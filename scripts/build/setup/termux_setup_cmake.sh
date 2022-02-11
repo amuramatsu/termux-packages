@@ -1,6 +1,6 @@
 termux_setup_cmake() {
 	local TERMUX_CMAKE_MAJORVESION=3.22
-	local TERMUX_CMAKE_MINORVERSION=0
+	local TERMUX_CMAKE_MINORVERSION=1
 	local TERMUX_CMAKE_VERSION=$TERMUX_CMAKE_MAJORVESION.$TERMUX_CMAKE_MINORVERSION
 	local TERMUX_CMAKE_TARNAME=cmake-${TERMUX_CMAKE_VERSION}-linux-x86_64.tar.gz
 	local TERMUX_CMAKE_TARFILE=$TERMUX_PKG_TMPDIR/$TERMUX_CMAKE_TARNAME
@@ -16,7 +16,7 @@ termux_setup_cmake() {
 		if [ ! -d "$TERMUX_CMAKE_FOLDER" ]; then
 			termux_download https://cmake.org/files/v$TERMUX_CMAKE_MAJORVESION/$TERMUX_CMAKE_TARNAME \
 				"$TERMUX_CMAKE_TARFILE" \
-				dc73115520d13bb64202383d3df52bc3d6bbb8422ecc5b2c05f803491cb215b0
+				73565c72355c6652e9db149249af36bcab44d9d478c5546fd926e69ad6b43640
 			rm -Rf "$TERMUX_PKG_TMPDIR/cmake-${TERMUX_CMAKE_VERSION}-linux-x86_64"
 			tar xf "$TERMUX_CMAKE_TARFILE" -C "$TERMUX_PKG_TMPDIR"
 			mv "$TERMUX_PKG_TMPDIR/cmake-${TERMUX_CMAKE_VERSION}-linux-x86_64" \
@@ -25,11 +25,14 @@ termux_setup_cmake() {
 
 		export PATH=$TERMUX_CMAKE_FOLDER/bin:$PATH
 	else
-		if [ "$(dpkg-query -W -f '${db:Status-Status}\n' cmake 2>/dev/null)" != "installed" ]; then
+		if [[ "$(dpkg --version 2>/dev/null)" && "$(dpkg-query -W -f '${db:Status-Status}\n' cmake 2>/dev/null)" != "installed" ]] ||
+                   [[ "$(pacman -V 2>/dev/null)" && ! "$(pacman -Q cmake 2>/dev/null)" ]]; then
 			echo "Package 'cmake' is not installed."
 			echo "You can install it with"
 			echo
 			echo "  pkg install cmake"
+			echo
+			echo "  pacman -S cmake"
 			echo
 			exit 1
 		fi
