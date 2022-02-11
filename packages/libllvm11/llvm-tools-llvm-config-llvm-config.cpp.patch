@@ -1,0 +1,14 @@
+--- a/llvm/tools/llvm-config/llvm-config.cpp	2021-02-04 06:51:10.000000000 +0900
++++ b/llvm/tools/llvm-config/llvm-config.cpp	2022-02-12 03:30:33.000000000 +0900
+@@ -520,7 +520,10 @@
+         OS << ActiveIncludeOption << ' ' << LLVM_CXXFLAGS << '\n';
+       } else if (Arg == "--ldflags") {
+         OS << ((HostTriple.isWindowsMSVCEnvironment()) ? "-LIBPATH:" : "-L")
+-           << ActiveLibDir << ' ' << LLVM_LDFLAGS << '\n';
++           << ActiveLibDir << ' ' 
++           << ((HostTriple.isWindowsMSVCEnvironment()) ? "" :
++               "-Wl,-rpath," + ActiveLibDir) << ' '
++           << LLVM_LDFLAGS << '\n';
+       } else if (Arg == "--system-libs") {
+         PrintSystemLibs = true;
+       } else if (Arg == "--libs") {
