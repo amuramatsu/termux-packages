@@ -1,6 +1,6 @@
 termux_setup_meson() {
 	termux_setup_ninja
-	local MESON_VERSION=0.56.0
+	local MESON_VERSION=0.61.1
 	local MESON_FOLDER
 
 	if [ "${TERMUX_PACKAGES_OFFLINE-false}" = "true" ]; then
@@ -16,14 +16,8 @@ termux_setup_meson() {
 		termux_download \
 			"https://github.com/mesonbuild/meson/releases/download/$MESON_VERSION/meson-$MESON_VERSION.tar.gz" \
 			"$MESON_TAR_FILE" \
-			291dd38ff1cd55fcfca8fc985181dd39be0d3e5826e5f0013bf867be40117213
+			feb2cefb325b437dbf36146df7c6b87688ddff0b0205caa31dc64055c6da410c
 		tar xf "$MESON_TAR_FILE" -C "$TERMUX_PKG_TMPDIR"
-		# Avoid meson stripping away DT_RUNPATH, see
-		# (https://github.com/NetBSD/pkgsrc/commit/2fb2c013715a6374b4e2d1f8e9f2143e827f0f64
-		# and https://github.com/mesonbuild/meson/issues/314):
-		perl -p -i -e 's/self.fix_rpathtype_entry\(new_rpath, DT_RUNPATH\)//' \
-			$MESON_TMP_FOLDER/mesonbuild/scripts/depfixer.py
-
 		mv "$MESON_TMP_FOLDER" "$MESON_FOLDER"
 	fi
 	TERMUX_MESON="$MESON_FOLDER/meson.py"
@@ -57,6 +51,9 @@ termux_setup_meson() {
 	echo '' >> $TERMUX_MESON_CROSSFILE
 	echo "[properties]" >> $TERMUX_MESON_CROSSFILE
 	echo "needs_exe_wrapper = true" >> $TERMUX_MESON_CROSSFILE
+
+	echo '' >> $TERMUX_MESON_CROSSFILE
+	echo "[built-in options]" >> $TERMUX_MESON_CROSSFILE
 
 	echo -n "c_args = [" >> $TERMUX_MESON_CROSSFILE
 	local word first=true

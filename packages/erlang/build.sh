@@ -2,16 +2,21 @@ TERMUX_PKG_HOMEPAGE=https://www.erlang.org/
 TERMUX_PKG_DESCRIPTION="General-purpose concurrent functional programming language"
 TERMUX_PKG_LICENSE="Apache-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=24.1.3
+TERMUX_PKG_VERSION=24.2.1
 TERMUX_PKG_SRCURL=https://github.com/erlang/otp/archive/OTP-$TERMUX_PKG_VERSION.tar.gz
-TERMUX_PKG_SHA256=7ccfa8372995fc7895baeb3729f679aff87781d1b7c734acd22740bc41ee2eed
+TERMUX_PKG_SHA256=2854318d12d727fc508e8fd5fe6921c0cbc7727d1183ad8f6f808585496e42d6
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_AUTO_UPDATE_TAG_REGEXP="\d+(\.\d+)+"
 TERMUX_PKG_DEPENDS="openssl, ncurses, zlib"
 TERMUX_PKG_NO_STATICSPLIT=true
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_BUILD_IN_SRC=true
-TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--without-javac --with-ssl=${TERMUX_PREFIX} --with-termcap"
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
+--without-javac
+--with-ssl=${TERMUX_PREFIX}
+--with-termcap
+erl_xcomp_sysroot=${TERMUX_PREFIX}
+"
 
 termux_step_post_get_source() {
 	# We need a host build every time, because we dont know the full output of host build and have no idea to cache it.
