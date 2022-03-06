@@ -20,3 +20,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 termux_step_pre_configure() {
 	TERMUX_PKG_SRCDIR+="/cmake/"
 }
+
+termux_step_post_configure() {
+	mkdir -p ${TERMUX_PKG_BUILDDIR}/${TERMUX_PREFIX}/lib/cmake/protobuf
+}
