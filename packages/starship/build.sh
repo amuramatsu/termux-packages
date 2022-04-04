@@ -2,17 +2,28 @@ TERMUX_PKG_HOMEPAGE=https://starship.rs
 TERMUX_PKG_DESCRIPTION="A minimal, blazing fast, and extremely customizable prompt for any shell"
 TERMUX_PKG_LICENSE="ISC"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=1.3.0
-TERMUX_PKG_REVISION=2
+TERMUX_PKG_VERSION=1.5.4
 TERMUX_PKG_SRCURL=https://github.com/starship/starship/archive/v$TERMUX_PKG_VERSION.tar.gz
-TERMUX_PKG_SHA256=3f29cb6e5cb7c673cbc1f8e91ceb4a0d1317d235b147db15e461ffec22be13a5
+TERMUX_PKG_SHA256=158003cd192f9375e504b9ab84d9239a06a8f9732cdd201243ab2fdcd38043f8
 TERMUX_PKG_AUTO_UPDATE=true
-TERMUX_PKG_DEPENDS="zlib, openssl"
+TERMUX_PKG_DEPENDS="openssl, zlib"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="--no-default-features --features http"
 
 termux_step_pre_configure() {
 	termux_setup_rust
+	: "${CARGO_HOME:=$HOME/.cargo}"
+	export CARGO_HOME
+
+	cargo fetch --target $CARGO_TARGET_NAME
+
+	local d
+	for d in $CARGO_HOME/registry/src/github.com-*/libgit2-sys-*/libgit2; do
+		patch --silent -p1 -d ${d} \
+			< $TERMUX_SCRIPTDIR/packages/libgit2/src-rand.c.patch || :
+		cp $TERMUX_SCRIPTDIR/packages/libgit2/getloadavg.c ${d}/src/ || :
+	done
+
 	CFLAGS+=" $CPPFLAGS"
 	if [ $TERMUX_ARCH = arm ]; then
 		CFLAGS+=" -fno-integrated-as"
