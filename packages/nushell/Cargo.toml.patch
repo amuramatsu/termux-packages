@@ -1,11 +1,11 @@
---- ./Cargo.toml	2021-06-22 10:52:33.000000000 +0530
-+++ ./Cargo.toml.mod	2021-06-30 11:38:24.620496505 +0530
-@@ -76,8 +76,6 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -72,7 +72,7 @@
  
- default = [
-     "nu-cli/shadow-rs",
--    "sys",
--    "ps",
-     "ctrlc-support",
-     "which-support",
-     "term-support",
+ [features]
+ plugin = ["nu-plugin", "nu-cli/plugin", "nu-parser/plugin", "nu-command/plugin", "nu-protocol/plugin", "nu-engine/plugin"]
+-default = ["plugin", "which", "zip-support", "trash-support"]
++default = ["plugin", "which", "zip-support"]
+ stable = ["default"]
+ extra = ["default", "dataframe"]
+ wasi = []

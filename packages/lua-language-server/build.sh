@@ -1,20 +1,21 @@
 TERMUX_PKG_HOMEPAGE="https://github.com/sumneko/lua-language-server"
 TERMUX_PKG_DESCRIPTION="Sumneko Lua Language Server coded in Lua"
 TERMUX_PKG_LICENSE="MIT"
-TERMUX_PKG_MAINTAINER="MrAdityaAlok <dev.aditya.alok@gmail.com>"
-TERMUX_PKG_VERSION=2.6.0
+TERMUX_PKG_MAINTAINER="Aditya Alok <dev.aditya.alok@gmail.com>"
+TERMUX_PKG_VERSION=2.6.7
 TERMUX_PKG_GIT_BRANCH="${TERMUX_PKG_VERSION}"
 TERMUX_PKG_SRCURL="https://github.com/sumneko/lua-language-server.git"
-TERMUX_PKG_BUILD_DEPENDS="libandroid-spawn"
+TERMUX_PKG_DEPENDS="libandroid-spawn"
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_BUILD_IN_SRC=true
+TERMUX_PKG_AUTO_UPDATE=true
 
 _patch_on_device() {
 	if [ "${TERMUX_ON_DEVICE_BUILD}" = true ]; then
 		current_dir=$(pwd)
 
 		cd "${TERMUX_PKG_SRCDIR}"
-		patch --silent -p1 <"${TERMUX_PKG_BUILDER_DIR}"/android.patch.ondevice.beforehostbuild
+		patch --silent -p1 <"${TERMUX_PKG_BUILDER_DIR}"/android.diff
 
 		cd "${current_dir}"
 	fi

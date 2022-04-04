@@ -8,23 +8,23 @@ if [ "$1" == "--help" ] || [ "$1" == "-help" ]; then
 fi
 
 select_repository() {
-    if [ "$1" == "Default repositories" ]; then
-        echo "[*] Termux primary host (EU) selected"
-        MAIN="https://packages.termux.org/apt/termux-main"
-        ROOT="https://packages.termux.org/apt/termux-root"
-        X11="https://packages.termux.org/apt/termux-x11"
-
-    elif [ "$1" == "Default repositories (CF)" ]; then
+    if [ "$1" == "Default repositories (CF)" ]; then
         echo "[*] Termux primary host (worldwide) selected"
         MAIN="https://packages-cf.termux.org/apt/termux-main"
         ROOT="https://packages-cf.termux.org/apt/termux-root"
         X11="https://packages-cf.termux.org/apt/termux-x11"
 
+    elif [ "$1" == "Default repositories" ]; then
+        echo "[*] Termux primary host (EU) selected"
+        MAIN="https://packages.termux.org/apt/termux-main"
+        ROOT="https://packages.termux.org/apt/termux-root"
+        X11="https://packages.termux.org/apt/termux-x11"
+
     elif [ "$1" == "GH Mirrors by Kcubeterm" ]; then
         echo "[*] GH mirrors selected"
-        MAIN="https://deb.kcubeterm.me/termux-main"
-        ROOT="https://deb.kcubeterm.me/termux-root"
-        X11="https://deb.kcubeterm.me/termux-x11"
+        MAIN="https://dl.kcubeterm.com/termux-main"
+        ROOT="https://dl.kcubeterm.com/termux-root"
+        X11="https://dl.kcubeterm.com/termux-x11"
 
     elif [ "$1" == "Mirrors by A1batross" ]; then
         echo "[*] A1batross mirrors selected"
@@ -62,17 +62,17 @@ select_repository() {
         ROOT="https://mirror.mwt.me/termux/root"
         X11="https://mirror.mwt.me/termux/x11"
 
+    elif [ "$1" == "Mirrors by Purdue Linux Users Group" ]; then
+        echo "[*] Purdue LUG's (USA) mirrors selected"
+        MAIN="https://plug-mirror.rcac.purdue.edu/termux/termux-main"
+        ROOT="https://plug-mirror.rcac.purdue.edu/termux/termux-root"
+        X11="https://plug-mirror.rcac.purdue.edu/termux/termux-x11"
+
     elif [ "$1" == "Mirrors by Sahilister" ]; then
         echo "[*] Sahilister's (DE) mirrors selected"
         MAIN="https://termux.sahilister.in/apt/termux-main"
         ROOT="https://termux.sahilister.in/apt/termux-root"
         X11="https://termux.sahilister.in/apt/termux-x11"
-
-    elif [ "$1" == "Mirrors by Tsinghua University" ]; then
-        echo "[*] Tsinghua's (CN) mirrors selected"
-        MAIN="https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-main"
-        ROOT="https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-root"
-        X11="https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-x11"
 
     elif [ "$1" == "Mirrors by BFSU" ]; then
         echo "[*] BFSU (CN) mirrors selected"
@@ -80,17 +80,47 @@ select_repository() {
         ROOT="https://mirrors.bfsu.edu.cn/termux/apt/termux-root"
         X11="https://mirrors.bfsu.edu.cn/termux/apt/termux-x11"
 
+    elif [ "$1" == "Mirrors by Chongqing University" ]; then
+        echo "[*] Chongqing University (CN) mirrors selected"
+        MAIN="https://mirrors.cqupt.edu.cn/termux/apt/termux-main"
+        ROOT="https://mirrors.cqupt.edu.cn/termux/apt/termux-root"
+        X11="https://mirrors.cqupt.edu.cn/termux/apt/termux-x11"
+
+    elif [ "$1" == "Mirrors by Dongguan University of Technology" ]; then
+        echo "[*] Dongguan University of Technology (CN) mirrors selected"
+        MAIN="https://mirrors.dgut.edu.cn/termux/apt/termux-main"
+        ROOT="https://mirrors.dgut.edu.cn/termux/apt/termux-root"
+        X11="https://mirrors.dgut.edu.cn/termux/apt/termux-x11"
+
+    elif [ "$1" == "Mirrors by HIT" ]; then
+        echo "[*] HIT (CN) mirrors selected"
+        MAIN="https://mirrors.hit.edu.cn/termux/apt/termux-main"
+        ROOT="https://mirrors.hit.edu.cn/termux/apt/termux-root"
+        X11="https://mirrors.hit.edu.cn/termux/apt/termux-x11"
+
     elif [ "$1" == "Mirrors by NJU" ]; then
         echo "[*] NJU (CN) mirrors selected"
         MAIN="https://mirror.nju.edu.cn/termux/apt/termux-main"
         ROOT="https://mirror.nju.edu.cn/termux/apt/termux-root"
         X11="https://mirror.nju.edu.cn/termux/apt/termux-x11"
 
+    elif [ "$1" == "Mirrors by Tsinghua University" ]; then
+        echo "[*] Tsinghua's (CN) mirrors selected"
+        MAIN="https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-main"
+        ROOT="https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-root"
+        X11="https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-x11"
+
     elif [ "$1" == "Mirrors by USTC" ]; then
         echo "[*] USTC (CN) mirrors selected"
         MAIN="https://mirrors.ustc.edu.cn/termux/apt/termux-main"
         ROOT="https://mirrors.ustc.edu.cn/termux/apt/termux-root"
         X11="https://mirrors.ustc.edu.cn/termux/apt/termux-x11"
+
+    elif [ "$1" == "Mirrors by Alibaba" ]; then
+        echo "[*] Alibaba (CN) mirrors selected"
+        MAIN="https://mirrors.aliyun.com/termux/termux-packages-24"
+        ROOT="https://mirrors.aliyun.com/termux/termux-root-packages-24"
+        X11="https://mirrors.aliyun.com/termux/x11-packages"
 
     else
         echo "[!] Error: unknown repository: '$1'. Exiting"
@@ -135,8 +165,8 @@ dialog \
     "${REPOSITORIES[@]}" --and-widget \
     --title "termux-change-repo" --clear \
     --radiolist "Which mirror do you want to use?" 0 0 0 \
-    "Default repositories" "Default host" on \
     "Default repositories (CF)" "Default host with CloudFlare endpoint" on \
+    "Default repositories" "Default host" off \
     "GH Mirrors by Kcubeterm" "Hosted on Github Release" off \
     "Mirrors by A1batross" "Hosted on termux.mentality.rip" off \
     "Mirrors by Astra ISP" "Hosted on termux.astra.in.ua" off \
@@ -144,11 +174,13 @@ dialog \
     "Mirrors by Grimler" "Hosted on grimler.se" off \
     "Mirrors by Librehat" "Hosted on termux.librehat.com" off \
     "Mirrors by Mwt" "Hosted on mirror.mwt.me" off \
+    "Mirrors by Purdue Linux Users Group" "Hosted on plug-mirror.rcac.purdue.edu" off \
     "Mirrors by Sahilister" "Hosted on termux.sahilister.in" off \
     "Mirrors by Tsinghua University" "Hosted on mirrors.tuna.tsinghua.edu.cn" off \
     "Mirrors by BFSU" "Hosted on mirrors.bfsu.edu.cn" off \
     "Mirrors by NJU" "Hosted on mirror.nju.edu.cn" off \
     "Mirrors by USTC" "Hosted on mirrors.ustc.edu.cn" off \
+    "Mirrors by HIT" "Hosted on mirrors.hit.edu.cn" off \
     2> "$TEMPFILE"
 
 retval=$?

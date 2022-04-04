@@ -5,7 +5,7 @@ TERMUX_PKG_MAINTAINER="@termux"
 _TAG_VERSION=12.0.0
 _TAG_REVISION=27
 TERMUX_PKG_VERSION=${_TAG_VERSION}.${_TAG_REVISION}
-TERMUX_PKG_REVISION=1
+TERMUX_PKG_REVISION=3
 TERMUX_PKG_SRCURL=(https://android.googlesource.com/platform/frameworks/base
                    https://android.googlesource.com/platform/system/core
                    https://android.googlesource.com/platform/system/libbase
@@ -86,7 +86,7 @@ termux_step_pre_configure() {
 
 	CFLAGS+=" -fPIC"
 	CXXFLAGS+=" -fPIC -std=c++17"
-	CPPFLAGS+=" -D__ANDROID_SDK_VERSION__=__ANDROID_API__"
+	CPPFLAGS+=" -DNDEBUG -D__ANDROID_SDK_VERSION__=__ANDROID_API__"
 
 	_TMP_LIBDIR=$TERMUX_PKG_SRCDIR/_lib
 	rm -rf $_TMP_LIBDIR
@@ -246,7 +246,7 @@ termux_step_make_install() {
 	rm -rf android-jar
 	mkdir android-jar
 	cd android-jar
-	cp $ANDROID_HOME/platforms/android-28/android.jar .
+	cp $ANDROID_HOME/platforms/android-32/android.jar .
 	unzip -q android.jar
 	mkdir -p $TERMUX_PREFIX/share/aapt
 	jar cfM $TERMUX_PREFIX/share/aapt/android.jar AndroidManifest.xml resources.arsc

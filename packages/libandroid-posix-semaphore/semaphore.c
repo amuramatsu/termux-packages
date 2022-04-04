@@ -38,14 +38,13 @@
 #include <sys/stat.h>  // fstat()
 #include <stdlib.h>    // calloc()
 #include <pthread.h>   // mutex
+#include <paths.h>     // _PATH_TMP
 
 #ifndef SEM_NSEMS_MAX
 #define SEM_NSEMS_MAX 256
 #endif // !SEM_NSEMS_MAX
 
-#ifndef PREFIX
-#define PREFIX "/data/data/com.termux/files/usr"
-#endif
+#define SEM_PREFIX _PATH_TMP "sem."
 
 static __inline__ char *__strchrnul(const char *s, int c)
 {
@@ -62,7 +61,7 @@ typedef struct {
 } semtab_type;
 
 static semtab_type *semtab;
-static pthread_mutex_t lock;
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 #define LOCK(l) (pthread_mutex_lock(&l))
 #define UNLOCK(l) (pthread_mutex_unlock(&l))
@@ -82,8 +81,8 @@ static char *__sem_mapname(const char *name, char *buf)
         errno = ENAMETOOLONG;
         return 0;
     }
-    memcpy(buf, PREFIX"/tmp/sem.", 40);
-    memcpy(buf+40, name, p-name+1);
+    memcpy(buf, SEM_PREFIX, strlen(SEM_PREFIX));
+    memcpy(buf+strlen(SEM_PREFIX), name, p-name+1);
     return buf;
 }
 
@@ -96,7 +95,7 @@ sem_t *sem_open(const char *name, int flags, ...)
     sem_t newsem;
     void *map;
     struct stat st;
-    char buf[NAME_MAX+41];
+    char buf[NAME_MAX+strlen(SEM_PREFIX)+1];
 
     if (!(name = __sem_mapname(name, buf)))
         return SEM_FAILED;
@@ -222,10 +221,15 @@ fail:
 
 int sem_close(sem_t *sem)
 {
+    if (sem == NULL || semtab == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
     int i;
     LOCK(lock);
     for (i=0; i<SEM_NSEMS_MAX && semtab[i].sem != sem; i++);
     if (i == SEM_NSEMS_MAX) {
+        UNLOCK(lock);
         errno = EINVAL;
         return -1;
     }
@@ -242,7 +246,15 @@ int sem_close(sem_t *sem)
 
 int sem_unlink(const char *name)
 {
-    char buf[NAME_MAX+41];
+    char buf[NAME_MAX+strlen(SEM_PREFIX)+1];
     if (!(name = __sem_mapname(name, buf))) return -1;
     return unlink(name);
 }
+
+/* Make alias for use with e.g. dlopen() */
+#undef sem_open
+sem_t *sem_open(const char *name, int flags, ...) __attribute__((alias("libandroid_sem_open")));
+#undef sem_close
+int sem_close(sem_t *sem) __attribute__((alias("libandroid_sem_close")));
+#undef sem_unlink
+int sem_unlink(const char *name) __attribute__((alias("libandroid_sem_unlink")));
