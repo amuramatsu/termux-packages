@@ -1,19 +1,19 @@
 TERMUX_PKG_HOMEPAGE=http://linuxplayers.g1.xrea.com/mozc-ut.html
 TERMUX_PKG_DESCRIPTION="Japanese Input method with large dictionary (for emacs)"
 TERMUX_PKG_LICENSE="GPL-3.0"
-_MAJOR_VERSION=2.26.4666.102
-_MINOR_VERSION=20220305
+_MAJOR_VERSION=2.26.4695.102
+_MINOR_VERSION=20220403
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
-TERMUX_PKG_SHA256=77cfc60eca9368a4b880c18e77ca8664b2a8c798166b075a4760814a1abfca28
+TERMUX_PKG_SHA256=1eaa7b083524141e46870687f134ace591422a7d517a8f07e550d09d8a5e9759
 TERMUX_PKG_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-$_MAJOR_VERSION.tar.bz2
 TERMUX_PKG_BUILD_IN_SRC=yes
-TERMUX_PKG_DEPENDS="libc++, libprotobuf, libiconv"
+TERMUX_PKG_DEPENDS="libc++, libandroid-posix-semaphore, libprotobuf, libiconv"
 TERMUX_PKG_BUILD_DEPENDS="protobuf"
 TERMUX_PKG_HOSTBUILD=yes
 
 _UTDIC_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozcdic-ut-$_MINOR_VERSION.tar.bz2
-_UTDIC_SHA256=cb8020142ecbbbe961b5821b055b920d673853599fe8aa1c063386249dec2e00
+_UTDIC_SHA256=091c867c5c8f759f3dff9ba46787e9e6539e9e7877e19c91b7be9f18c144d28e
 
 _MOZC_CONFIG_REPO=https://github.com/hidegit/mozc-config.git
 _MOZC_CONFIG_COMMIT=79bd032431320dbb79d3e16d41686e5a58f22218
@@ -42,6 +42,7 @@ termux_step_post_get_source() {
 termux_step_configure () {
         LDFLAGS="${LDFLAGS/-static-openmp/}"
         LDFLAGS="${LDFLAGS/-fopenmp/}"
+        LDFLAGS="$LDFLAGS -landroid-posix-semaphore"
 	termux_setup_ninja
 	cd "$TERMUX_PKG_SRCDIR/src"
 	GYP_DEFINES="use_libprotobuf=1 include_dirs=$TERMUX_PREFIX/include library_dirs=$TERMUX_PREFIX/lib" \
@@ -54,6 +55,7 @@ termux_step_configure () {
 termux_step_make () {
         LDFLAGS="${LDFLAGS/-static-openmp/}"
         LDFLAGS="${LDFLAGS/-fopenmp/}"
+        LDFLAGS="$LDFLAGS -landroid-posix-semaphore"
 	cd "$TERMUX_PKG_SRCDIR/src"
 	export PATH="${PATH}:$TERMUX_TOPDIR/libprotobuf/host-build/install/bin"
 	python build_mozc.py build -c Release \

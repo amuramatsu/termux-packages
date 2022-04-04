@@ -1,19 +1,18 @@
---- a/src/base/file_util.cc	2021-12-05 12:34:31.000000000 +0900
-+++ b/src/base/file_util.cc	2021-12-09 17:36:35.000000000 +0900
-@@ -40,7 +40,12 @@
+--- a/src/base/file_util.cc	2022-04-03 04:55:33.000000000 +0900
++++ b/src/base/file_util.cc	2022-04-05 00:39:31.000000000 +0900
+@@ -40,7 +40,11 @@
  #include <unistd.h>
  #endif  // OS_WIN
  
 +#if 1
 +#include <stdlib.h>
-+#include <string.h>
 +#else
  #include <filesystem>
 +#endif
+ #include <string>
  
  #include "base/file_stream.h"
- #include "base/logging.h"
-@@ -490,6 +495,19 @@
+@@ -491,6 +495,19 @@
  #ifdef __APPLE__
    return absl::UnimplementedError(
        "std::filesystem is only available on macOS 10.15, iOS 13.0, or later");
@@ -33,7 +32,7 @@
  #else   // __APPLE__
  
    // u8path is deprecated in C++20. The current target is C++17.
-@@ -580,6 +598,9 @@
+@@ -581,6 +598,9 @@
  #ifdef __APPLE__
    return absl::UnimplementedError(
        "std::filesystem is only available on macOS 10.15, iOS 13.0, or later.");
