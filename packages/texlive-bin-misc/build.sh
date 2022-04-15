@@ -2,18 +2,16 @@ TERMUX_PKG_HOMEPAGE=https://www.tug.org/texlive/
 TERMUX_PKG_DESCRIPTION="TeX Live is a distribution of the TeX typesetting system. This package contains architecture dependent binaries."
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
-TERMUX_PKG_VERSION=20210325
-_SVN_VERSION=58837
-TERMUX_PKG_REVISION=3
-TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/svn${_SVN_VERSION}.tar.gz
-TERMUX_PKG_SHA256=0afa6919e44675b7afe0fa45344747afef07b6ee98eeb14ff6a2ef78f458fc12
-TERMUX_PKG_DEPENDS="libc++, libiconv, freetype, libpng, libgd, libgmp, libmpfr, libicu, liblua52, libgraphite, harfbuzz, harfbuzz-icu, teckit, libpixman, libcairo, zlib, zziplib, texlive-bin"
+TERMUX_PKG_VERSION=20220403
+TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-${TERMUX_PKG_VERSION:0:4}.0.tar.gz
+TERMUX_PKG_SHA256=e160606d25b6087c2d3520bfd2b852fd343eab3ab3ec90c07649ce1d1b49078d
+TERMUX_PKG_DEPENDS="freetype, harfbuzz, harfbuzz-icu, libc++, libcairo, libgd, libgmp, libgraphite, libiconv, libicu, liblua52, libmpfr, libpaper, libpixman, libpng, teckit, zlib, zziplib, texlive-bin"
 # libpcre, glib, fonconfig are dependencies to libcairo. pkg-config gives an error if they are missing
 # libuuid, libxml2 are needed by fontconfig
 TERMUX_PKG_BUILD_DEPENDS="icu-devtools, pcre, glib, fontconfig, libuuid, libxml2"
 TERMUX_PKG_BREAKS="texlive (<< 20180414), texlive-bin-dev"
 TERMUX_PKG_REPLACES="texlive (<< 20170524-3), texlive-bin-dev"
-TERMUX_PKG_RECOMMENDS="texlive"
+TERMUX_PKG_RECOMMENDS="texlive-installer"
 TERMUX_PKG_HOSTBUILD=true
 
 TL_ROOT=$TERMUX_PREFIX/share/texlive
@@ -21,49 +19,47 @@ TL_BINDIR=$TERMUX_PREFIX/bin/texlive
 
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 RANLIB=ranlib
---mandir=$TERMUX_PREFIX/share/man
---infodir=$TERMUX_PREFIX/share/info
 --bindir=$TL_BINDIR
---datarootdir=$TL_ROOT
 --build=$TERMUX_BUILD_TUPLE
---disable-ttfdump
---disable-makeindexk
+--datarootdir=$TL_ROOT
+--disable-dialog
+--disable-gregorio
+--disable-luajittex
 --enable-makejvf
 --enable-mendexk
---enable-musixtnt
---disable-ps2pk
---disable-seetexk
---disable-gregorio
---disable-native-texlive-build
---enable-bibtexu
---disable-dvisvgm
---disable-dialog
---disable-psutils
---disable-multiplatform
---disable-t1utils
---disable-luatex
---disable-luajittex
---disable-luahbtex
---disable-luajithbtex
 --enable-mflua
 --disable-mfluajit
---disable-xz
+--disable-multiplatform
+--enable-musixtnt
+--disable-native-texlive-build
 --disable-pmx
---without-texinfo
---without-xdvipdfmx
---without-texi2html
+--disable-ps2pk
+--disable-psutils
+--disable-seetexk
+--disable-t1utils
+--disable-ttfdump
+--disable-xz
+--disable-dvisvgm
+--disable-luatex
+--disable-makeindexk
+--infodir=$TERMUX_PREFIX/share/info
+--mandir=$TERMUX_PREFIX/share/man
 --with-system-cairo
---with-system-graphite2
---with-system-harfbuzz
 --with-system-gd
 --with-system-gmp
+--with-system-graphite2
+--with-system-harfbuzz
 --with-system-icu
---with-system-mpfr
---with-system-zlib
+--with-system-libpaper
 --with-system-lua
+--with-system-mpfr
 --with-system-teckit
+--with-system-zlib
 --with-system-zziplib
+--without-texi2html
+--without-texinfo
 --without-x
+--without-xdvipdfmx
 --with-banner-add=/Termux"
 
 # These files are provided by texlive:
@@ -91,7 +87,7 @@ share/texlive/texmf-dist/source
 share/texlive/texmf-dist/chktex
 share/texlive/texmf-dist/hbf2gf
 include
-lib/pkgconfig
+lib
 bin/texlive/a2ping
 bin/texlive/a5toa4
 bin/texlive/adhocfilelist
@@ -122,6 +118,7 @@ bin/texlive/bibexport
 bin/texlive/bibmradd
 bin/texlive/bibtex
 bin/texlive/bibtex8
+bin/texlive/bibtexu
 bin/texlive/biburl2doi
 bin/texlive/bibzbladd
 bin/texlive/bundledoc
@@ -142,6 +139,7 @@ bin/texlive/chkdvifont
 bin/texlive/chklref
 bin/texlive/chktex
 bin/texlive/chkweb
+bin/texlive/citeproc
 bin/texlive/cjk-gs-integrate
 bin/texlive/cllualatex
 bin/texlive/cluttex
@@ -221,6 +219,9 @@ bin/texlive/gftype
 bin/texlive/git-latexdiff
 bin/texlive/gsftopk
 bin/texlive/hbf2gf
+bin/texlive/hishrink
+bin/texlive/histretch
+bin/texlive/hitex
 bin/texlive/ht
 bin/texlive/htcontext
 bin/texlive/htlatex
@@ -273,6 +274,9 @@ bin/texlive/ltx2crossrefxml
 bin/texlive/ltxfileinfo
 bin/texlive/ltximg
 bin/texlive/lua2dox_filter
+bin/texlive/luafindfont
+bin/texlive/luahbtex
+bin/texlive/luajithbtex
 bin/texlive/luaotfload-tool
 bin/texlive/luatools
 bin/texlive/lwarpmk
@@ -281,6 +285,7 @@ bin/texlive/make4ht
 bin/texlive/makedtx
 bin/texlive/makeglossaries
 bin/texlive/makeglossaries-lite
+bin/texlive/makeindex
 bin/texlive/match_parens
 bin/texlive/mathspic
 bin/texlive/mf
@@ -290,6 +295,7 @@ bin/texlive/mfplain
 bin/texlive/mft
 bin/texlive/mk4ht
 bin/texlive/mkgrkindex
+bin/texlive/mkindex
 bin/texlive/mkjobtexmf
 bin/texlive/mkocp
 bin/texlive/mkofm
@@ -314,6 +320,7 @@ bin/texlive/odvitype
 bin/texlive/ofm2opl
 bin/texlive/omfonts
 bin/texlive/opl2ofm
+bin/texlive/optexcount
 bin/texlive/ot2kpx
 bin/texlive/otangle
 bin/texlive/otfinfo
@@ -419,6 +426,12 @@ bin/texlive/texhash
 bin/texlive/texlinks
 bin/texlive/texliveonfly
 bin/texlive/texloganalyser
+bin/texlive/texlogfilter
+bin/texlive/texlogsieve
+bin/texlive/texlua
+bin/texlive/texluac
+bin/texlive/texluajit
+bin/texlive/texluajitc
 bin/texlive/texmfstart
 bin/texlive/texosquery
 bin/texlive/texosquery-jre5
@@ -436,6 +449,7 @@ bin/texlive/ttf2kotexfont
 bin/texlive/ttf2pk
 bin/texlive/ttf2tfm
 bin/texlive/ttftotype42
+bin/texlive/twill
 bin/texlive/typeoutfileinfo
 bin/texlive/ulqda
 bin/texlive/upbibtex
@@ -464,7 +478,9 @@ bin/texlive/wordcount
 bin/texlive/wovf2ovp
 bin/texlive/wovp2ovf
 bin/texlive/xdvipdfmx
+bin/texlive/xelatex-unsafe
 bin/texlive/xetex
+bin/texlive/xetex-unsafe
 bin/texlive/xhlatex
 bin/texlive/xindex
 bin/texlive/xml2pmx
@@ -543,6 +559,9 @@ share/man/man1/gftopk.1
 share/man/man1/gftype.1
 share/man/man1/gsftopk.1
 share/man/man1/hbf2gf.1
+share/man/man1/hishrink.1
+share/man/man1/histretch.1
+share/man/man1/hitex.1
 share/man/man1/inimf.1
 share/man/man1/initex.1
 share/man/man1/kpseaccess.1
@@ -586,6 +605,7 @@ share/man/man1/outocp.1
 share/man/man1/ovf2ovp.1
 share/man/man1/ovp2ovf.1
 share/man/man1/patgen.1
+share/man/man1/pbibtex.1
 share/man/man1/pdfetex.1
 share/man/man1/pdflatex.1
 share/man/man1/pdflatex-dev.1
@@ -627,9 +647,11 @@ share/man/man1/ttf2afm.1
 share/man/man1/ttf2pk.1
 share/man/man1/ttf2tfm.1
 share/man/man1/ttftotype42.1
+share/man/man1/twill.1
 share/man/man1/updmap-sys.1
 share/man/man1/updmap.1
 share/man/man1/uppltotf.1
+share/man/man1/upbibtex.1
 share/man/man1/uptex.1
 share/man/man1/uplatex-dev.1
 share/man/man1/uptftopl.1
@@ -669,15 +691,15 @@ termux_step_host_build() {
 	make ctangle
 	make tie
 	make otangle
+	make himktables
 }
 
 termux_step_pre_configure() {
-	# When building against libicu 59.1 or later we need c++11:
-	CXXFLAGS+=" -std=c++11"
 	export TANGLE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/tangle
 	export TANGLEBOOT=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/tangleboot
 	export CTANGLE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/ctangle
 	export CTANGLEBOOT=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/ctangleboot
 	export TIE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/tie
 	export OTANGLE=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/otangle
+	export HIMKTABLES=$TERMUX_PKG_HOSTBUILD_DIR/texk/web2c/himktables
 }
