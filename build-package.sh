@@ -109,7 +109,6 @@ source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_cmake.sh"
 # Utility function to setup protobuf:
 # shellcheck source=scripts/build/setup/termux_setup_protobuf.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_protobuf.sh"
-source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_protobuf_host.sh"
 
 # Setup variables used by the build. Not to be overridden by packages.
 # shellcheck source=scripts/build/termux_step_setup_variables.sh

@@ -7,10 +7,10 @@ TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_SHA256=27c4e7106d442d64ff1828230b1bc4547f07babfb9256c64ce8c23204d0facf8
 TERMUX_PKG_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-$_MAJOR_VERSION.$_MINOR_VERSION.tar.bz2
-TERMUX_PKG_BUILD_IN_SRC=yes
+TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_DEPENDS="libc++, libandroid-posix-semaphore, libprotobuf, libiconv"
 TERMUX_PKG_BUILD_DEPENDS="protobuf"
-TERMUX_PKG_HOSTBUILD=yes
+TERMUX_PKG_HOSTBUILD=true
 
 _UTDIC_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozcdic-ut-$_MINOR_VERSION.tar.bz2
 _UTDIC_SHA256=41fe6cd1855e8e1c523932a19fe3200ae3ce5daaee4ed13923693e287ef547e9
@@ -21,7 +21,23 @@ _MOZCTOROKU_REPO=https://github.com/amuramatsu/mozctoroku.git
 _MOZCTOROKU_COMMIT=fb2f064c3a8e36df3f4a9115434d5564c9b551d8
 
 termux_step_host_build() {
-	termux_setup_protobuf_host
+	local _PROTOBUF_VERSION=$(bash -c ". $TERMUX_SCRIPTDIR/packages/libprotobuf/build.sh; echo \${TERMUX_PKG_VERSION:2}")
+	local _PROTOBUF_SHA256=$(bash -c ". $TERMUX_SCRIPTDIR/packages/libprotobuf/build.sh; echo \$TERMUX_PKG_SHA256")
+	local _PROTOBUF_SRCURL=$(bash -c ". $TERMUX_SCRIPTDIR/packages/libprotobuf/build.sh; echo \$TERMUX_PKG_SRCURL")
+	local _PROTOBUF_HOST_FOLDER=$TERMUX_PKG_HOSTBUILD_DIR/protobuf-host
+
+	termux_download \
+		"$_PROTOBUF_SRCURL" \
+		"$TERMUX_PKG_TMPDIR/protobuf-$_PROTOBUF_VERSION.tar.gz" \
+		"$_PROTOBUF_SHA256"
+	tar zvxf "$TERMUX_PKG_TMPDIR/protobuf-$_PROTOBUF_VERSION.tar.gz" \
+		-C "$TERMUX_PKG_SRCDIR"
+	termux_setup_cmake
+	termux_setup_protobuf
+	(cd "$TERMUX_PKG_SRCDIR/protobuf-$_PROTOBUF_VERSION" &&
+	 mkdir build && cd build &&
+	 cmake "-DCMAKE_INSTALL_PREFIX=$_PROTOBUF_HOST_FOLDER" -Dprotobuf_BUILD_TESTS=OFF ../cmake &&
+	 make -j $TERMUX_MAKE_PROCESSES install)
 }
 
 termux_step_post_get_source() {
@@ -32,18 +48,23 @@ termux_step_post_get_source() {
 	tar jvxf mozcdic-ut-${_MINOR_VERSION}.tar.bz2
 	cat mozcdic-ut-${_MINOR_VERSION}/mozcdic-*-${_MINOR_VERSION}.txt \
 	    >> src/data/dictionary_oss/dictionary00.txt
+
 	git clone $_MOZC_CONFIG_REPO mozc-config
 	(cd mozc-config && git reset --hard $_MOZC_CONFIG_COMMIT)
 	git clone $_MOZCTOROKU_REPO mozctoroku
 	(cd mozctoroku && git reset --hard $_MOZCTOROKU_COMMIT)
+
 	termux_setup_protobuf
 }
 
 termux_step_configure () {
         LDFLAGS="${LDFLAGS/-static-openmp/}"
         LDFLAGS="${LDFLAGS/-fopenmp/}"
-        LDFLAGS="$LDFLAGS -landroid-posix-semaphore"
+        LDFLAGS+=" -landroid-posix-semaphore"
 	termux_setup_ninja
+	sed -i.bak "s,@TERMUX_PROTOBUF_HOST_ROOT@,$TERMUX_PKG_HOSTBUILD_DIR/protobuf-host,g" \
+		"$TERMUX_PKG_SRCDIR/src/protobuf/protobuf.gyp"
+	
 	cd "$TERMUX_PKG_SRCDIR/src"
 	GYP_DEFINES="use_libprotobuf=1 include_dirs=$TERMUX_PREFIX/include library_dirs=$TERMUX_PREFIX/lib" \
 	  python build_mozc.py gyp \
@@ -55,7 +76,7 @@ termux_step_configure () {
 termux_step_make () {
         LDFLAGS="${LDFLAGS/-static-openmp/}"
         LDFLAGS="${LDFLAGS/-fopenmp/}"
-        LDFLAGS="$LDFLAGS -landroid-posix-semaphore"
+        LDFLAGS+=" -landroid-posix-semaphore"
 	cd "$TERMUX_PKG_SRCDIR/src"
 	export PATH="${PATH}:$TERMUX_TOPDIR/libprotobuf/host-build/install/bin"
 	python build_mozc.py build -c Release \
