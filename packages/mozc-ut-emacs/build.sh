@@ -1,19 +1,19 @@
 TERMUX_PKG_HOMEPAGE=http://linuxplayers.g1.xrea.com/mozc-ut.html
 TERMUX_PKG_DESCRIPTION="Japanese Input method with large dictionary (for emacs)"
 TERMUX_PKG_LICENSE="GPL-3.0"
-_MAJOR_VERSION=2.26.4695.102
-_MINOR_VERSION=20220403
+_MAJOR_VERSION=2.28.4715.102
+_MINOR_VERSION=20220423
 TERMUX_PKG_VERSION=$_MAJOR_VERSION.$_MINOR_VERSION
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
-TERMUX_PKG_SHA256=1eaa7b083524141e46870687f134ace591422a7d517a8f07e550d09d8a5e9759
-TERMUX_PKG_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-$_MAJOR_VERSION.tar.bz2
+TERMUX_PKG_SHA256=27c4e7106d442d64ff1828230b1bc4547f07babfb9256c64ce8c23204d0facf8
+TERMUX_PKG_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-$_MAJOR_VERSION.$_MINOR_VERSION.tar.bz2
 TERMUX_PKG_BUILD_IN_SRC=yes
 TERMUX_PKG_DEPENDS="libc++, libandroid-posix-semaphore, libprotobuf, libiconv"
 TERMUX_PKG_BUILD_DEPENDS="protobuf"
 TERMUX_PKG_HOSTBUILD=yes
 
 _UTDIC_SRCURL=https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozcdic-ut-$_MINOR_VERSION.tar.bz2
-_UTDIC_SHA256=091c867c5c8f759f3dff9ba46787e9e6539e9e7877e19c91b7be9f18c144d28e
+_UTDIC_SHA256=41fe6cd1855e8e1c523932a19fe3200ae3ce5daaee4ed13923693e287ef547e9
 
 _MOZC_CONFIG_REPO=https://github.com/hidegit/mozc-config.git
 _MOZC_CONFIG_COMMIT=79bd032431320dbb79d3e16d41686e5a58f22218
