@@ -79,6 +79,25 @@ termux_step_massage() {
 		termux_error_exit "Package contains hard links: $HARDLINKS"
 	fi
 
+	# Check so that package is not affected by https://github.com/android/ndk/issues/1614
+	SYMBOLS="$(readelf -s $($TERMUX_HOST_PLATFORM-clang -print-libgcc-file-name) | grep "FUNC    GLOBAL HIDDEN" | awk '{print $8}')"
+	# Also check for unresolved symbols defined in libandroid-* (#9944)
+	SYMBOLS+=" $(echo libandroid_{sem_{open,close,unlink},shm{ctl,get,at,dt}})"
+	LIBRARIES=""
+	if [ -d "lib" ]; then
+		LIBRARIES="$(find lib -name "*.so")"
+	fi
+	for lib in $LIBRARIES; do
+		for sym in $SYMBOLS; do
+			if ! readelf -h $lib &> /dev/null; then
+				continue
+			fi
+			if readelf -s $lib | egrep 'NOTYPE[[:space:]]+GLOBAL[[:space:]]+DEFAULT[[:space:]]+UND[[:space:]]+'$sym'$' &> /dev/null; then
+				termux_error_exit "$lib contains undefined symbol $sym"
+			fi
+		done
+	done
+
 	if [ "$TERMUX_PACKAGE_FORMAT" = "debian" ]; then
 		termux_create_debian_subpackages
 	elif [ "$TERMUX_PACKAGE_FORMAT" = "pacman" ]; then

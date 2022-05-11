@@ -80,13 +80,13 @@ select_repository() {
         ROOT="https://mirrors.bfsu.edu.cn/termux/apt/termux-root"
         X11="https://mirrors.bfsu.edu.cn/termux/apt/termux-x11"
 
-    elif [ "$1" == "Mirrors by Chongqing University" ]; then
+    elif [ "$1" == "Mirrors by CQUPT" ]; then
         echo "[*] Chongqing University (CN) mirrors selected"
         MAIN="https://mirrors.cqupt.edu.cn/termux/apt/termux-main"
         ROOT="https://mirrors.cqupt.edu.cn/termux/apt/termux-root"
         X11="https://mirrors.cqupt.edu.cn/termux/apt/termux-x11"
 
-    elif [ "$1" == "Mirrors by Dongguan University of Technology" ]; then
+    elif [ "$1" == "Mirrors by DGUT" ]; then
         echo "[*] Dongguan University of Technology (CN) mirrors selected"
         MAIN="https://mirrors.dgut.edu.cn/termux/apt/termux-main"
         ROOT="https://mirrors.dgut.edu.cn/termux/apt/termux-root"
@@ -178,9 +178,12 @@ dialog \
     "Mirrors by Sahilister" "Hosted on termux.sahilister.in" off \
     "Mirrors by Tsinghua University" "Hosted on mirrors.tuna.tsinghua.edu.cn" off \
     "Mirrors by BFSU" "Hosted on mirrors.bfsu.edu.cn" off \
+    "Mirrors by CQUPT" "Hosted on mirrors.cqupt.edu.cn" off \
+    "Mirrors by DGUT" "Hosted on mirrors.dgut.edu.cn" off \
     "Mirrors by NJU" "Hosted on mirror.nju.edu.cn" off \
     "Mirrors by USTC" "Hosted on mirrors.ustc.edu.cn" off \
     "Mirrors by HIT" "Hosted on mirrors.hit.edu.cn" off \
+    "Mirrors by Alibaba" "Hosted on mirrors.aliyun.com" off \
     2> "$TEMPFILE"
 
 retval=$?

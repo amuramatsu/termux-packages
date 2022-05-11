@@ -16,6 +16,7 @@ bin/pp-trace
 bin/scan-*
 include/clang*
 include/omp*.h
+lib/clang/${LLVM_MAJOR_VERSION}
 lib/clang/*/include/*.h
 lib/clang/*/include/*.modulemap
 lib/clang/*/include/cuda_wrappers/
@@ -30,6 +31,7 @@ lib/libscanbuild/
 libexec/
 share/clang
 share/man/man1/clang.1.gz
+share/man/man1/diagtool.1.gz
 share/man/man1/scan-*
 share/scan-*
 "
