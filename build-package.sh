@@ -3,6 +3,14 @@
 
 set -e -o pipefail -u
 
+cd "$(realpath "$(dirname "$0")")"
+TERMUX_SCRIPTDIR=$(pwd)
+export TERMUX_SCRIPTDIR
+
+# Store pid of current process in a file for docker__run_docker_exec_trap
+source "$TERMUX_SCRIPTDIR/scripts/utils/docker/docker.sh"; docker__create_docker_exec_pid_file
+
+
 SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct 2>/dev/null || date "+%s")
 export SOURCE_DATE_EPOCH
 
@@ -21,10 +29,6 @@ if [ "$(uname -o)" = "Android" ] || [ -e "/system/bin/app_process" ]; then
 else
 	export TERMUX_ON_DEVICE_BUILD=false
 fi
-
-cd "$(realpath "$(dirname "$0")")"
-TERMUX_SCRIPTDIR=$(pwd)
-export TERMUX_SCRIPTDIR
 
 # Automatically enable offline set of sources and build tools.
 # Offline termux-packages bundle can be created by executing
@@ -85,6 +89,10 @@ source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_python_crossenv.sh"
 # Utility function for rust-using packages to setup a rust toolchain.
 # shellcheck source=scripts/build/setup/termux_setup_rust.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_rust.sh"
+
+# Utility function for swift-using packages to setup a swift toolchain
+# shellcheck source=scripts/build/setup/termux_setup_swift.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_swift.sh"
 
 # Utility function for zig-using packages to setup a zig toolchain.
 # shellcheck source=scripts/build/setup/termux_setup_zig.sh
@@ -313,10 +321,13 @@ source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_finish_build.sh"
 . "$TERMUX_SCRIPTDIR/scripts/properties.sh"
 
 if [ "$TERMUX_ON_DEVICE_BUILD" = "true" ]; then
+	# Setup TERMUX_APP_PACKAGE_MANAGER
+	source "$TERMUX_PREFIX/bin/termux-setup-package-manager"
+
 	# For on device builds cross compiling is not supported.
 	# Target architecture must be same as for environment used currently.
-	case "$TERMUX_MAIN_PACKAGE_FORMAT" in
-		"debian") TERMUX_ARCH=$(dpkg --print-architecture);;
+	case "$TERMUX_APP_PACKAGE_MANAGER" in
+		"apt") TERMUX_ARCH=$(dpkg --print-architecture);;
 		"pacman") TERMUX_ARCH=$(pacman-conf | grep Architecture | sed 's/Architecture = //g');;
 	esac
 	export TERMUX_ARCH
@@ -360,11 +371,7 @@ while (($# >= 1)); do
 				if [ -z "$1" ]; then
 					termux_error_exit "./build-package.sh: argument to '--format' should not be empty"
 				fi
-
-				case "$1" in
-					debian|pacman) TERMUX_PACKAGE_FORMAT="$1";;
-					*) termux_error_exit "./build-package.sh: only 'debian' and 'pacman' formats are supported";;
-				esac
+				TERMUX_PACKAGE_FORMAT="$1"
 			else
 				termux_error_exit "./build-package.sh: option '--format' requires an argument"
 			fi
@@ -416,6 +423,20 @@ while (($# >= 1)); do
 done
 unset -f _show_usage
 
+# Dependencies should be used from repo only if they are built for
+# same package name.
+if [ "$TERMUX_REPO_PACKAGE" != "$TERMUX_APP_PACKAGE" ]; then
+	echo "Ignoring -i option to download dependencies since repo package name ($TERMUX_REPO_PACKAGE) does not equal app package name ($TERMUX_APP_PACKAGE)"
+	TERMUX_INSTALL_DEPS=false
+fi
+
+if [ -n "${TERMUX_PACKAGE_FORMAT-}" ]; then
+	case "${TERMUX_PACKAGE_FORMAT-}" in
+		debian|pacman) :;;
+		*) termux_error_exit "Unsupported package format \"${TERMUX_PACKAGE_FORMAT-}\". Only 'debian' and 'pacman' formats are supported";;
+	esac
+fi
+
 if [ "${TERMUX_INSTALL_DEPS-false}" = "true" ]; then
 	# Setup PGP keys for verifying integrity of dependencies.
 	# Keys are obtained from our keyring package.
@@ -464,7 +485,7 @@ for ((i=0; i<${#PACKAGE_LIST[@]}; i++)); do
 				if [ -d "${TERMUX_SCRIPTDIR}/${package_directory}/${TERMUX_PKG_NAME}" ]; then
 					export TERMUX_PKG_BUILDER_DIR=${TERMUX_SCRIPTDIR}/$package_directory/$TERMUX_PKG_NAME
 					break
-				elif [ -n "${TERMUX_IS_DISABLED=""}" ] && [ -d "${TERMUX_SCRIPTDIR}/disabled-packages/${TERMUX_PKG_NAME}"]; then
+				elif [ -n "${TERMUX_IS_DISABLED=""}" ] && [ -d "${TERMUX_SCRIPTDIR}/disabled-packages/${TERMUX_PKG_NAME}" ]; then
 					export TERMUX_PKG_BUILDER_DIR=$TERMUX_SCRIPTDIR/disabled-packages/$TERMUX_PKG_NAME
 					break
 				fi

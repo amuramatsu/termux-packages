@@ -1,5 +1,4 @@
 termux_step_setup_variables() {
-	: "${TERMUX_PACKAGE_FORMAT:="$([ ! -z "${TERMUX_MAIN_PACKAGE_FORMAT+x}" ] && echo "$TERMUX_MAIN_PACKAGE_FORMAT" || echo "debian")"}" # debian, pacman
 	: "${TERMUX_ARCH:="aarch64"}" # arm, aarch64, i686 or x86_64.
 	: "${TERMUX_OUTPUT_DIR:="${TERMUX_SCRIPTDIR}/output"}"
 	: "${TERMUX_DEBUG_BUILD:="false"}"
@@ -13,6 +12,20 @@ termux_step_setup_variables() {
 	: "${TERMUX_SKIP_DEPCHECK:="false"}"
 	: "${TERMUX_TOPDIR:="$HOME/.termux-build"}"
 	: "${TERMUX_PACMAN_PACKAGE_COMPRESSION:="xz"}"
+
+	if [ -z "${TERMUX_PACKAGE_FORMAT-}" ]; then
+		if [ "$TERMUX_ON_DEVICE_BUILD" = "true" ] && [ -n "${TERMUX_APP_PACKAGE_MANAGER-}" ]; then
+			TERMUX_PACKAGE_FORMAT="$([ "${TERMUX_APP_PACKAGE_MANAGER-}" = "apt" ] && echo "debian" || echo "${TERMUX_APP_PACKAGE_MANAGER-}")"
+		else
+			TERMUX_PACKAGE_FORMAT="debian"
+		fi
+	fi
+
+	case "${TERMUX_PACKAGE_FORMAT-}" in
+		debian) TERMUX_PACKAGE_MANAGER="apt";;
+		pacman) TERMUX_PACKAGE_MANAGER="pacman";;
+		*) termux_error_exit "Unsupported package format \"${TERMUX_PACKAGE_FORMAT-}\". Only 'debian' and 'pacman' formats are supported";;
+	esac
 
 	if [ "$TERMUX_ON_DEVICE_BUILD" = "true" ]; then
 		# For on-device builds cross-compiling is not supported so we can
@@ -30,24 +43,6 @@ termux_step_setup_variables() {
 
 	# TERMUX_PKG_MAINTAINER should be explicitly set in build.sh of the package.
 	: "${TERMUX_PKG_MAINTAINER:="default"}"
-
-	TERMUX_REPO_URL=(
-		https://packages-cf.termux.org/apt/termux-main
-		https://packages-cf.termux.org/apt/termux-root
-		https://packages-cf.termux.org/apt/termux-x11
-	)
-
-	TERMUX_REPO_DISTRIBUTION=(
-		stable
-		root
-		x11
-	)
-
-	TERMUX_REPO_COMPONENT=(
-		main
-		stable
-		main
-	)
 
 	if [ "x86_64" = "$TERMUX_ARCH" ] || [ "aarch64" = "$TERMUX_ARCH" ]; then
 		TERMUX_ARCH_BITS=64
