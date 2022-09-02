@@ -189,9 +189,21 @@ source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_handle_hostbuild.sh"
 # shellcheck source=scripts/build/termux_step_host_build.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_host_build.sh"
 
-# Setup a standalone Android NDK toolchain. Not to be overridden by packages.
+# Setup a standalone Android NDK 25 toolchain. Called from termux_step_setup_toolchain.
+# shellcheck source=scripts/build/toolchain/termux_setup_toolchain_25.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/toolchain/termux_setup_toolchain_25.sh"
+
+# Setup a standalone Android NDK 23c toolchain. Called from termux_step_setup_toolchain.
+# shellcheck source=scripts/build/toolchain/termux_setup_toolchain_23c.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/toolchain/termux_setup_toolchain_23c.sh"
+
+# Runs termux_step_setup_toolchain_${TERMUX_NDK_VERSION}. Not to be overridden by packages.
 # shellcheck source=scripts/build/termux_step_setup_toolchain.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_setup_toolchain.sh"
+
+# Setup a standalone toolchain with GNU Assembler (GAS). Can be called from build.sh.
+# shellcheck source=scripts/build/toolchain/termux_setup_gnu_as_23c.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/toolchain/termux_setup_gnu_as_23c.sh"
 
 # Apply all *.patch files for the package. Not to be overridden by packages.
 # shellcheck source=scripts/build/termux_step_patch_package.sh
@@ -257,9 +269,8 @@ source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_install_license.sh"
 source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_extract_into_massagedir.sh"
 
 # Hook function to create {pre,post}install, {pre,post}rm-scripts for subpkgs
-termux_step_create_subpkg_debscripts() {
-	return
-}
+# shellcheck source=scripts/build/termux_step_create_subpkg_debscripts.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_create_subpkg_debscripts.sh"
 
 # Create all subpackages. Run from termux_step_massage
 # shellcheck source=scripts/build/termux_create_debian_subpackages.sh
@@ -371,7 +382,7 @@ while (($# >= 1)); do
 				if [ -z "$1" ]; then
 					termux_error_exit "./build-package.sh: argument to '--format' should not be empty"
 				fi
-				TERMUX_PACKAGE_FORMAT="$1"
+				export TERMUX_PACKAGE_FORMAT="$1"
 			else
 				termux_error_exit "./build-package.sh: option '--format' requires an argument"
 			fi

@@ -3,6 +3,7 @@ TERMUX_PKG_DESCRIPTION="Multilib binaries for cross-compilation"
 TERMUX_PKG_LICENSE="NCSA"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=$TERMUX_NDK_VERSION
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SKIP_SRC_EXTRACT=true
 TERMUX_PKG_PLATFORM_INDEPENDENT=true
 TERMUX_PKG_NO_STATICSPLIT=true
@@ -20,10 +21,9 @@ prepare_libs() {
 	local BASEDIR=$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/$SUFFIX/${TERMUX_PKG_API_LEVEL}
 	cp $BASEDIR/*.o $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/$SUFFIX/lib
 	cp $BASEDIR/lib{c,dl,log,m}.so $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/$SUFFIX/lib
-	cp $BASEDIR/lib{c,dl,m}.a $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/$SUFFIX/lib
 	cp $TERMUX_STANDALONE_TOOLCHAIN/sysroot/usr/lib/${SUFFIX}/libc++_shared.so \
 		$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/$SUFFIX/lib
-	cp $TERMUX_STANDALONE_TOOLCHAIN/sysroot/usr/lib/${SUFFIX}/lib{c++_static,c++abi}.a \
+	cp $TERMUX_STANDALONE_TOOLCHAIN/sysroot/usr/lib/${SUFFIX}/lib{c,dl,m,c++_static,c++abi}.a \
 		$TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/$SUFFIX/lib
 	echo 'INPUT(-lc++_static -lc++abi)' > $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/$SUFFIX/lib/libc++_shared.a
 
