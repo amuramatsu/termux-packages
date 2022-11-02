@@ -3,9 +3,9 @@ TERMUX_PKG_DESCRIPTION="A tool for creating minimal interactive TUIs for shell s
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="LICENSE"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="0.5.0"
+TERMUX_PKG_VERSION="0.8.0"
 TERMUX_PKG_SRCURL="https://github.com/charmbracelet/gum/archive/refs/tags/v$TERMUX_PKG_VERSION.tar.gz"
-TERMUX_PKG_SHA256=0f8e071cc3610c641cc0539f7feb9652b0e8a1fa8f7409c81625cbe71027f28e
+TERMUX_PKG_SHA256=80d0000d8eaf1d577c76099a6747307df445ae66e368b99467d3493cce21c668
 TERMUX_PKG_AUTO_UPDATE=true
 
 termux_step_make() {
@@ -17,6 +17,11 @@ termux_step_make() {
 
 termux_step_make_install() {
 	install -Dm755 -t "${TERMUX_PREFIX}/bin" "${TERMUX_PKG_SRCDIR}/gum"
+
+	install -Dm644 /dev/null $TERMUX_PREFIX/share/man/man1/gum.1
+	install -Dm644 /dev/null $TERMUX_PREFIX/share/bash-completion/completions/gum
+	install -Dm644 /dev/null $TERMUX_PREFIX/share/zsh/site-functions/_gum
+	install -Dm644 /dev/null $TERMUX_PREFIX/share/fish/vendor_completions.d/gum.fish
 }
 
 termux_step_create_debscripts() {
@@ -26,16 +31,12 @@ termux_step_create_debscripts() {
 
 	# Generating manpages
 	printf >&2 "%s\n" "Generating manpages for gum"
-	mkdir -p "$TERMUX_PREFIX/share/man/man1"
 	if ! gum man > "$TERMUX_PREFIX/share/man/man1/gum.1"; then
 		printf >&2 "\t%s\n" "manpages for gum: FAILED"
 	fi
 
 	# Generating shell completions
 	printf >&2 "%s\n" "Generating shell completions for gum"
-	mkdir -p "$TERMUX_PREFIX/share/bash-completion/completions"
-	mkdir -p "$TERMUX_PREFIX/share/zsh/site-functions"
-	mkdir -p "$TERMUX_PREFIX/share/fish/vendor_completions.d"
 	if ! gum completion bash \
 		> "$TERMUX_PREFIX/share/bash-completion/completions/gum"; then
 		printf >&2 "\t%s\n" "bash completions for gum: FAILED"
@@ -48,13 +49,5 @@ termux_step_create_debscripts() {
 		> "$TERMUX_PREFIX/share/fish/vendor_completions.d/gum.fish"; then
 		printf >&2 "\t%s\n" "fish completions for gum: FAILED"
 	fi
-	EOF
-
-	cat <<- EOF > ./postrm
-	#!$TERMUX_PREFIX/bin/sh
-	rm -f "$TERMUX_PREFIX/share/man/man1/gum.1"
-	rm -f "$TERMUX_PREFIX/share/bash-completion/completions/gum"
-	rm -f "$TERMUX_PREFIX/share/zsh/site-functions/_gum"
-	rm -f "$TERMUX_PREFIX/share/fish/vendor_completions.d/gum.fish"
 	EOF
 }

@@ -50,6 +50,7 @@ PACKAGES+=" pandoc"
 PACKAGES+=" python3-docutils"
 PACKAGES+=" python3-recommonmark"
 PACKAGES+=" python3-sphinx"
+PACKAGES+=" python3-sphinxcontrib.qthelp"
 PACKAGES+=" scdoc"
 PACKAGES+=" texinfo"
 PACKAGES+=" xmlto"
@@ -58,9 +59,12 @@ PACKAGES+=" xmltoman"
 # Needed by python modules (e.g. asciinema) and some build systems.
 PACKAGES+=" python3.9"
 PACKAGES+=" python3.10"
+PACKAGES+=" python3.11"
 PACKAGES+=" python3-pip"
 PACKAGES+=" python3-setuptools"
+PACKAGES+=" python-wheel-common"
 PACKAGES+=" python3.10-venv"
+PACKAGES+=" python3.11-venv"
 
 # Needed by package bc.
 PACKAGES+=" ed"
@@ -96,6 +100,9 @@ PACKAGES+=" libelf-dev"
 PACKAGES+=" libexpat1-dev"
 PACKAGES+=" libjpeg-dev"
 
+# Needed by package gimp3.
+PACKAGES+=" librsvg2-dev"
+
 # Needed by package news-flash-gtk.
 PACKAGES+=" libsqlite3-dev"
 
@@ -103,10 +110,14 @@ PACKAGES+=" libsqlite3-dev"
 PACKAGES+=" lua5.2"
 
 # Needed by package luarocks.
-PACKAGES+=" lua5.3"
+PACKAGES+=" lua5.1"
 
 # Used bt host build of package mariadb.
 PACKAGES+=" libncurses5-dev"
+
+# Needed to build neovim >= 8.0.0
+PACKAGES+=" lua-lpeg"
+PACKAGES+=" lua-mpack"
 
 # Needed by packages mkvtoolnix and ruby.
 PACKAGES+=" ruby"
@@ -202,6 +213,7 @@ PACKAGES+=" wayland-scanner++"
 PACKAGES+=" xfce4-dev-tools"
 PACKAGES+=" xfonts-utils"
 PACKAGES+=" xutils-dev"
+PACKAGES+=" desktop-file-utils"
 
 # Needed by packages in science repository
 PACKAGES+=" protobuf-c-compiler"
@@ -210,6 +222,9 @@ PACKAGES+=" sqlite3"
 # Needed by packages in game repository
 PACKAGES+=" cvs"
 PACKAGES+=" python3-yaml"
+
+# Needed by gobject-introspection (termux_setup_gir).
+PACKAGES+=" bash-static"
 
 # Needed by apt.
 PACKAGES+=" triehash"
@@ -222,7 +237,7 @@ PACKAGES+=" python3-jsonschema"
 
 # Needed by package lilypond.
 PACKAGES+=" fontforge-nox"
-PACKAGES+=" guile-2.2"
+PACKAGES+=" guile-3.0"
 PACKAGES+=" python3-fontforge"
 PACKAGES+=" texlive-metapost"
 

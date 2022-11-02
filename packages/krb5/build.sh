@@ -3,10 +3,11 @@ TERMUX_PKG_DESCRIPTION="The Kerberos network authentication system"
 TERMUX_PKG_LICENSE="custom"
 TERMUX_PKG_LICENSE_FILE="../NOTICE"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=1.19.3
+TERMUX_PKG_VERSION=1.20
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://fossies.org/linux/misc/krb5-$TERMUX_PKG_VERSION.tar.gz
-TERMUX_PKG_SHA256=56d04863cfddc9d9eb7af17556e043e3537d41c6e545610778676cf551b9dcd0
-TERMUX_PKG_DEPENDS="libandroid-support, libandroid-glob, libresolv-wrapper, readline, openssl-1.1, libdb"
+TERMUX_PKG_SHA256=7e022bdd3c851830173f9faaa006a230a0e0fdad4c953e85bff4bf0da036e12f
+TERMUX_PKG_DEPENDS="libandroid-support, libandroid-glob, libresolv-wrapper, readline, openssl, libdb"
 TERMUX_PKG_BREAKS="krb5-dev"
 TERMUX_PKG_REPLACES="krb5-dev"
 TERMUX_PKG_CONFFILES="etc/krb5.conf var/krb5kdc/kdc.conf"
@@ -38,11 +39,6 @@ termux_step_pre_configure() {
 
 	CFLAGS="$CFLAGS -D_PASSWORD_LEN=PASS_MAX"
 	export LIBS="-landroid-glob -lresolv_wrapper"
-
-	CFLAGS="-I$TERMUX_PREFIX/include/openssl-1.1 $CFLAGS"
-	CPPFLAGS="-I$TERMUX_PREFIX/include/openssl-1.1 $CPPFLAGS"
-	CXXFLAGS="-I$TERMUX_PREFIX/include/openssl-1.1 $CXXFLAGS"
-	LDFLAGS="-L$TERMUX_PREFIX/lib/openssl-1.1 $LDFLAGS"
 }
 
 termux_step_post_make_install() {

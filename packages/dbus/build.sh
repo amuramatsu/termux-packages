@@ -2,15 +2,16 @@ TERMUX_PKG_HOMEPAGE=https://dbus.freedesktop.org
 TERMUX_PKG_DESCRIPTION="Freedesktop.org message bus system"
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=1.14.0
+TERMUX_PKG_VERSION=1.15.2
 TERMUX_PKG_SRCURL="https://dbus.freedesktop.org/releases/dbus/dbus-$TERMUX_PKG_VERSION.tar.xz"
-TERMUX_PKG_SHA256=ccd7cce37596e0a19558fd6648d1272ab43f011d80c8635aea8fd0bad58aebd4
+TERMUX_PKG_SHA256=7e640803084af59f5e477b7ded11fd888b5380910a895c51ca3aedd63c0626ca
 TERMUX_PKG_DEPENDS="libexpat, libx11"
 TERMUX_PKG_BREAKS="dbus-dev"
 TERMUX_PKG_REPLACES="dbus-dev"
 TERMUX_PKG_BUILD_IN_SRC=true
 
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
+ac_cv_func_close_range=no
 --disable-libaudit
 --disable-systemd
 --disable-tests

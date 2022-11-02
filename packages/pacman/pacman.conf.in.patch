@@ -1,5 +1,6 @@
---- pacman-6.0.1/etc/pacman.conf.in	2021-09-04 12:42:20.344308000 +0300
-+++ pacman-6.0.1/etc/pacman.conf.in.ter	2022-08-29 18:01:00.695250960 +0300
+diff -uNr pacman-6.0.1/etc/pacman.conf.in pacman-6.0.1/etc/pacman.conf.in.patch
+--- pacman-6.0.1/etc/pacman.conf.in	2022-10-19 09:05:03.548158181 +0300
++++ pacman-6.0.1/etc/pacman.conf.in.patch	2022-10-19 09:07:22.858158128 +0300
 @@ -9,15 +9,15 @@
  [options]
  # The following paths are commented out with their default values listed.
@@ -37,13 +38,13 @@
 -#RemoteFileSigLevel = Optional
 +# By default, pacman accepts packages signed by keys that its local keyring
 +# trusts (see pacman-key and its man page), as well as unsigned packages.
-+SigLevel    = Never
++SigLevel    = DatabaseRequired
 +LocalFileSigLevel = Optional
 +#RemoteFileSigLevel = Required
  
  #
  # REPOSITORIES
-@@ -60,18 +61,11 @@
+@@ -60,18 +61,14 @@
  # uncommented to enable the repo.
  #
  
@@ -70,3 +71,6 @@
 +
 +[root]
 +Server = https://s3.amazonaws.com/termux-pacman.us/root/$arch
++
++[tur]
++Server = https://s3.amazonaws.com/termux-pacman.us/tur/$arch

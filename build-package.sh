@@ -74,6 +74,10 @@ source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_cabal.sh"
 # shellcheck source=scripts/build/setup/termux_setup_jailbreak_cabal.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_jailbreak_cabal.sh"
 
+# Utility function for setting up GObject Introspection cross environment.
+# shellcheck source=scripts/build/setup/termux_setup_gir.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_gir.sh"
+
 # Utility function for setting up GN toolchain.
 # shellcheck source=scripts/build/setup/termux_setup_gn.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/setup/termux_setup_gn.sh"
@@ -189,9 +193,9 @@ source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_handle_hostbuild.sh"
 # shellcheck source=scripts/build/termux_step_host_build.sh
 source "$TERMUX_SCRIPTDIR/scripts/build/termux_step_host_build.sh"
 
-# Setup a standalone Android NDK 25 toolchain. Called from termux_step_setup_toolchain.
-# shellcheck source=scripts/build/toolchain/termux_setup_toolchain_25.sh
-source "$TERMUX_SCRIPTDIR/scripts/build/toolchain/termux_setup_toolchain_25.sh"
+# Setup a standalone Android NDK 25b toolchain. Called from termux_step_setup_toolchain.
+# shellcheck source=scripts/build/toolchain/termux_setup_toolchain_25b.sh
+source "$TERMUX_SCRIPTDIR/scripts/build/toolchain/termux_setup_toolchain_25b.sh"
 
 # Setup a standalone Android NDK 23c toolchain. Called from termux_step_setup_toolchain.
 # shellcheck source=scripts/build/toolchain/termux_setup_toolchain_23c.sh

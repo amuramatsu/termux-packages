@@ -2,10 +2,10 @@ TERMUX_PKG_HOMEPAGE=https://www.libsdl.org
 TERMUX_PKG_DESCRIPTION="A library for portable low-level access to a video framebuffer, audio output, mouse, and keyboard (version 2)"
 TERMUX_PKG_LICENSE="ZLIB"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=2.24.0
+TERMUX_PKG_VERSION="2.24.2"
 TERMUX_PKG_SRCURL=https://www.libsdl.org/release/SDL2-${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=91e4c34b1768f92d399b078e171448c6af18cafda743987ed2064a28954d6d97
-TERMUX_PKG_DEPENDS="libandroid-glob, libflac, libogg, libsndfile, libvorbis, libx11, libxau, libxcb, libxcursor, libxdmcp, libxext, libxfixes, libxi, libxinerama, libxrandr, libxrender, libxss, libxxf86vm, pulseaudio"
+TERMUX_PKG_SHA256=b35ef0a802b09d90ed3add0dcac0e95820804202914f5bb7b0feb710f1a1329f
+TERMUX_PKG_DEPENDS="libx11, libxcursor, libxext, libxfixes, libxi, libxrandr, libxss, pulseaudio"
 TERMUX_PKG_BUILD_DEPENDS="mesa"
 TERMUX_PKG_RECOMMENDS="mesa"
 TERMUX_PKG_CONFLICTS="libsdl2"
@@ -58,11 +58,10 @@ termux_step_pre_configure() {
 }
 
 termux_step_post_massage() {
+	# ld(1)ing with `-lSDL2` won't work without this:
+	# https://github.com/termux/x11-packages/issues/633
 	cd ${TERMUX_PKG_MASSAGEDIR}/${TERMUX_PREFIX}/lib || exit 1
 	if [ ! -e "./libSDL2.so" ]; then
 		ln -sf libSDL2-2.0.so libSDL2.so
-	fi
-	if [ ! -e "./libSDL2-2.0.so.0" ]; then
-		ln -sf libSDL2-2.0.so libSDL2-2.0.so.0
 	fi
 }

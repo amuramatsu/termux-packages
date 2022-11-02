@@ -2,14 +2,12 @@ TERMUX_PKG_HOMEPAGE=https://opencv.org/
 TERMUX_PKG_DESCRIPTION="Open Source Computer Vision Library"
 TERMUX_PKG_LICENSE="Apache-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=(4.5.5)
-TERMUX_PKG_VERSION+=(1.22.3) # NumPy version
-TERMUX_PKG_REVISION=4
-TERMUX_PKG_SRCURL=(https://github.com/opencv/opencv/archive/${TERMUX_PKG_VERSION}.tar.gz
-                   https://github.com/numpy/numpy/archive/refs/tags/v${TERMUX_PKG_VERSION[1]}.tar.gz)
-TERMUX_PKG_SHA256=(a1cfdcf6619387ca9e232687504da996aaa9f7b5689986b8331ec02cb61d28ad
-                   c8f3ec591e3f17b939220f2b9eabb4c5e2db330f8af62c0a3aeee8a4d1a6c0db)
-TERMUX_PKG_DEPENDS="libc++, libjpeg-turbo, libpng, libprotobuf, libtiff, libwebp, openjpeg, openjpeg-tools, zlib"
+TERMUX_PKG_VERSION=4.6.0
+TERMUX_PKG_REVISION=8
+TERMUX_PKG_SRCURL=https://github.com/opencv/opencv/archive/${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=1ec1cba65f9f20fe5a41fda1586e01c70ea0c9a6d7b67c9e13edf0cfe2239277
+TERMUX_PKG_DEPENDS="libc++, libjpeg-turbo, libopenblas, libpng, libprotobuf, libtiff, libwebp, openjpeg, openjpeg-tools, zlib, python-numpy"
+TERMUX_PKG_BUILD_DEPENDS="python-numpy-static"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DANDROID_NO_TERMUX=OFF
 -DWITH_OPENEXR=OFF
@@ -17,10 +15,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DPROTOBUF_UPDATE_FILES=ON
 -DOPENCV_GENERATE_PKGCONFIG=ON
 "
-
-termux_step_post_get_source() {
-	mv numpy-${TERMUX_PKG_VERSION[1]} numpy
-}
 
 termux_step_pre_configure() {
 	termux_setup_protobuf
@@ -55,15 +49,12 @@ termux_step_pre_configure() {
 		${_CROSSENV_PREFIX}
 	popd
 	. ${_CROSSENV_PREFIX}/bin/activate
+	build-pip install Cython wheel
 	LDFLAGS+=" -lpython${_PYTHON_VERSION}"
-	export NPY_DISABLE_SVML=1
-	pushd $TERMUX_PKG_SRCDIR/numpy
-	pip install .
-	popd
 	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+="
 		-DPYTHON_DEFAULT_EXECUTABLE=python
 		-DPYTHON3_INCLUDE_PATH=$TERMUX_PREFIX/include/python${_PYTHON_VERSION}
-		-DPYTHON3_NUMPY_INCLUDE_DIRS=${_CROSSENV_PREFIX}/cross/lib/python${_PYTHON_VERSION}/site-packages/numpy/core/include
+		-DPYTHON3_NUMPY_INCLUDE_DIRS=$TERMUX_PREFIX/lib/python${_PYTHON_VERSION}/site-packages/numpy/core/include
 		"
 }
 

@@ -3,13 +3,12 @@ TERMUX_PKG_DESCRIPTION="An open-source implementation of the OpenGL specificatio
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=22.1.0
-TERMUX_PKG_REVISION=1
+TERMUX_PKG_VERSION=22.2.2
 TERMUX_PKG_SRCURL=https://archive.mesa3d.org/mesa-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=df6270c1371eaa2aa6eb65b95cbbb2a98b14fa4b7ba0ed45e4ca2fd32df60477
-TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libexpat, libx11, libxext, ncurses, zlib, zstd"
+TERMUX_PKG_SHA256=2de11fb74fc5cc671b818e49fe203cea0cd1d8b69756e97cdb06a2f4e78948f9
+TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libexpat, libx11, libxext, ncurses, zlib, zstd"
 TERMUX_PKG_BUILD_DEPENDS="libllvm-static, llvm, llvm-tools, mlir, xorgproto"
-TERMUX_PKG_CONFLICTS="libmesa, ndk-sysroot (<< 23b-6)"
+TERMUX_PKG_CONFLICTS="libmesa, ndk-sysroot (<= 25b)"
 TERMUX_PKG_REPLACES="libmesa"
 
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
@@ -17,9 +16,9 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dcpp_rtti=false
 -Dgbm=disabled
 -Degl=disabled
--Dgles1=disabled
--Dgles2=disabled
--Ddri3=disabled
+-Dgles1=enabled
+-Dgles2=enabled
+-Ddri3=enabled
 -Dllvm=enabled
 -Dshared-llvm=disabled
 -Dglx=xlib
@@ -27,6 +26,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Ddri-drivers=
 -Dgallium-drivers=swrast
 -Dvulkan-drivers=
+-Dosmesa=true
 "
 
 termux_step_pre_configure() {
@@ -51,6 +51,9 @@ termux_step_post_configure() {
 }
 
 termux_step_post_massage() {
+	# A bunch of programs in the wild assume that the name of OpenGL shared
+	# library is `libGL.so.1` and try to dlopen(3) it. In fact `sdl2` does
+	# this. So please do not ever remove the symlink.
 	cd ${TERMUX_PKG_MASSAGEDIR}/${TERMUX_PREFIX}/lib || exit 1
 	if [ ! -e "./libGL.so.1" ]; then
 		ln -sf libGL.so libGL.so.1
