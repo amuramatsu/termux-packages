@@ -2,11 +2,10 @@ TERMUX_PKG_HOMEPAGE=https://www.kde.org/
 TERMUX_PKG_DESCRIPTION="Utilities for core application functionality and accessing the OS (KDE)"
 TERMUX_PKG_LICENSE="LGPL-2.1"
 TERMUX_PKG_MAINTAINER="Simeon Huang <symeon@librehat.com>"
-TERMUX_PKG_VERSION=5.71.0
-TERMUX_PKG_REVISION=4
+TERMUX_PKG_VERSION=5.101.0
 TERMUX_PKG_SRCURL="https://download.kde.org/stable/frameworks/${TERMUX_PKG_VERSION%.*}/kcoreaddons-${TERMUX_PKG_VERSION}.tar.xz"
-TERMUX_PKG_SHA256=e95008b032e299cf47f596739d9236701e2f55e507734f33b8ea497882fd130b
-TERMUX_PKG_DEPENDS="qt5-qtbase, shared-mime-info"
+TERMUX_PKG_SHA256=77b64fc17f7ebbbd53bbb3614b4c3c73a0a9b21607e96e6abb2823ef1972b72a
+TERMUX_PKG_DEPENDS="libc++, qt5-qtbase, shared-mime-info"
 TERMUX_PKG_BUILD_DEPENDS="extra-cmake-modules, qt5-qtbase-cross-tools, qt5-qttools-cross-tools"
 
 # Keep share/mime/packages/kde5.xml only which would trigger an update after installation

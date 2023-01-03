@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://www.libsdl.org
 TERMUX_PKG_DESCRIPTION="A library for portable low-level access to a video framebuffer, audio output, mouse, and keyboard (version 2)"
 TERMUX_PKG_LICENSE="ZLIB"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="2.24.2"
+TERMUX_PKG_VERSION=2.26.1
 TERMUX_PKG_SRCURL=https://www.libsdl.org/release/SDL2-${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=b35ef0a802b09d90ed3add0dcac0e95820804202914f5bb7b0feb710f1a1329f
+TERMUX_PKG_SHA256=02537cc7ebd74071631038b237ec4bfbb3f4830ba019e569434da33f42373e04
 TERMUX_PKG_DEPENDS="libx11, libxcursor, libxext, libxfixes, libxi, libxrandr, libxss, pulseaudio"
 TERMUX_PKG_BUILD_DEPENDS="mesa"
 TERMUX_PKG_RECOMMENDS="mesa"
@@ -34,6 +34,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-video-vivante
 --disable-video-cocoa
 --disable-render-metal
+--disable-video-kmsdrm
 --enable-video-opengl
 --disable-video-opengles
 --disable-video-opengles2
@@ -48,6 +49,17 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-directx
 --disable-render-d3d
 "
+
+termux_step_post_get_source() {
+	# Do not forget to bump revision of reverse dependencies and rebuild them
+	# after SOVERSION is changed.
+	local _SOVERSION=0
+
+	local v=$(sed -En 's/^LT_MAJOR=([0-9]+).*/\1/p' configure.ac)
+	if [ "${v}" != "${_SOVERSION}" ]; then
+		termux_error_exit "SOVERSION guard check failed."
+	fi
+}
 
 termux_step_pre_configure() {
 	rm -rf "$TERMUX_PKG_SRCDIR"/Xcode-iOS

@@ -3,8 +3,12 @@
 # coreutils and are clearly not a default part of most Linux installations,
 # or sourcing any other script in our build directories.
 
-TERMUX_SDK_REVISION=8512546
-TERMUX_ANDROID_BUILD_TOOLS_VERSION=30.0.3
+TERMUX_SDK_REVISION=9123335
+TERMUX_ANDROID_BUILD_TOOLS_VERSION=33.0.1
+# when changing the above:
+# change TERMUX_PKG_VERSION (and remove TERMUX_PKG_REVISION if necessary) in:
+#   apksigner, d8
+# and trigger rebuild of them
 : "${TERMUX_NDK_VERSION_NUM:="25"}"
 : "${TERMUX_NDK_REVISION:="b"}"
 TERMUX_NDK_VERSION=$TERMUX_NDK_VERSION_NUM$TERMUX_NDK_REVISION
@@ -14,7 +18,8 @@ TERMUX_NDK_VERSION=$TERMUX_NDK_VERSION_NUM$TERMUX_NDK_REVISION
 # update SHA256 sums in scripts/setup-android-sdk.sh
 # check all packages build and run correctly and bump if needed
 
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+: "${TERMUX_JAVA_HOME:=/usr/lib/jvm/java-8-openjdk-amd64}"
+export JAVA_HOME=${TERMUX_JAVA_HOME}
 
 if [ "${TERMUX_PACKAGES_OFFLINE-false}" = "true" ]; then
 	export ANDROID_HOME=${TERMUX_SCRIPTDIR}/build-tools/android-sdk-$TERMUX_SDK_REVISION
@@ -57,6 +62,11 @@ TERMUX_REPO_COMPONENT=(
 )
 
 # Allow to override setup.
-if [ -f "$HOME/.termuxrc" ]; then
-	. "$HOME/.termuxrc"
-fi
+for f in "${HOME}/.config/termux/termuxrc.sh" "${HOME}/.termux/termuxrc.sh" "${HOME}/.termuxrc"; do
+	if [ -f "$f" ]; then
+		echo "Using builder configuration from '$f'..."
+		. "$f"
+		break
+	fi
+done
+unset f

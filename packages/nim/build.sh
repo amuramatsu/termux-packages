@@ -3,10 +3,10 @@ TERMUX_PKG_DESCRIPTION="Nim programming language compiler"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="copying.txt"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=1.6.6
+TERMUX_PKG_VERSION=1.6.10
 TERMUX_PKG_SRCURL=https://nim-lang.org/download/nim-$TERMUX_PKG_VERSION.tar.xz
-TERMUX_PKG_SHA256=67b111ce6f3861503b9fcc1cae59fc34d0122566d3ecfef3a064a2174121a452
-TERMUX_PKG_DEPENDS="clang, git, libandroid-glob, openssl-1.1"
+TERMUX_PKG_SHA256=13d7702f8b57087babe8cd051c13bc56a3171418ba867b49c6bbd09b29d24fea
+TERMUX_PKG_DEPENDS="clang, git, libandroid-glob, openssl"
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_BUILD_IN_SRC=true
 
@@ -40,7 +40,6 @@ termux_step_make() {
 	sed -i "s%\@LDFLAGS\@%${LDFLAGS}%g" config/nim.cfg
 	sed -i "s%\@CPPFLAGS\@%${CPPFLAGS}%g" config/nim.cfg
 
-	find -name "stdlib_osproc.nim.c" | xargs -n 1 sed -i 's',"/system/bin/sh\"\,\ 14","${TERMUX_PREFIX}/bin/sh\"\,\ 38",'g'
 	PATH=$TERMUX_PKG_HOSTBUILD_DIR/bin:$PATH
 
 	if [ $NIM_ARCH = "amd64" ]; then

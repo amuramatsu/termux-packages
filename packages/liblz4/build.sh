@@ -9,12 +9,18 @@ TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_BREAKS="liblz4-dev"
 TERMUX_PKG_REPLACES="liblz4-dev"
 
-termux_step_pre_configure() {
-	TERMUX_PKG_SRCDIR+=/build/cmake
+termux_step_post_get_source() {
+	# Do not forget to bump revision of reverse dependencies and rebuild them
+	# after SOVERSION is changed.
+	local _SOVERSION=1
+
+	local v=$(sed -En 's/^#define LZ4_VERSION_MAJOR +([0-9]+) +.*$/\1/p' \
+			lib/lz4.h)
+	if [ "${_SOVERSION}" != "${v}" ]; then
+		termux_error_exit "SOVERSION guard check failed."
+	fi
 }
 
-termux_step_post_make_install() {
-	# Rebuild all dependent packages to remove this.
-	ln -sf liblz4.so "${TERMUX_PREFIX}/lib/liblz4.so.${TERMUX_PKG_VERSION}"
-	ln -sf liblz4.so "${TERMUX_PREFIX}/lib/liblz4.so.${TERMUX_PKG_VERSION//.*}"
+termux_step_pre_configure() {
+	TERMUX_PKG_SRCDIR+=/build/cmake
 }

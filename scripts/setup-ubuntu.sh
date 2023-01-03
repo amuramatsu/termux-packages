@@ -50,6 +50,7 @@ PACKAGES+=" pandoc"
 PACKAGES+=" python3-docutils"
 PACKAGES+=" python3-recommonmark"
 PACKAGES+=" python3-sphinx"
+PACKAGES+=" python3-sphinx-rtd-theme"
 PACKAGES+=" python3-sphinxcontrib.qthelp"
 PACKAGES+=" scdoc"
 PACKAGES+=" texinfo"
@@ -106,6 +107,9 @@ PACKAGES+=" librsvg2-dev"
 # Needed by package news-flash-gtk.
 PACKAGES+=" libsqlite3-dev"
 
+# Needed by package fennel.
+PACKAGES+=" lua5.3"
+
 # Needed by package vlc.
 PACKAGES+=" lua5.2"
 
@@ -119,7 +123,10 @@ PACKAGES+=" libncurses5-dev"
 PACKAGES+=" lua-lpeg"
 PACKAGES+=" lua-mpack"
 
-# Needed by packages mkvtoolnix and ruby.
+# Needed by host build of package ruby.
+PACKAGES+=" libyaml-dev"
+
+# Needed by package mkvtoolnix.
 PACKAGES+=" ruby"
 
 # Needed by host build of package nodejs.
@@ -135,9 +142,9 @@ PACKAGES+=" composer"
 
 # Needed by package rust.
 PACKAGES+=" libssl-dev" # Needed to build Rust
-PACKAGES+=" llvm-12-dev"
-PACKAGES+=" llvm-12-tools"
-PACKAGES+=" clang-12"
+PACKAGES+=" llvm-13-dev"
+PACKAGES+=" llvm-13-tools"
+PACKAGES+=" clang-13"
 
 # Needed for package smalltalk.
 PACKAGES+=" libsigsegv-dev"
@@ -190,8 +197,6 @@ PACKAGES+=" libjansson-dev"
 PACKAGES+=" libparse-yapp-perl"
 PACKAGES+=" libreadline-dev"
 PACKAGES+=" libunistring-dev"
-PACKAGES+=" llvm-12-dev"
-PACKAGES+=" llvm-12-tools"
 
 # Needed by packages in X11 repository.
 PACKAGES+=" alex"
@@ -241,15 +246,17 @@ PACKAGES+=" guile-3.0"
 PACKAGES+=" python3-fontforge"
 PACKAGES+=" texlive-metapost"
 
+# Needed by package motif.
+PACKAGES+=" libfl-dev"
+PACKAGES+=" libxft-dev"
+PACKAGES+=" libxt-dev"
+PACKAGES+=" xbitmaps"
+
 # Needed by proxmark3/proxmark3-git
 PACKAGES+=" gcc-arm-none-eabi"
 
 # Needed by pypy
 PACKAGES+=" qemu-user-static"
-
-# For opt, llvm-link, llc not shipped by NDK.
-# Required by picolisp (and maybe a few others in future)
-PACKAGES+=" llvm-12"
 
 # Required by cava
 PACKAGES+=" xxd"

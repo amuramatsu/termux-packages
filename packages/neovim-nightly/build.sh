@@ -5,21 +5,21 @@ TERMUX_PKG_MAINTAINER="Aditya Alok <alok@termux.org>"
 # Upstream now has version number like "0.8.0-dev-698-ga5920e98f", but actually
 # "0.8.0-dev-698-g1ef84547a" < "0.8.0-dev-nightly-10-g1a07044c1", we need to bump
 # the epoch of the package version.
-TERMUX_PKG_VERSION="1:0.9.0-dev-136-gfad558b6a"
+TERMUX_PKG_VERSION="1:0.9.0-dev-598+g3a519d86b"
 TERMUX_PKG_SRCURL="https://github.com/neovim/neovim/archive/nightly.tar.gz"
-TERMUX_PKG_SHA256=fe4bc9703ec7e9e8f6ef00966b7f1dba9c77fa33158bf751086bd5cdae8a133e
+TERMUX_PKG_SHA256=41d8b28570e68edc94e83fc9d976ecbfe2bb45980861bf064ca88758f755c4d4
 TERMUX_PKG_DEPENDS="libiconv, libuv, luv, libmsgpack, libandroid-support, libvterm, libtermkey, libluajit, libunibilium, libtreesitter"
 TERMUX_PKG_HOSTBUILD=true
 
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DCMAKE_BUILD_TYPE=RelWithDebInfo
 -DENABLE_JEMALLOC=OFF
--DGETTEXT_MSGFMT_EXECUTABLE=$(which msgfmt)
--DGETTEXT_MSGMERGE_EXECUTABLE=$(which msgmerge)
+-DGETTEXT_MSGFMT_EXECUTABLE=$(command -v msgfmt)
+-DGETTEXT_MSGMERGE_EXECUTABLE=$(command -v msgmerge)
 -DGPERF_PRG=$TERMUX_PKG_HOSTBUILD_DIR/deps/usr/bin/gperf
 -DLUA_PRG=$TERMUX_PKG_HOSTBUILD_DIR/deps/usr/bin/luajit
--DPKG_CONFIG_EXECUTABLE=$(which pkg-config)
--DXGETTEXT_PRG=$(which xgettext)
+-DPKG_CONFIG_EXECUTABLE=$(command -v pkg-config)
+-DXGETTEXT_PRG=$(command -v xgettext)
 -DLUAJIT_INCLUDE_DIR=$TERMUX_PREFIX/include/luajit-2.1
 -DCOMPILE_LUA=OFF
 "
@@ -58,7 +58,7 @@ termux_pkg_auto_update() {
 		return 1
 	fi
 
-	remote_nvim_version="$(grep -oP '^\d+\.\d+\.\d+-dev-\d+-g[0-9a-f]+$' <<< "$remote_nvim_version" || true)"
+	remote_nvim_version="$(grep -oP '^\d+\.\d+\.\d+-dev-\d+\+g[0-9a-f]+' <<< "$remote_nvim_version" || true)"
 
 	if [ -z "$remote_nvim_version" ]; then
 		echo "WARNING: Version in nightly page is not in expected format. Skipping auto-update."
@@ -84,7 +84,7 @@ _patch_luv() {
 termux_step_host_build() {
 	termux_setup_cmake
 
-	TERMUX_ORIGINAL_CMAKE=$(which cmake)
+	TERMUX_ORIGINAL_CMAKE=$(command -v cmake)
 	if [ ! -f "$TERMUX_ORIGINAL_CMAKE.orig" ]; then
 		mv "$TERMUX_ORIGINAL_CMAKE" "$TERMUX_ORIGINAL_CMAKE.orig"
 	fi

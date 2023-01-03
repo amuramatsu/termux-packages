@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://github.com/dandavison/delta
 TERMUX_PKG_DESCRIPTION="A syntax-highlighter for git and diff output"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="0.14.0"
+TERMUX_PKG_VERSION="0.15.1"
 TERMUX_PKG_SRCURL=https://github.com/dandavison/delta/archive/${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=7d1ab2949d00f712ad16c8c7fc4be500d20def9ba70394182720a36d300a967c
+TERMUX_PKG_SHA256=b9afd2f80ae1d57991a19832d6979c7080a568d42290a24e59d6a2a82cbc1728
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="git, zlib"
 TERMUX_PKG_BUILD_IN_SRC=true
@@ -23,10 +23,14 @@ termux_step_pre_configure() {
 
 	cargo fetch --target "${CARGO_TARGET_NAME}"
 
+	local _patch=$TERMUX_SCRIPTDIR/packages/libgit2/src-util-rand.c.patch
+	local d
 	for d in $CARGO_HOME/registry/src/github.com-*/libgit2-sys-*/libgit2; do
-		patch --silent -p1 -d ${d} \
-			<$TERMUX_SCRIPTDIR/packages/libgit2/src-rand.c.patch || :
-		cp $TERMUX_SCRIPTDIR/packages/libgit2/getloadavg.c ${d}/src/ || :
+		(
+			t=${d}/src/
+			cp $TERMUX_SCRIPTDIR/packages/libgit2/getloadavg.c ${t}
+			patch --silent -d ${t} < ${_patch}
+		) || :
 	done
 }
 

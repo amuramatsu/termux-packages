@@ -3,24 +3,17 @@ TERMUX_PKG_DESCRIPTION="A translator library for raster and vector geospatial da
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="LICENSE.TXT"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=3.4.2
-TERMUX_PKG_REVISION=2
+TERMUX_PKG_VERSION=3.6.1
 TERMUX_PKG_SRCURL=https://download.osgeo.org/gdal/${TERMUX_PKG_VERSION}/gdal-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=16baf03dfccf9e3f72bb2e15cd2d5b3f4be0437cdff8a785bceab0c7be557335
-TERMUX_PKG_DEPENDS="json-c, libc++, libcurl, libexpat, libgeos, libiconv, libjxl, libpng, libspatialite, libsqlite, libwebp, netcdf-c, openjpeg, openssl, proj, postgresql"
+TERMUX_PKG_SHA256=68f1c03547ff7152289789db7f67ee634167c9b7bfec4872b88406b236f9c230
+TERMUX_PKG_DEPENDS="json-c, libc++, libcurl, libexpat, libfreexl, libgeos, libiconv, libjxl, liblzma, libpng, libspatialite, libsqlite, libwebp, netcdf-c, openjpeg, openssl, proj, postgresql"
+TERMUX_PKG_BUILD_DEPENDS="json-c-static"
 TERMUX_PKG_BREAKS="gdal-dev"
 TERMUX_PKG_REPLACES="gdal-dev"
 TERMUX_PKG_GROUPS="science"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
---with-expat=$TERMUX_PREFIX
---with-jxl=$TERMUX_PREFIX
---with-libjson-c=$TERMUX_PREFIX
---with-libtiff=internal
---with-spatialite=$TERMUX_PREFIX
---with-sqlite3=$TERMUX_PREFIX
+-DGDAL_USE_JXL=ON
+-DGDAL_USE_TIFF_INTERNAL=ON
+-DGDAL_USE_GEOTIFF_INTERNAL=ON
 "
-
-termux_step_pre_configure() {
-	LDFLAGS+=" $($CC -print-libgcc-file-name)"
-}

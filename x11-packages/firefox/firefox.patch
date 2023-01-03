@@ -54,15 +54,15 @@ diff -uNr firefox-105.0.3/build/moz.configure/pkg.configure firefox-105.0.3.mod/
 diff -uNr firefox-105.0.3/build/moz.configure/toolchain.configure firefox-105.0.3.mod/build/moz.configure/toolchain.configure
 --- firefox-105.0.3/build/moz.configure/toolchain.configure	2022-10-08 00:40:07.000000000 +0900
 +++ firefox-105.0.3.mod/build/moz.configure/toolchain.configure	2022-10-15 17:25:19.398719772 +0900
-@@ -1168,8 +1168,6 @@
+@@ -1175,7 +1175,7 @@
      ):
          wrapper = list(compiler_wrapper or ())
          flags = []
 -        if sysroot.path:
--            flags.extend(("--sysroot", sysroot.path))
-         if host_or_target.os == "OSX" and macos_target:
-             flags.append("-mmacosx-version-min=%s" % macos_target)
-         if provided_compiler:
++        if False:
+             if host_or_target.kernel == "Darwin":
+                 # While --sysroot and -isysroot are roughly equivalent, when not using
+                 # -isysroot on mac, clang takes the SDKROOT environment variable into
 @@ -1763,17 +1761,7 @@
  
  @depends(cxx_compiler, target)
@@ -166,19 +166,19 @@ diff -uNr firefox-105.0.3/memory/build/malloc_decls.h firefox-105.0.3.mod/memory
 diff -uNr firefox-105.0.3/memory/build/Mutex.h firefox-105.0.3.mod/memory/build/Mutex.h
 --- firefox-105.0.3/memory/build/Mutex.h	2022-10-08 00:40:08.000000000 +0900
 +++ firefox-105.0.3.mod/memory/build/Mutex.h	2022-10-15 09:48:55.157535800 +0900
-@@ -67,7 +67,7 @@
-     // OS_SPINLOCK_INIT initialize the lock to 0 and in both case it's a 32-bit
-     // integer.
-     mMutex.mUnfairLock = OS_UNFAIR_LOCK_INIT;
+@@ -55,7 +55,7 @@
+     }
+ #elif defined(XP_DARWIN)
+     mMutex = OS_UNFAIR_LOCK_INIT;
 -#elif defined(XP_LINUX) && !defined(ANDROID)
 +#elif defined(XP_LINUX) && !defined(__TERMUX__)
      pthread_mutexattr_t attr;
      if (pthread_mutexattr_init(&attr) != 0) {
        return false;
-@@ -161,7 +161,7 @@
- // initialize the lock to 0 and in both case it's a 32-bit integer.
- #    define STATIC_MUTEX_INIT \
-       { .mUnfairLock = OS_UNFAIR_LOCK_INIT }
+@@ -169,7 +169,7 @@
+ 
+ #  if defined(XP_DARWIN)
+ #    define STATIC_MUTEX_INIT OS_UNFAIR_LOCK_INIT
 -#  elif defined(XP_LINUX) && !defined(ANDROID)
 +#  elif defined(XP_LINUX) && !defined(__TERMUX__)
  #    define STATIC_MUTEX_INIT PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP
@@ -240,21 +240,49 @@ diff -uNr firefox-105.0.3/toolkit/components/moz.build firefox-105.0.3.mod/toolk
          "narrate",
          "reader",
 -        "viaduct",
+         "uniffi-js",
+         "uniffi-bindgen-gecko-js/components",
      ]
+--- a/toolkit/library/rust/shared/Cargo.toml
++++ b/toolkit/library/rust/shared/Cargo.toml
+@@ -111,10 +111,11 @@
+ # This happens to work around issues the older code has with 1.65.
+ fallible_collections = { version = "0.4", features = ["rust_1_57"] }
  
- if CONFIG["BUILD_CTYPES"]:
++tabs = { version = "0.1" }
++
+ [target.'cfg(not(target_os = "android"))'.dependencies]
+ viaduct = "0.1"
+ webext_storage_bridge = { path = "../../../components/extensions/storage/webext_storage_bridge" }
+-tabs = { version = "0.1" }
+ 
+ [target.'cfg(target_os = "windows")'.dependencies]
+ detect_win32k_conflicts = { path = "../../../xre/detect_win32k_conflicts" }
+--- a/toolkit/library/rust/shared/lib.rs
++++ b/toolkit/library/rust/shared/lib.rs
+@@ -57,10 +57,8 @@
+ #[cfg(not(target_os = "android"))]
+ extern crate webext_storage_bridge;
+ 
+-#[cfg(not(target_os = "android"))]
+ extern crate tabs;
+ 
+-#[cfg(not(target_os = "android"))]
+ mod reexport_tabs {
+     tabs::uniffi_reexport_scaffolding!();
+ }
 diff -uNr firefox-105.0.3/toolkit/moz.configure firefox-105.0.3.mod/toolkit/moz.configure
 --- firefox-105.0.3/toolkit/moz.configure	2022-10-08 00:40:08.000000000 +0900
 +++ firefox-105.0.3.mod/toolkit/moz.configure	2022-10-18 01:42:19.379553089 +0900
-@@ -172,7 +172,7 @@
- # ==============================================================
+@@ -173,7 +173,7 @@
  @depends(target)
  def midir_linux_support(target):
--    return target.kernel == "Linux" and target.os != "Android"
-+    return False
+     return (
+-        target.kernel == "Linux" and target.os != "Android" and target.cpu != "riscv64"
++        False
+     )
  
  
- @depends(target, midir_linux_support)
 @@ -225,7 +225,7 @@
  
  @depends("--enable-audio-backends", target)
@@ -326,19 +354,16 @@ diff -uNr firefox-105.0.3/toolkit/moz.configure firefox-105.0.3.mod/toolkit/moz.
 diff -uNr firefox-105.0.3/toolkit/xre/glxtest.cpp firefox-105.0.3.mod/toolkit/xre/glxtest.cpp
 --- firefox-105.0.3/toolkit/xre/glxtest.cpp	2022-10-08 00:25:42.000000000 +0900
 +++ firefox-105.0.3.mod/toolkit/xre/glxtest.cpp	2022-10-17 19:31:36.885513927 +0900
-@@ -1197,7 +1197,11 @@
+@@ -1175,7 +1175,9 @@
    glxtest_bufsize = bufsize;
  
    // Get a list of all GPUs from the PCI bus.
 +#if !defined(__TERMUX__)
-   int pci_count = get_pci_status();
-+#else
-+  int pci_count = 0;
+   get_pci_status();
 +#endif
  
  #ifdef MOZ_WAYLAND
    if (IsWaylandEnabled()) {
-
 diff -uNr firefox-105.0.3/js/src/ctypes/libffi/src/closures.c firefox-105.0.3.mod/js/src/ctypes/libffi/src/closures.c
 --- firefox-105.0.3/js/src/ctypes/libffi/src/closures.c	2022-10-07 22:37:49.000000000 +0900
 +++ firefox-105.0.3.mod/js/src/ctypes/libffi/src/closures.c	2022-10-17 19:42:34.472896402 +0900
@@ -377,63 +402,6 @@ diff -uNr firefox-105.0.3/nsprpub/pr/src/pthreads/ptthread.c firefox-105.0.3.mod
  /*
   * Record whether or not we have the privilege to set the scheduling
   * policy and priority of threads.  0 means that privilege is available.
-diff -uNr firefox-105.0.3/gfx/cairo/cairo/src/moz.build firefox-105.0.3.mod/gfx/cairo/cairo/src/moz.build
---- firefox-105.0.3/gfx/cairo/cairo/src/moz.build	2022-10-07 22:37:48.000000000 +0900
-+++ firefox-105.0.3.mod/gfx/cairo/cairo/src/moz.build	2022-10-18 01:50:34.180360552 +0900
-@@ -15,7 +15,7 @@
-     'pixman-rename.h',
- ]
- 
--if CONFIG['MOZ_WIDGET_TOOLKIT'] not in ('cocoa', 'uikit'):
-+if False:
-     EXPORTS.cairo += [
-         'cairo-pdf.h',
-     ]
-diff -uNr firefox-105.0.3/gfx/cairo/cairo/src/cairo-features.h firefox-105.0.3.mod/gfx/cairo/cairo/src/cairo-features.h
---- firefox-105.0.3/gfx/cairo/cairo/src/cairo-features.h	2022-10-07 22:37:48.000000000 +0900
-+++ firefox-105.0.3.mod/gfx/cairo/cairo/src/cairo-features.h	2022-10-18 03:44:09.352362967 +0900
-@@ -52,7 +52,6 @@
- #endif
- 
- #ifdef MOZ_PDF_PRINTING
--#define CAIRO_HAS_PDF_SURFACE 1
- #endif
- 
- #if defined(MOZ_X11) || defined(MOZ_WAYLAND)
-diff -uNr firefox-105.0.3/gfx/thebes/moz.build firefox-105.0.3.mod/gfx/thebes/moz.build
---- firefox-105.0.3/gfx/thebes/moz.build	2022-10-08 00:40:07.000000000 +0900
-+++ firefox-105.0.3.mod/gfx/thebes/moz.build	2022-10-18 03:50:47.722636946 +0900
-@@ -126,7 +126,6 @@
-         "gfxFT2FontBase.cpp",
-         "gfxFT2Utils.cpp",
-         "gfxPlatformGtk.cpp",
--        "PrintTargetPDF.cpp",
-     ]
- 
-     if CONFIG["MOZ_X11"]:
-diff -uNr firefox-105.0.3/gfx/cairo/cairo/src/cairoint.h firefox-105.0.3.mod/gfx/cairo/cairo/src/cairoint.h
---- firefox-105.0.3/gfx/cairo/cairo/src/cairoint.h	2022-10-07 22:37:49.000000000 +0900
-+++ firefox-105.0.3.mod/gfx/cairo/cairo/src/cairoint.h	2022-10-18 04:14:40.627988166 +0900
-@@ -84,7 +84,6 @@
-     CAIRO_HAS_PDF_SURFACE || \
-     CAIRO_HAS_SVG_SURFACE || \
-     CAIRO_HAS_WIN32_SURFACE
--#define CAIRO_HAS_FONT_SUBSET 1
- #endif
- 
- #if CAIRO_HAS_PS_SURFACE  || \
-diff -uNr firefox-105.0.3/dom/media/systemservices/moz.build firefox-105.0.3.mod/dom/media/systemservices/moz.build
---- firefox-105.0.3/dom/media/systemservices/moz.build	2022-10-07 23:40:08.000000000 +0900
-+++ firefox-105.0.3.mod/dom/media/systemservices/moz.build	2022-10-18 04:48:14.802451213 +0900
-@@ -57,7 +57,7 @@
-     DEFINES["WEBRTC_ANDROID"] = True
- 
- 
--if CONFIG["OS_TARGET"] == "Android":
-+if True:
-     EXPORTS += ["OpenSLESProvider.h"]
-     UNIFIED_SOURCES += [
-         "OpenSLESProvider.cpp",
 diff -uNr firefox-105.0.3/old-configure.in firefox-105.0.3.mod/old-configure.in
 --- firefox-105.0.3/old-configure.in	2022-10-07 22:37:53.000000000 +0900
 +++ firefox-105.0.3.mod/old-configure.in	2022-10-18 11:44:37.005989967 +0900

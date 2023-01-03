@@ -3,32 +3,32 @@ TERMUX_PKG_DESCRIPTION="Qt script module"
 TERMUX_PKG_LICENSE="LGPL-3.0, GPL-3.0, GPL-2.0"
 TERMUX_PKG_LICENSE_FILE="LICENSE.FDL, LICENSE.GPL2, LICENSE.GPL3, LICENSE.GPL3-EXCEPT, LICENSE.LGPL3"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=5.15.5
+TERMUX_PKG_VERSION=5.15.7
 TERMUX_PKG_SRCURL="https://download.qt.io/official_releases/qt/5.15/${TERMUX_PKG_VERSION}/submodules/qtscript-everywhere-opensource-src-${TERMUX_PKG_VERSION}.tar.xz"
-TERMUX_PKG_SHA256=f522b6d4d5aba0ffa7ae716a6b333fe459e6695627304aafa3fd90c8d005d39f
-TERMUX_PKG_DEPENDS="qt5-qtbase"
+TERMUX_PKG_SHA256=59123bd646e50bbb76356c512d5f60c7bb9aa2d429850ec66be033e683bd83aa
+TERMUX_PKG_DEPENDS="libc++, qt5-qtbase"
 TERMUX_PKG_BUILD_DEPENDS="qt5-qtbase-cross-tools"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_NO_STATICSPLIT=true
 
 termux_step_configure () {
-    "${TERMUX_PREFIX}/opt/qt/cross/bin/qmake" \
-        -spec "${TERMUX_PREFIX}/lib/qt/mkspecs/termux-cross"
+	"${TERMUX_PREFIX}/opt/qt/cross/bin/qmake" \
+		-spec "${TERMUX_PREFIX}/lib/qt/mkspecs/termux-cross"
 }
 
 termux_step_make_install() {
-    make install
+	make install
 
-    #######################################################
-    ##
-    ##  Fixes & cleanup.
-    ##
-    #######################################################
+	#######################################################
+	##
+	##  Fixes & cleanup.
+	##
+	#######################################################
 
-    ## Drop QMAKE_PRL_BUILD_DIR because reference the build dir.
-    find "${TERMUX_PREFIX}/lib" -type f -name "libQt5Script*.prl" \
-        -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' "{}" \;
+	## Drop QMAKE_PRL_BUILD_DIR because reference the build dir.
+	find "${TERMUX_PREFIX}/lib" -type f -name "libQt5Script*.prl" \
+		-exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' "{}" \;
 
-    ## Remove *.la files.
-    find "${TERMUX_PREFIX}/lib" -iname \*.la -delete
+	## Remove *.la files.
+	find "${TERMUX_PREFIX}/lib" -iname \*.la -delete
 }
