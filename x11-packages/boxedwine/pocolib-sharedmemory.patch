@@ -1,0 +1,11 @@
+diff -ruN Boxedwine.orig/lib/poco/Foundation/src/SharedMemory.cpp Boxedwine/lib/poco/Foundation/src/SharedMemory.cpp
+--- Boxedwine.orig/lib/poco/Foundation/src/SharedMemory.cpp	2023-01-10 04:01:17
++++ Boxedwine/lib/poco/Foundation/src/SharedMemory.cpp	2023-01-15 01:11:45
+@@ -19,6 +19,6 @@
+ #elif defined(POCO_OS_FAMILY_WINDOWS)
+ #include "SharedMemory_WIN32.cpp"
+-#elif defined(POCO_OS_FAMILY_UNIX)
++#elif defined(POCO_OS_FAMILY_UNIX) && !defined(__ANDROID__)
+ #include "SharedMemory_POSIX.cpp"
+ #else
+ #include "SharedMemory_DUMMY.cpp"
