@@ -1,0 +1,85 @@
+diff -ruN Boxedwine.orig/include/boxedwine.h Boxedwine/include/boxedwine.h
+--- Boxedwine.orig/include/boxedwine.h	2023-01-10 04:01:17
++++ Boxedwine/include/boxedwine.h	2023-01-15 02:53:50
+@@ -12,7 +12,8 @@
+ #include <functional>
+ #include <set>
+ #include <list>
+-#include <filesystem>
++#include <boost/system/error_code.hpp>
++#include <boost/filesystem.hpp>
+ 
+ #include <errno.h>
+ 
+diff -ruN Boxedwine.orig/source/io/fs.cpp Boxedwine/source/io/fs.cpp
+--- Boxedwine.orig/source/io/fs.cpp	2023-01-10 04:01:17
++++ Boxedwine/source/io/fs.cpp	2023-01-15 04:30:58
+@@ -399,8 +399,8 @@
+ }
+ 
+ U32 Fs::deleteNativeDirAndAllFilesInDir(const std::string& path) {
+-    std::error_code e; // will prevent it from throwing an error
+-    return (U32)std::filesystem::remove_all(path, e);
++    boost::system::error_code e; // will prevent it from throwing an error
++    return (U32)boost::filesystem::remove_all(path, e);
+ }
+ 
+ U32 Fs::iterateAllNativeFiles(const std::string& path, bool recursive, bool includeDirs, std::function<U32(const std::string&, bool isDir)> f) {
+diff -ruN Boxedwine.orig/source/ui/controls/installView.cpp Boxedwine/source/ui/controls/installView.cpp
+--- Boxedwine.orig/source/ui/controls/installView.cpp	2023-01-10 04:01:17
++++ Boxedwine/source/ui/controls/installView.cpp	2023-01-15 04:29:34
+@@ -253,6 +253,28 @@
+     containerNameControl->setText(name);
+ }
+ 
++static void recursive_copy(const boost::filesystem::path& src,
++                           const boost::filesystem::path& dst,
++                           boost::system::error_code& ec)
++{
++    if (boost::filesystem::is_directory(src)) {
++        if (! boost::filesystem::is_directory(dst))
++            boost::filesystem::create_directories(dst, ec);
++        for (boost::filesystem::directory_entry& item :
++                 boost::filesystem::directory_iterator(src)) {
++            recursive_copy(item.path(), dst / item.path().filename(), ec);
++            if (ec)
++                return;
++        }
++     } 
++     else if (boost::filesystem::is_regular_file(src)) {
++         boost::filesystem::copy(src, dst, ec);
++     } 
++     else {
++         ec = boost::system::error_code(EACCES, boost::system::system_category());
++     }
++}
++
+ void InstallView::onInstall() {
+     std::string location = locationControl->getText();
+     int containerIndex = containerControl->getSelection();
+@@ -311,19 +333,19 @@
+             GlobalSettings::startUpArgs.readyToLaunch = true;
+             GlobalSettings::startUpArgs.showAppPickerForContainerDir = container->getDir();
+         } else if (installType == INSTALL_TYPE_DIR) {
+-            std::filesystem::path dest(GlobalSettings::getRootFolder(container));
++            boost::filesystem::path dest(GlobalSettings::getRootFolder(container));
+             dest = dest / "home" / "username" / ".wine" / "drive_c" / Fs::getFileNameFromNativePath(location);
+ 
+-            if (!std::filesystem::exists(dest)) {
+-                std::error_code ec;
+-                if (!std::filesystem::create_directories(dest, ec)) {
++            if (!boost::filesystem::exists(dest)) {
++                boost::system::error_code ec;
++                if (!boost::filesystem::create_directories(dest, ec)) {
+                     this->errorMsgString = getTranslationWithFormat(INSTALLVIEW_ERROR_FILESYSTEM_FAIL_TO_CREATE_DIRS, true, ec.message());
+                     this->errorMsg = this->errorMsgString.c_str();
+                 }
+             }
+             if (!this->errorMsg) {
+-                std::error_code ec;
+-                std::filesystem::copy(location, dest, std::filesystem::copy_options::recursive, ec);
++                boost::system::error_code ec;
++                recursive_copy(location, dest, ec);
+                 if (ec) {
+                     this->errorMsgString = getTranslationWithFormat(INSTALLVIEW_ERROR_FILESYSTEM_COPY_DIRECTORY, true, ec.message());
+                     this->errorMsg = this->errorMsgString.c_str();

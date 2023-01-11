@@ -1,0 +1,124 @@
+diff -ruN Boxedwine.orig/lib/poco/Foundation/src/NamedEvent_UNIX.cpp Boxedwine/lib/poco/Foundation/src/NamedEvent_UNIX.cpp
+--- Boxedwine.orig/lib/poco/Foundation/src/NamedEvent_UNIX.cpp	2023-01-10 04:01:17
++++ Boxedwine/lib/poco/Foundation/src/NamedEvent_UNIX.cpp	2023-01-14 00:43:52
+@@ -137,7 +137,7 @@
+ #if defined(sun) || defined(__APPLE__) || defined(__QNX__)
+ 	std::string fn = "/";
+ #else
+-	std::string fn = "/tmp/";
++	std::string fn = "@TERMUX_PREFIX@/tmp/";
+ #endif
+ 	fn.append(_name);
+ 	fn.append(".event");
+diff -ruN Boxedwine.orig/lib/poco/Foundation/src/NamedMutex_UNIX.cpp Boxedwine/lib/poco/Foundation/src/NamedMutex_UNIX.cpp
+--- Boxedwine.orig/lib/poco/Foundation/src/NamedMutex_UNIX.cpp	2023-01-10 04:01:17
++++ Boxedwine/lib/poco/Foundation/src/NamedMutex_UNIX.cpp	2023-01-14 00:42:26
+@@ -158,7 +158,7 @@
+ #if defined(sun) || defined(__APPLE__) || defined(__QNX__)
+ 	std::string fn = "/";
+ #else
+-	std::string fn = "/tmp/";
++	std::string fn = "@TERMUX_PREFIX@/tmp/";
+ #endif
+ 	fn.append(_name);
+ 	fn.append(".mutex");
+diff -ruN Boxedwine.orig/lib/poco/Foundation/src/Path_UNIX.cpp Boxedwine/lib/poco/Foundation/src/Path_UNIX.cpp
+--- Boxedwine.orig/lib/poco/Foundation/src/Path_UNIX.cpp	2023-01-10 04:01:17
++++ Boxedwine/lib/poco/Foundation/src/Path_UNIX.cpp	2023-01-14 00:43:22
+@@ -199,7 +199,7 @@
+ 	}
+ 	else
+ 	{
+-		path = "/tmp/";
++		path = "@TERMUX_PREFIX@/tmp/";
+ 	}
+ 	return path;
+ }
+diff -ruN Boxedwine.orig/lib/poco/Foundation/testsuite/src/URITest.cpp Boxedwine/lib/poco/Foundation/testsuite/src/URITest.cpp
+--- Boxedwine.orig/lib/poco/Foundation/testsuite/src/URITest.cpp	2023-01-10 04:01:17
++++ Boxedwine/lib/poco/Foundation/testsuite/src/URITest.cpp	2023-01-14 00:50:33
+@@ -810,13 +810,13 @@
+ 
+ void URITest::testFromPath()
+ {
+-	Path path1("/var/www/site/index.html", Path::PATH_UNIX);
++	Path path1("@TERMUX_PREFIX@/var/www/site/index.html", Path::PATH_UNIX);
+ 	URI uri1(path1);
+-	assertTrue (uri1.toString() == "file:///var/www/site/index.html");
++	assertTrue (uri1.toString() == "file://@TERMUX_PREFIX@/var/www/site/index.html");
+ 
+-	Path path2("/var/www/site/with space.html", Path::PATH_UNIX);
++	Path path2("@TERMUX_PREFIX@/var/www/site/with space.html", Path::PATH_UNIX);
+ 	URI uri2(path2);
+-	assertTrue (uri2.toString() == "file:///var/www/site/with%20space.html");
++	assertTrue (uri2.toString() == "file://@TERMUX_PREFIX@/var/www/site/with%20space.html");
+ 
+ 	Path path3("c:\\www\\index.html", Path::PATH_WINDOWS);
+ 	URI uri3(path3);
+diff -ruN Boxedwine.orig/lib/poco/Net/testsuite/src/SocketAddressTest.cpp Boxedwine/lib/poco/Net/testsuite/src/SocketAddressTest.cpp
+--- Boxedwine.orig/lib/poco/Net/testsuite/src/SocketAddressTest.cpp	2023-01-10 04:01:17
++++ Boxedwine/lib/poco/Net/testsuite/src/SocketAddressTest.cpp	2023-01-14 00:45:44
+@@ -175,22 +175,22 @@
+ void SocketAddressTest::testSocketAddressUnixLocal()
+ {
+ #ifdef POCO_OS_FAMILY_UNIX
+-	SocketAddress sa1(SocketAddress::UNIX_LOCAL, "/tmp/sock1");
++	SocketAddress sa1(SocketAddress::UNIX_LOCAL, "@TERMUX_PREFIX@/tmp/sock1");
+ 	assertTrue (sa1.af() == AF_UNIX);
+ 	assertTrue (sa1.family() == SocketAddress::UNIX_LOCAL);
+-	assertTrue (sa1.toString() == "/tmp/sock1");
++	assertTrue (sa1.toString() == "@TERMUX_PREFIX@/tmp/sock1");
+ 
+-	SocketAddress sa2(SocketAddress::UNIX_LOCAL, "/tmp/sock2");
++	SocketAddress sa2(SocketAddress::UNIX_LOCAL, "@TERMUX_PREFIX@/tmp/sock2");
+ 	assertTrue (sa1 != sa2);
+ 	assertTrue (sa1 < sa2);
+ 
+-	SocketAddress sa3(SocketAddress::UNIX_LOCAL, "/tmp/sock1");
++	SocketAddress sa3(SocketAddress::UNIX_LOCAL, "@TERMUX_PREFIX@/tmp/sock1");
+ 	assertTrue (sa1 == sa3);
+ 	assertTrue (!(sa1 < sa3));
+ 
+-	SocketAddress sa4("/tmp/sock1");
++	SocketAddress sa4("@TERMUX_PREFIX@/tmp/sock1");
+ 	assertTrue (sa1 == sa4);
+-	assertTrue (sa4.toString() == "/tmp/sock1");
++	assertTrue (sa4.toString() == "@TERMUX_PREFIX@/tmp/sock1");
+ #endif
+ }
+ 
+diff -ruN Boxedwine.orig/lib/poco/Net/testsuite/src/SocketTest.cpp Boxedwine/lib/poco/Net/testsuite/src/SocketTest.cpp
+--- Boxedwine.orig/lib/poco/Net/testsuite/src/SocketTest.cpp	2023-01-10 04:01:17
++++ Boxedwine/lib/poco/Net/testsuite/src/SocketTest.cpp	2023-01-14 00:44:27
+@@ -506,7 +506,7 @@
+ #if POCO_OS == POCO_OS_ANDROID
+ 	Poco::File socketFile("/data/local/tmp/SocketTest.sock");
+ #else
+-	Poco::File socketFile("/tmp/SocketTest.sock");
++	Poco::File socketFile("@TERMUX_PREFIX@/tmp/SocketTest.sock");
+ #endif
+ 	if (socketFile.exists()) socketFile.remove();
+ 	SocketAddress localAddr(SocketAddress::UNIX_LOCAL, socketFile.path());
+diff -ruN Boxedwine.orig/lib/poco/Crypto/src/RSACipherImpl.cpp Boxedwine/lib/poco/Crypto/src/RSACipherImpl.cpp
+--- Boxedwine.orig/lib/poco/Crypto/src/RSACipherImpl.cpp	2023-01-10 04:01:17
++++ Boxedwine/lib/poco/Crypto/src/RSACipherImpl.cpp	2023-01-15 01:28:38
+@@ -50,8 +50,8 @@
+ 			return RSA_PKCS1_PADDING;
+ 		case RSA_PADDING_PKCS1_OAEP:
+ 			return RSA_PKCS1_OAEP_PADDING;
+-		case RSA_PADDING_SSLV23:
+-			return RSA_SSLV23_PADDING;
++		//case RSA_PADDING_SSLV23:
++		//	return RSA_SSLV23_PADDING;
+ 		case RSA_PADDING_NONE:
+ 			return RSA_NO_PADDING;
+ 		default:
+@@ -116,7 +116,7 @@
+ 		switch (_paddingMode)
+ 		{
+ 		case RSA_PADDING_PKCS1:
+-		case RSA_PADDING_SSLV23:
++		//case RSA_PADDING_SSLV23:
+ 			size -= 11;
+ 			break;
+ 		case RSA_PADDING_PKCS1_OAEP:
