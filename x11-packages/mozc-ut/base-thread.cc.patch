@@ -1,0 +1,20 @@
+--- a/src/base/thread.cc	2021-05-29 22:40:50.000000000 +0900
++++ b/src/base/thread.cc	2021-06-15 08:50:22.000000000 +0900
+@@ -173,7 +173,7 @@
+ 
+ namespace {
+ 
+-#ifdef OS_ANDROID
++#if defined(OS_ANDROID) || defined(__clang__)
+ 
+ void ExitThread(int sig) { pthread_exit(0); }
+ 
+@@ -205,7 +205,7 @@
+   // Nothing is required.
+ }
+ 
+-void PThreadCancel(pthread_t thread_id) { pthread_cancel(thread_id); }
++void PThreadCancel(::pthread_t thread_id) { ::pthread_cancel(thread_id); }
+ 
+ #endif  // OS_ANDROID or others
+ 
