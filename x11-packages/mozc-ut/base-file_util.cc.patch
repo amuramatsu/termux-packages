@@ -1,0 +1,44 @@
+--- a/src/base/file_util.cc	2022-04-03 04:55:33.000000000 +0900
++++ b/src/base/file_util.cc	2022-04-05 00:39:31.000000000 +0900
+@@ -40,7 +40,11 @@
+ #include <unistd.h>
+ #endif  // OS_WIN
+ 
++#if 1
++#include <stdlib.h>
++#else
+ #include <filesystem>
++#endif
+ #include <string>
+ 
+ #include "base/file_stream.h"
+@@ -491,6 +495,19 @@
+ #ifdef __APPLE__
+   return absl::UnimplementedError(
+       "std::filesystem is only available on macOS 10.15, iOS 13.0, or later");
++#elif 1
++
++  const char *src = realpath(filename1.c_str(), NULL);
++  const char *dst = realpath(filename2.c_str(), NULL);
++  if (src == NULL || dst == NULL) {
++    free((void*)src);
++    free((void*)dst);
++    return false;
++  }
++  int s = strcmp(src, dst);
++  free((void*)src);
++  free((void*)dst);
++  return s == 0;
+ #else   // __APPLE__
+ 
+   // u8path is deprecated in C++20. The current target is C++17.
+@@ -581,6 +598,9 @@
+ #ifdef __APPLE__
+   return absl::UnimplementedError(
+       "std::filesystem is only available on macOS 10.15, iOS 13.0, or later.");
++#elif 1
++  return absl::UnimplementedError(
++      "Hardlink is not supported on android.");
+ #else   // __APPLE__
+ 
+   // u8path is deprecated in C++20. The current target is C++17.

@@ -1,0 +1,34 @@
+--- a/src/build_mozc.py
++++ b/src/build_mozc.py
+@@ -73,7 +73,7 @@ EXT_THIRD_PARTY_DIR = os.path.join(MOZC_ROOT, 'third_party')
+ #   https://github.com/google/mozc/issues/567
+ # Qt5 candidate window built by Bazel is the alternative.
+ #   https://github.com/google/mozc/blob/master/docs/build_mozc_in_docker.md
+-USE_DEPRECATED_GTK_RENDERER = False
++USE_DEPRECATED_GTK_RENDERER = True
+ 
+ sys.path.append(SRC_DIR)
+ 
+@@ -165,6 +165,13 @@ def GetGypFileNames(options):
+     if not PkgExists('ibus-1.0 >= 1.4.1'):
+       logging.info('removing ibus.gyp.')
+       gyp_file_names.remove('%s/unix/ibus/ibus.gyp' % SRC_DIR)
++    # Add fcitx.gyp/fcitx5.gyp if fcitx version is >=4.
++    if not PkgExists('fcitx >= 4'):
++      logging.info('remove fcitx.gyp.')
++      gyp_file_names.remove('%s/unix/fcitx/fcitx.gyp' % SRC_DIR)
++    if not PkgExists('Fcitx5Core >= 5'):
++      logging.info('remove fcitx5.gyp.')
++      gyp_file_names.remove('%s/unix/fcitx5/fcitx5.gyp' % SRC_DIR)
+   gyp_file_names.sort()
+   return gyp_file_names
+ 
+@@ -333,7 +340,7 @@ def CheckGtkBuild(options):
+       '',
+       'Please add the --no_gtk_build flag to continue build_mozc.py.',
+   ]
+-  PrintErrorAndExit('\n'.join(message))
++  #PrintErrorAndExit('\n'.join(message))
+ 
+ 
+ def ParseBuildOptions(args):
