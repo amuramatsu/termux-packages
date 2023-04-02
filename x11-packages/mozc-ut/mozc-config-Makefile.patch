@@ -60,7 +60,7 @@
 +-L$(MOZC_SRC)/out_linux/Release/obj/protobuf -lprotobuf \
 +-L$(MOZC_SRC)/out_linux/Release/obj/base \
 +$(patsubst lib%.a,-l%,$(notdir $(wildcard $(MOZC_SRC)/out_linux/Release/obj/base/lib*.a)))
-+EXTOBJS	:= $(EXTOBJS_) $(EXTOBJS_)
++EXTOBJS	:= $(EXTOBJS_) $(EXTOBJS_) -Wl,-rpath,$(prefix)/lib $(prefix)/lib/libandroid-execinfo.so
 +LIBS	= -Wl,-rpath,$(prefix)/lib $(prefix)/lib/libiconv.so
  
  IBUS_SETUP_MOZC = ibus-setup-mozc

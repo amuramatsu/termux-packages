@@ -1,18 +1,18 @@
---- a/src/base/file_util.cc	2022-04-03 04:55:33.000000000 +0900
-+++ b/src/base/file_util.cc	2022-04-05 00:39:31.000000000 +0900
-@@ -40,7 +40,11 @@
- #include <unistd.h>
- #endif  // OS_WIN
- 
+--- a/src/base/file_util.cc
++++ b/src/base/file_util.cc
+@@ -33,7 +33,11 @@
+ #include <cstddef>
+ #include <cstdio>
+ #include <cstring>
 +#if 1
 +#include <stdlib.h>
 +#else
  #include <filesystem>
 +#endif
+ #include <ios>
+ #include <iterator>
  #include <string>
- 
- #include "base/file_stream.h"
-@@ -491,6 +495,19 @@
+@@ -513,6 +517,19 @@ absl::StatusOr<bool> FileUtilImpl::IsEquivalent(
  #ifdef __APPLE__
    return absl::UnimplementedError(
        "std::filesystem is only available on macOS 10.15, iOS 13.0, or later");
@@ -32,7 +32,7 @@
  #else   // __APPLE__
  
    // u8path is deprecated in C++20. The current target is C++17.
-@@ -581,6 +598,9 @@
+@@ -602,6 +619,9 @@ absl::Status FileUtilImpl::CreateHardLink(const std::string &from,
  #ifdef __APPLE__
    return absl::UnimplementedError(
        "std::filesystem is only available on macOS 10.15, iOS 13.0, or later.");

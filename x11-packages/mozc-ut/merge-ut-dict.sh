@@ -8,7 +8,7 @@ USE_DICTS="$USE_DICTS neologd"
 USE_DICTS="$USE_DICTS personal-names"
 USE_DICTS="$USE_DICTS place-names"
 #USE_DICTS="$USE_DICTS skk-jisyo"
-#USE_DICTS="$USE_DICTS sudachidict"
+USE_DICTS="$USE_DICTS sudachidict"
 
 if [ -z "$1" ]; then
     DATE=$(date +"%Y-%m-%d")

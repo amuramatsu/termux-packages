@@ -1,6 +1,6 @@
 --- a/mozc-config/mozc_dict_main.cc
 +++ b/mozc-config/mozc_dict_main.cc
-@@ -15,6 +15,7 @@
+@@ -15,10 +15,12 @@
  #include <sstream>
  #include <string>
  #include <unistd.h>
@@ -8,7 +8,20 @@
  
  using namespace std;
  
-@@ -59,7 +60,7 @@ MozcDict::MozcDict() {
+ #include "base/util.h"
++#include "base/random.h"
+ #include "dictionary/user_dictionary.h"
+ #include "dictionary/user_dictionary_util.h"
+ #include "dictionary/user_dictionary_storage.h"
+@@ -27,6 +29,7 @@ using namespace std;
+ //#undef MOZC_DICTIONARY_POS_MAP_H_
+ //#define kPOSMap kPOSMap2
+ //#define MOZC_DICTIONARY_POS_MAP_H_
++#define arraysize(f) (sizeof(f) / sizeof(*f))
+ 
+ class MozcDict {
+   public:
+@@ -59,7 +62,7 @@ MozcDict::MozcDict() {
  mozc::UserDictionaryStorage::UserDictionary* MozcDict::get_dic(string name) {
      for (int i = 0; i < dic_num(); i++) {
          mozc::UserDictionaryStorage::UserDictionary* dic =
@@ -17,7 +30,7 @@
          if (dic->name() == name) return dic;
      }
      return NULL;
-@@ -68,17 +69,18 @@ mozc::UserDictionaryStorage::UserDictionary* MozcDict::get_dic(string name) {
+@@ -68,17 +71,18 @@ mozc::UserDictionaryStorage::UserDictionary* MozcDict::get_dic(string name) {
  void MozcDict::set_entry_with_dic(string dic_name, string key, string value, string pos, string comment) {
      mozc::UserDictionaryStorage::UserDictionary* dic = get_dic(dic_name);//NULL;
  //    for (int i = 0; i < dic_num(); i++) {
@@ -41,7 +54,7 @@
      if (!mozc::UserDictionaryImporter::ConvertEntry(from, &to)) {
          cerr << "Invalid POS Error - " << pos << endl;
          return;
-@@ -95,20 +97,21 @@ void MozcDict::set_entry_with_dic(string dic_name, string key, string value, str
+@@ -95,20 +99,21 @@ void MozcDict::set_entry_with_dic(string dic_name, string key, string value, str
  void MozcDict::set_entry(string key, string value, string pos, string comment) {
      string dic_name = "ユーザー辞書 1";
      if (dic_num() >= 1)
@@ -69,7 +82,15 @@
      if (!mozc::UserDictionaryImporter::ConvertEntry(from, &to)) {
          cerr << "Invalid POS Error - " << pos << endl;
          return;
-@@ -128,11 +131,7 @@ uint64 CreateID() {
+@@ -123,16 +128,14 @@ void MozcDict::set_entry(string key, string value, string pos, string comment) {
+ }
+ 
+ namespace {
+-uint64 CreateID() {
+-  uint64 id = 0;
++uint64_t CreateID() {
++  uint64_t id = 0;
++  mozc::Random random;
  
    // dic_id == 0 is used as a magic number
    while (id == 0) {
@@ -78,11 +99,12 @@
 -      LOG(ERROR) << "GetSecureRandomSequence() failed. use rand()";
 -      id = static_cast<uint64>(rand());
 -    }
-+    mozc::Util::GetRandomSequence(reinterpret_cast<char *>(&id), sizeof(id));
++    const std::string buf = random.ByteString(sizeof(id));
++    memcpy(reinterpret_cast<char *>(&id), buf.data(), sizeof(id));
    }
  
    return id;
-@@ -142,7 +141,7 @@ uint64 CreateID() {
+@@ -142,7 +145,7 @@ uint64 CreateID() {
  void MozcDict::debug_print() {
      for (int i = 0; i < dic_num(); i++) {
          mozc::UserDictionaryStorage::UserDictionary* dic =
@@ -91,7 +113,7 @@
          if (dic == NULL) continue;
          cout << "name = " << dic->name() << endl;
          for (int j = 0; j < dic->entries_size(); j ++) {
-@@ -150,13 +149,13 @@ void MozcDict::debug_print() {
+@@ -150,13 +153,13 @@ void MozcDict::debug_print() {
                      dic->mutable_entries(j);
              if (entry == NULL) continue;
              cout << "\t" << entry->key() << "\t" << entry->value()
@@ -107,7 +129,7 @@
      if (dic == NULL) return 1;
      dic->set_name(name);
      dic->set_id(CreateID());
-@@ -173,12 +172,21 @@ bool MozcDict::save() {
+@@ -173,12 +176,21 @@ bool MozcDict::save() {
  }
  
  int reboot() {
@@ -129,7 +151,7 @@
  
      return execv(path, argv);
  }
-@@ -209,12 +217,24 @@ int MozcDict::import(string name, char* file_name) {
+@@ -209,12 +221,24 @@ int MozcDict::import(string name, char* file_name) {
      is.close();
  
      mozc::UserDictionaryImporter::EncodingType type =
@@ -156,7 +178,7 @@
          if (output == "") {
              cerr << "Convert Error" << endl;
              delete[] input;
-@@ -226,8 +246,7 @@ int MozcDict::import(string name, char* file_name) {
+@@ -226,8 +250,7 @@ int MozcDict::import(string name, char* file_name) {
          return -1;
      }
  
@@ -166,7 +188,7 @@
      mozc::UserDictionaryImporter::ErrorType error =
      mozc::UserDictionaryImporter::ImportFromTextLineIterator(
              mozc::UserDictionaryImporter::IME_AUTO_DETECT, &iter, dic);
-@@ -239,7 +258,7 @@ int MozcDict::import(string name, char* file_name) {
+@@ -239,7 +262,7 @@ int MozcDict::import(string name, char* file_name) {
  int MozcDict::delete_dic(string name) {
      for (int i = 0; i < dic_num(); i++) {
          mozc::UserDictionaryStorage::UserDictionary* dic =
@@ -175,7 +197,7 @@
          if (dic->name() == name) {
              if (dic->id() == 0)
                  dic->set_id(CreateID());
-@@ -253,7 +272,7 @@ int MozcDict::delete_dic(string name) {
+@@ -253,7 +276,7 @@ int MozcDict::delete_dic(string name) {
  int MozcDict::export_dic(string name, const string file_name) {
      for (int i = 0; i < dic_num(); i++) {
          mozc::UserDictionaryStorage::UserDictionary* dic =
@@ -184,7 +206,7 @@
          if (dic->name() == name) {
              if (dic->id() == 0)
                  dic->set_id(CreateID());
-@@ -284,19 +303,19 @@ void print_help() {
+@@ -284,19 +307,19 @@ void print_help() {
  }
  
  namespace {

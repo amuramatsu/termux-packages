@@ -1,19 +1,18 @@
 TERMUX_PKG_HOMEPAGE=https://github.com/fcitx/mozc
 TERMUX_PKG_DESCRIPTION="Mozc is a Japanese Input Method Editor (IME) designed for multi-platform with UT dictionary"
 TERMUX_PKG_LICENSE="CC BY-SA 3.0"
-_MOZC_VERSION=2.28.4960.102
-_UT_VERSION=20230224
-_GIT_COMMIT=7ed54606665eff99e346d1b0d2fdb29f373c0184
+_MOZC_VERSION=2.28.5029.102
+_UT_VERSION=20230419
+_GIT_COMMIT=67152ee32dbdf1ae42e03815373c6ce3711c8144
 TERMUX_PKG_VERSION=$_MOZC_VERSION.$_UT_VERSION
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_SRCURL=git+https://github.com/fcitx/mozc
 TERMUX_PKG_GIT_BRANCH=fcitx
 TERMUX_PKG_BUILD_IN_SRC=true
-TERMUX_PKG_DEPENDS="libc++, libandroid-posix-semaphore, libiconv"
-TERMUX_PKG_BUILD_DEPENDS="fcitx5, gtk2, qt5-qtbase"
-TERMUX_PKG_HOSTBUILD=true
+TERMUX_PKG_DEPENDS="libc++, libandroid-posix-semaphore, libandroid-execinfo, libiconv"
+TERMUX_PKG_BUILD_DEPENDS="fcitx5, qt5-qtbase"
 
-_MERGE_UT_REPO=https://github.com/utuhiro78/merge-ut-dictionaries
+_MERGE_UT_REPO=https://github.com/utuhiro78/merge-ut-dictionaries.git
 _MERGE_UT_COMMIT=ffaf40e56c3a7b317a6b432bf167415fcfb9077b
 _MOZC_CONFIG_REPO=https://github.com/hidegit/mozc-config.git
 _MOZC_CONFIG_COMMIT=79bd032431320dbb79d3e16d41686e5a58f22218
@@ -24,8 +23,9 @@ termux_step_post_get_source() {
 	git fetch --unshallow
 	git reset --hard $_GIT_COMMIT
 	git submodule update --recursive
-	sed -i.bak 's/__ANDROID__/XXX__ANDROID__XXX/g' \
-		src/third_party/protobuf/src/google/protobuf/stubs/common.cc
+	grep -r -w -l __ANDROID__ | while read line; do
+		sed -i.bak 's/__ANDROID__/XXX__ANDROID__XXX/g' "$line"
+	done
 	
 	git clone $_MERGE_UT_REPO merge-ut
 	(cd merge-ut && \
@@ -44,7 +44,7 @@ termux_step_post_get_source() {
 termux_step_configure () {
         LDFLAGS="${LDFLAGS/-static-openmp/}"
         LDFLAGS="${LDFLAGS/-fopenmp/}"
-        LDFLAGS+=" -landroid-posix-semaphore"
+        LDFLAGS+=" -landroid-posix-semaphore -landroid-execinfo"
 	termux_setup_cmake
 	termux_setup_ninja
 	
@@ -59,11 +59,11 @@ termux_step_configure () {
 termux_step_make () {
         LDFLAGS="${LDFLAGS/-static-openmp/}"
         LDFLAGS="${LDFLAGS/-fopenmp/}"
-        LDFLAGS+=" -landroid-posix-semaphore"
+        LDFLAGS+=" -landroid-posix-semaphore -landroid-execinfo"
 	cd "$TERMUX_PKG_SRCDIR/src"
-	python build_mozc.py build -c Release package || true
-	python build_mozc.py build -c Release unixemacs/emacs.gyp:mozc_emacs_helper || true
-	python build_mozc.py build -c Release unixfcitx5/fcitx5.gyp:fcitx5-mozc || true
+	python build_mozc.py build --no_gtk_build -c Release package || true
+	python build_mozc.py build --no_gtk_build -c Release unixemacs/emacs.gyp:mozc_emacs_helper || true
+	python build_mozc.py build --no_gtk_build -c Release unixfcitx5/fcitx5.gyp:fcitx5-mozc || true
 	cd "$TERMUX_PKG_SRCDIR/mozc-config"
 	make mozc-config mozc-dict
 }
