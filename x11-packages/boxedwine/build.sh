@@ -5,6 +5,7 @@ TERMUX_PKG_LICENSE_FILE="license.txt"
 TERMUX_PKG_MAINTAINER="@termux"
 _GIT_HASH=88ac5138dc77acbd1a8f6f4bec48fbddb464ec22
 TERMUX_PKG_VERSION=23.0.2.20230329.${_GIT_HASH}
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://github.com/danoon2/Boxedwine/archive/${_GIT_HASH}.zip
 TERMUX_PKG_SHA256=ae5d95643ee1ccd48eb2a1a75000b62d427703cfa5530355a4f7b2989165539c
 TERMUX_PKG_DEPENDS="sdl2, glu, openssl, boost, libminizip, pulseaudio, libx11"
