@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://starship.rs
 TERMUX_PKG_DESCRIPTION="A minimal, blazing fast, and extremely customizable prompt for any shell"
 TERMUX_PKG_LICENSE="ISC"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=1.14.2
+TERMUX_PKG_VERSION=1.16.0
 TERMUX_PKG_SRCURL=https://github.com/starship/starship/archive/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=6c9bee757955644453deab3564a10c0696606bb1c197ad631ff6ebbf8892b7a7
+TERMUX_PKG_SHA256=133888e190ce1563927e16ee693da3026d2e668d975ac373f853e030743775c5
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_BUILD_DEPENDS="zlib"
 TERMUX_PKG_BUILD_IN_SRC=true
@@ -20,7 +20,7 @@ termux_step_pre_configure() {
 
 	local p="cmake-0.1.50-src-lib.rs.diff"
 	local d
-	for d in $CARGO_HOME/registry/src/github.com-*/cmake-*; do
+	for d in $CARGO_HOME/registry/src/*/cmake-*; do
 		patch --silent -p1 -d ${d} \
 			< "$TERMUX_PKG_BUILDER_DIR/${p}" || :
 	done

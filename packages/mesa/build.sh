@@ -3,10 +3,10 @@ TERMUX_PKG_DESCRIPTION="An open-source implementation of the OpenGL specificatio
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_LICENSE_FILE="docs/license.rst"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=23.0.3
+TERMUX_PKG_VERSION=23.1.5
 TERMUX_PKG_SRCURL=https://archive.mesa3d.org/mesa-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=386362a5d80df3b096636b67f340e1ce67b705b44767d5bdd11d2ed1037192d5
-TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libexpat, libglvnd, libwayland, libx11, libxext, libxfixes, libxshmfence, libxxf86vm, ncurses, zlib, zstd"
+TERMUX_PKG_SHA256=3cf88576fdebf24fc4047067936131c90cb6541c27365996b79b661dec1fb153
+TERMUX_PKG_DEPENDS="libandroid-shmem, libc++, libdrm, libglvnd, libwayland, libx11, libxext, libxfixes, libxshmfence, libxxf86vm, ncurses, vulkan-loader, zlib, zstd"
 TERMUX_PKG_SUGGESTS="mesa-dev"
 TERMUX_PKG_BUILD_DEPENDS="libllvm-static, libwayland-protocols, libxrandr, llvm, llvm-tools, mlir, xorgproto"
 TERMUX_PKG_CONFLICTS="libmesa, ndk-sysroot (<= 25b)"
@@ -26,8 +26,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dllvm=enabled
 -Dshared-llvm=disabled
 -Dplatforms=x11,wayland
--Dgallium-drivers=swrast,virgl
--Dvulkan-drivers=swrast
+-Dgallium-drivers=swrast,virgl,zink
 -Dosmesa=true
 -Dglvnd=true
 -Dxmlconfig=disabled
@@ -53,6 +52,15 @@ termux_step_pre_configure() {
 		export PKG_CONFIG="${_WRAPPER_BIN}/pkg-config"
 	fi
 	export PATH=$_WRAPPER_BIN:$PATH
+
+	if [ $TERMUX_ARCH = "arm" ] || [ $TERMUX_ARCH = "aarch64" ]; then
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast,freedreno"
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dfreedreno-kmds=msm,kgsl"
+	elif [ $TERMUX_ARCH = "i686" ] || [ $TERMUX_ARCH = "x86_64" ]; then
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -Dvulkan-drivers=swrast"
+	else
+		termux_error_exit "Invalid arch: $TERMUX_ARCH"
+	fi
 }
 
 termux_step_post_configure() {
