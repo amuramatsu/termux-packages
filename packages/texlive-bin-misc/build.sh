@@ -3,6 +3,7 @@ TERMUX_PKG_DESCRIPTION="TeX Live is a distribution of the TeX typesetting system
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="MURAMATSU Atsushi @amuramatsu"
 TERMUX_PKG_VERSION=20230313
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-${TERMUX_PKG_VERSION:0:4}.0.tar.gz
 TERMUX_PKG_SHA256=b14ec8c6873ae04d77cd1de239b660e30f3d6f0e97449aee67e3300ea4a259fd
 TERMUX_PKG_DEPENDS="freetype, harfbuzz, harfbuzz-icu, libc++, libcairo, libgd, libgmp, libgraphite, libiconv, libicu, liblua52, libmpfr, libpaper, libpixman, libpng, teckit, zlib, zziplib, texlive-bin"
@@ -32,7 +33,7 @@ RANLIB=ranlib
 --disable-multiplatform
 --enable-musixtnt
 --disable-native-texlive-build
---disable-pmx
+--enable-pmx
 --disable-ps2pk
 --disable-psutils
 --disable-seetexk
