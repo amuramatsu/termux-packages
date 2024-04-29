@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://github.com/go-shiori/shiori
 TERMUX_PKG_DESCRIPTION="Simple bookmark manager built with Go"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="Krishna Kanhaiya @kcubeterm"
-TERMUX_PKG_VERSION="1.6.1"
+TERMUX_PKG_VERSION="1.6.3"
 TERMUX_PKG_SRCURL=https://github.com/go-shiori/shiori/archive/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=032f3aa2904ec0c03336af76833275c5b1a2185018eb082ed7c32b186d4b169e
+TERMUX_PKG_SHA256=9d1307bf238cc883840ca9575daabb7eca5c84c2d9c8016ee2d82693308e5492
 TERMUX_PKG_AUTO_UPDATE=true
 
 termux_step_make() {

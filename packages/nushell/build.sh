@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://www.nushell.sh
 TERMUX_PKG_DESCRIPTION="A new type of shell operating on structured data"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="0.91.0"
+TERMUX_PKG_VERSION="0.92.2"
 TERMUX_PKG_SRCURL=https://github.com/nushell/nushell/archive/$TERMUX_PKG_VERSION.tar.gz
-TERMUX_PKG_SHA256=8957808c3d87b17c6e874b8382e8be45100e83c540556b2c43864c428c2b80b5
+TERMUX_PKG_SHA256=d0424380981164137b9db31f686b048b7a4b9fce1a2e06ae6b8e58df0b8c4d64
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="openssl, zlib"
 TERMUX_PKG_BUILD_IN_SRC=true
@@ -25,7 +25,7 @@ termux_step_pre_configure() {
 		popd
 	fi
 
-	local _features="default-no-clipboard extra"
+	local _features="default-no-clipboard"
 	if [ $TERMUX_ARCH != "i686" ] && [ $TERMUX_ARCH != "arm" ]; then
 		_features+=" dataframe"
 	fi

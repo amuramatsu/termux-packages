@@ -4,9 +4,9 @@ TERMUX_PKG_LICENSE="Apache-2.0"
 TERMUX_PKG_LICENSE_FILE="flang/LICENSE.TXT"
 TERMUX_PKG_MAINTAINER="@termux"
 LLVM_MAJOR_VERSION=18
-TERMUX_PKG_VERSION=${LLVM_MAJOR_VERSION}.1.2
+TERMUX_PKG_VERSION=${LLVM_MAJOR_VERSION}.1.4
 TERMUX_PKG_SRCURL=https://github.com/llvm/llvm-project/releases/download/llvmorg-$TERMUX_PKG_VERSION/llvm-project-$TERMUX_PKG_VERSION.src.tar.xz
-TERMUX_PKG_SHA256=51073febd91d1f2c3b411d022695744bda322647e76e0b4eb1918229210c48d5
+TERMUX_PKG_SHA256=2c01b2fbb06819a12a92056a7fd4edcdc385837942b5e5260b9c2c0baff5116b
 TERMUX_PKG_AUTO_UPDATE=false
 TERMUX_PKG_HOSTBUILD=true
 # `flang-new` should be rebuilt when libllvm bumps version.
@@ -53,8 +53,8 @@ termux_step_host_build() {
 	termux_setup_ninja
 
 	cmake -G Ninja "-DCMAKE_BUILD_TYPE=Release" \
-				   "-DLLVM_ENABLE_PROJECTS=clang;mlir" \
-				   $TERMUX_PKG_SRCDIR/llvm
+					"-DLLVM_ENABLE_PROJECTS=clang;mlir" \
+					$TERMUX_PKG_SRCDIR/llvm
 	ninja -j $TERMUX_MAKE_PROCESSES clang-tblgen mlir-tblgen
 }
 

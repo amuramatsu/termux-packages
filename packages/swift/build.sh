@@ -3,7 +3,7 @@ TERMUX_PKG_DESCRIPTION="Swift is a high-performance system programming language"
 TERMUX_PKG_LICENSE="Apache-2.0, NCSA"
 TERMUX_PKG_MAINTAINER="@finagolfin"
 TERMUX_PKG_VERSION=5.10
-TERMUX_PKG_REVISION=1
+TERMUX_PKG_REVISION=2
 SWIFT_RELEASE="RELEASE"
 TERMUX_PKG_SRCURL=https://github.com/apple/swift/archive/swift-$TERMUX_PKG_VERSION-$SWIFT_RELEASE.tar.gz
 TERMUX_PKG_SHA256=874c3b6668fb138db35c9f1c63570dafacac8476a6094b17764a51a45a1b69a2
@@ -126,7 +126,7 @@ termux_step_host_build() {
 
 termux_step_make() {
 	if [ "$TERMUX_ON_DEVICE_BUILD" = "false" ]; then
-	        termux_setup_swift
+			termux_setup_swift
 		ln -sf $TERMUX_PKG_HOSTBUILD_DIR/llvm-linux-x86_64 $TERMUX_PKG_BUILDDIR/llvm-linux-x86_64
 
 		SWIFT_BUILD_FLAGS="$SWIFT_BUILD_FLAGS --android
